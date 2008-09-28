@@ -171,7 +171,19 @@ logFile << "Bound to server port: " << port << endl;
 	// -------------------------
 	// Create a unique session identifier
 	CoCreateGuid(&hostedGameInfo.sessionIdentifier);	// Don't really care if this fails, not a big deal
-	hostedGameInfo.createGameInfo.startupFlags.Init(maxPlayers, gameType);
+	//hostedGameInfo.createGameInfo.startupFlags.Init(maxPlayers, gameType);
+	// Set the Startup flags
+	hostedGameInfo.createGameInfo.startupFlags.bDisastersOn = true;
+	hostedGameInfo.createGameInfo.startupFlags.bDayNightOn = true;
+	hostedGameInfo.createGameInfo.startupFlags.bMoraleOn = true;
+	hostedGameInfo.createGameInfo.startupFlags.bCampaign = false;
+	hostedGameInfo.createGameInfo.startupFlags.bMultiplayer = true;
+	hostedGameInfo.createGameInfo.startupFlags.bCheatsOn = false;
+	hostedGameInfo.createGameInfo.startupFlags.maxPlayers = maxPlayers;
+	hostedGameInfo.createGameInfo.startupFlags.b1 = 0;
+	hostedGameInfo.createGameInfo.startupFlags.missionType = gameType;
+	hostedGameInfo.createGameInfo.startupFlags.numInitialVehicles = 0;
+	// Copy the game creator name and password
 	strncpy(hostedGameInfo.createGameInfo.gameCreatorName, creatorName, sizeof(hostedGameInfo.createGameInfo.gameCreatorName));
 	strncpy(this->password, password, sizeof(this->password));
 

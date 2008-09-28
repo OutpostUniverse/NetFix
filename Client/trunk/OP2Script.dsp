@@ -48,12 +48,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib winmm.lib ws2_32.lib ..\lib\op2.lib /nologo /base:"0x14000000" /subsystem:windows /dll /machine:I386
+# ADD LINK32 wsock32.lib user32.lib winmm.lib ole32.lib /nologo /base:"0x14000000" /subsystem:windows /dll /machine:I386
 # SUBTRACT LINK32 /map /debug
-# Begin Special Build Tool
-SOURCE="$(InputPath)"
-PostBuild_Cmds=copy ReleaseMinSize\OP2Script.dll "\Sierra\Outpost 2 Divided Destiny\NetPatch\OP2mod.dll"	copy ReleaseMinSize\OP2Script.dll "\Sierra\Outpost2\PluginAI.dll"
-# End Special Build Tool
 # Begin Target
 
 # Name "OP2Script - Win32 Release MinSize"
@@ -96,74 +92,6 @@ SOURCE=.\OPUNetTransportLayer.h
 # Begin Group "API"
 
 # PROP Default_Filter ""
-# Begin Group "OP2Helper"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\OP2Helper\EnumSoundID.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\OP2Helper\EnumTechID.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\OP2Helper\OP2Helper.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\OP2Helper\OP2Helper.h
-# End Source File
-# End Group
-# Begin Group "Outpost2DLL"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\Enumerators.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\Enums.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\Functions.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\Groups.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\MapIdEnum.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\Outpost2DLL.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\Player.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\RequiredExports.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\Structs.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\TethysGame.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Outpost2DLL\Units.h
-# End Source File
-# End Group
 # Begin Group "Forced Exports"
 
 # PROP Default_Filter ""
@@ -440,10 +368,6 @@ SOURCE=..\API\ForcedExports\UserInterface\Viewport.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\API\ForcedExports\Game\GameStartInfo.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\API\ForcedExports\Game\LevelDLL.h
 # End Source File
 # Begin Source File
@@ -515,7 +439,7 @@ SOURCE=..\API\ForcedExports\Game\UnitTypeInfo.h
 
 SOURCE=..\API\ForcedExports\ForcedExports.asm
 # Begin Custom Build
-InputDir=\Documents and Settings\dstevens\My Documents\Coding\VC++\OP2Script\API\ForcedExports
+InputDir=\Documents and Settings\dstevens\My Documents\Coding\API\ForcedExports
 InputPath=..\API\ForcedExports\ForcedExports.asm
 InputName=ForcedExports
 
