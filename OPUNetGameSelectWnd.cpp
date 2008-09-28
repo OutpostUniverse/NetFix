@@ -239,7 +239,7 @@ void OPUNetGameSelectWnd::InitNetLayer()
 	}
 
 	// Set the global NetTransportLayer object pointer
-	app.netTransportLayer = opuNetTransportLayer;
+	app.netTLayer = opuNetTransportLayer;
 }
 
 
@@ -649,7 +649,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 
 
 	// Get the host player name
-	hostPlayerNetID = app.netTransportLayer->GetHostPlayerNetID();
+	hostPlayerNetID = app.netTLayer->GetHostPlayerNetID();
 	// Get the Player Name
 	SendDlgItemMessage(this->hWnd, IDC_PlayerName, WM_GETTEXT, sizeof(playerName), (LPARAM)&playerName);
 
