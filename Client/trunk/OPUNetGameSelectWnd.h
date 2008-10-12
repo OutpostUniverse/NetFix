@@ -7,6 +7,8 @@ struct HostedGameInfo;
 const int MaxServerAddressLen = 128;
 const int timerInterval = 50;
 const int SearchTickInterval = 60;
+const int JoinAttemptInterval = 20;
+const int MaxJoinAttempt = 3;
 
 
 class OPUNetGameSelectWnd : public IDlgWnd
@@ -49,6 +51,9 @@ private:
 	UINT timer;
 	UINT searchTickCount;
 	HostedGameInfo* joiningGame;
+	char password[16];
+	UINT joinAttempt;
+	UINT joinAttemptTickCount;
 };
 
 
