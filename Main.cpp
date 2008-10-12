@@ -38,7 +38,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     return TRUE;
 }
 
-extern "C" __declspec(dllexport) void __stdcall InitModFunc(char* iniSectionName)
+extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 {
 	// Store the .ini section name
 	strncpy(sectionName, iniSectionName, sizeof(sectionName));
