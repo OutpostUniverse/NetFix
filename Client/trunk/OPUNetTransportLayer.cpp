@@ -125,6 +125,32 @@ bool OPUNetTransportLayer::CreateSocket()
 	BOOL newValue = true;
 	setsockopt(netSocket, SOL_SOCKET, SO_BROADCAST, (const char*)&newValue, sizeof(newValue));
 
+	// Check if the port needs to be bound (forced)
+	int forcedPort;
+	forcedPort = config.GetInt(sectionName, "ForcedPort", 0);
+	if (forcedPort != 0)
+	{
+		int retVal;
+		sockaddr_in sockAddr;
+
+		// Set the bind address
+		sockAddr.sin_family = AF_INET;
+		sockAddr.sin_port = htons(forcedPort);
+		sockAddr.sin_addr.s_addr = INADDR_ANY;
+		// Try to bind to the forced port
+		retVal = bind(netSocket, (sockaddr*)&sockAddr, sizeof(sockAddr));
+
+		// Check for success
+		if (retVal == 0)
+		{
+			logFile << "ForcedPort = " << forcedPort << endl;
+		}
+		else
+		{
+			logFile << "Warning: Could not bind to ForcedPort = " << forcedPort << endl;
+		}
+	}
+
 	// Return status
 	return (netSocket != INVALID_SOCKET);
 }
@@ -172,7 +198,18 @@ logFile.open("logHost.txt");
 		errorCode = bind(hostSocket, (sockaddr*)&localAddress, sizeof(localAddress));
 		// Check for errors
 		if (errorCode == SOCKET_ERROR)
-			return false;			// Failed
+		{
+			// Could not bind to the socket. Get client socket port info
+			errorCode = getsockname(netSocket, (sockaddr*)&localAddress, sizeof(localAddress));
+			if (errorCode == SOCKET_ERROR)
+				return false;		// Failed
+			// Check if client socket port doesn't match
+			if (ntohs(localAddress.sin_port) != port)
+				return false;		// Failed
+
+			// Ports match, use the client socket
+			hostSocket = netSocket;
+		}
 
 // **DEBUG**
 logFile << "Bound to server port: " << port << endl;
