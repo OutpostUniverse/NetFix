@@ -39,8 +39,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /D "OP2_NO_EXPORTS" /FAs /Fr /FD /c
-# SUBTRACT CPP /YX /Yc /Yu
+# ADD CPP /nologo /MT /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /D "OP2_NO_EXPORTS" /FAs /FD /c
+# SUBTRACT CPP /Fr /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -439,7 +439,7 @@ SOURCE=..\API\ForcedExports\Game\UnitTypeInfo.h
 
 SOURCE=..\API\ForcedExports\ForcedExports.asm
 # Begin Custom Build
-InputDir=\Documents and Settings\dstevens\My Documents\Coding\API\ForcedExports
+InputDir=\Documents and Settings\dstevens\My Documents\Coding\Outpost2\API\ForcedExports
 InputPath=..\API\ForcedExports\ForcedExports.asm
 InputName=ForcedExports
 
