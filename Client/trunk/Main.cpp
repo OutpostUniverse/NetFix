@@ -7,11 +7,14 @@ using namespace OP2ForcedExport;
 
 #include "OPUNetGameProtocol.h"
 
+#include <fstream.h>
+extern ofstream logFile;
+
 
 HINSTANCE hInstance;
 OPUNetGameProtocol opuNetGameProtocol;
 char sectionName[64] = "";				// Ini file section name, for loading additional parameters
-const DefaultProtocolIndex = 3;			// "Serial"
+const DefaultProtocolIndex = 4;			// "SIGS"
 
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
@@ -44,7 +47,9 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	strncpy(sectionName, iniSectionName, sizeof(sectionName));
 
 	int protocolIndex;
-	protocolIndex = config.GetInt(sectionName, "ProtocolIndex", DefaultProtocolIndex);
+	// Get button index to replace functionality of
+	protocolIndex = GetPrivateProfileInt(sectionName, "ProtocolIndex", DefaultProtocolIndex, ".\\Outpost2.ini");
+	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << endl;
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
 }
