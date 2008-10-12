@@ -45,7 +45,7 @@ OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 // Destructor
 OPUNetGameSelectWnd::~OPUNetGameSelectWnd()
 {
-	// **TODO** Release list of hosted games
+	ClearGamesList();
 }
 
 
