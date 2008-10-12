@@ -126,7 +126,6 @@ bool OPUNetTransportLayer::CreateSocket()
 	setsockopt(netSocket, SOL_SOCKET, SO_BROADCAST, (const char*)&newValue, sizeof(newValue));
 
 	// Check if the port needs to be bound (forced)
-	int forcedPort;
 	forcedPort = config.GetInt(sectionName, "ForcedPort", 0);
 	if (forcedPort != 0)
 	{
@@ -330,7 +329,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 	packet.header.type = 1;
 	packet.tlMessage.joinRequest.commandType = tlcJoinRequest;
 	packet.tlMessage.joinRequest.sessionIdentifier = game.sessionIdentifier;
-	packet.tlMessage.joinRequest.returnPortNum = 0;
+	packet.tlMessage.joinRequest.returnPortNum = forcedPort;
 	strncpy(packet.tlMessage.joinRequest.password, password, sizeof(packet.tlMessage.joinRequest.password));
 
 // **DEBUG**
@@ -340,6 +339,14 @@ logFile << endl << "  Session ID: ";
 DumpGuid(packet.tlMessage.joinRequest.sessionIdentifier);
 logFile << endl;
 //DumpPacket(&packet);
+
+	sockaddr_in gameServerAddr;
+	// Check if a Game Server is set
+	if (GetGameServerAddress(gameServerAddr))
+	{
+		// Send a Join message through the server too
+		SendTo(packet, gameServerAddr);
+	}
 
 	// Send the JoinRequest
 	return SendTo(packet, game.address);
@@ -777,6 +784,7 @@ OPUNetTransportLayer::OPUNetTransportLayer()	// Private Constructor  [Prevent ob
 	bInitialized = false;
 	netSocket = INVALID_SOCKET;
 	hostSocket = INVALID_SOCKET;
+	forcedPort = 0;
 	memset(&peerInfo, 0, sizeof(peerInfo));
 	bInvite = false;
 	bGameStarted = false;
@@ -1078,6 +1086,8 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 	// Check if we need to repond to game host queries
 	if (bInvite)
 	{
+		int returnPortNum;
+
 		switch (tlMessage.tlHeader.commandType)
 		{
 		case tlcJoinRequest:		// 0: JoinRequest
@@ -1088,6 +1098,8 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier)
 				return true;		// Packet handled (discard)
 
+			returnPortNum = tlMessage.joinRequest.returnPortNum;
+
 			// Create a reply
 			packet.header.sourcePlayerNetID = playerNetID;		// Client will need the Host's ID
 			packet.header.sizeOfPayload = sizeof(JoinReply);
@@ -1096,18 +1108,26 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			if (tlMessage.joinReply.newPlayerNetID != 0)
 			{
 				tlMessage.tlHeader.commandType = tlcJoinGranted;
-// **DEBUG**
-logFile << "Client join accepted: ";
-DumpAddr(from);
-logFile << " (" << tlMessage.joinReply.newPlayerNetID << ")" << endl;
+				// **DEBUG**
+				logFile << "Client join accepted: ";
+				DumpAddr(from);
+				logFile << " (" << tlMessage.joinReply.newPlayerNetID << ")" << endl;
+
+				// Check if a forced return port has been set
+				if (returnPortNum != 0)
+				{
+					logFile << "Return Port forced to " << returnPortNum << endl;
+					// Set the new return port number
+					peerInfo[tlMessage.joinReply.newPlayerNetID & 7].address.sin_port = returnPortNum;
+				}
 			}
 			else
 			{
 				tlMessage.tlHeader.commandType = tlcJoinRefused;
-// **DEBUG**
-logFile << "Client join refused: ";
-DumpAddr(from);
-logFile << endl;
+				// **DEBUG**
+				logFile << "Client join refused: ";
+				DumpAddr(from);
+				logFile << endl;
 			}
 
 			// Send the reply
