@@ -5,8 +5,7 @@
 #include "OPUNetTransportLayer.h"
 
 
-char sectionName[64] = "";
-
+extern char sectionName[];
 
 
 // ** Begin Debug Code
