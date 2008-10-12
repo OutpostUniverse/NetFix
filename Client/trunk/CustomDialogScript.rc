@@ -60,7 +60,7 @@ BEGIN
     PUSHBUTTON      "C&reate",IDC_CreateButton,153,224,67,14
     PUSHBUTTON      "&Cancel",IDC_CancelButton,226,224,67,14
     CONTROL         "",IDC_StatusBar,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,
-                    244,287,10
+                    242,287,10
 END
 
 

@@ -40,7 +40,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
 # ADD CPP /nologo /MT /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /D "OP2_NO_EXPORTS" /FD /c
-# SUBTRACT CPP /FA<none> /Fr /YX /Yc /Yu
+# SUBTRACT CPP /Fr /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,6 +50,10 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
 # ADD LINK32 wsock32.lib user32.lib winmm.lib ole32.lib /nologo /base:"0x14000000" /subsystem:windows /dll /machine:I386 /out:"ReleaseMinSize/NetFixV3.dll"
 # SUBTRACT LINK32 /map /debug
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Cmds=Copy  ReleaseMinSize\NetFixV3.dll  \Sierra\Outpost2\NetFix\ 
+# End Special Build Tool
 # Begin Target
 
 # Name "OP2Script - Win32 Release MinSize"

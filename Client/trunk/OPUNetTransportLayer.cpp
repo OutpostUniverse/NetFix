@@ -1337,4 +1337,6 @@ void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressStr
 {
 	// Get the address string
 	config.GetString(sectionName, "GameServerAddr", gameServerAddressString, maxLength, "");
+
+	logFile << "[" << sectionName << "]" << " GameServerAddr = " << gameServerAddressString << endl;
 }
