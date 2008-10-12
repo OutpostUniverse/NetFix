@@ -40,6 +40,8 @@ OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 	timer = 0;
 	searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 	joiningGame = 0;
+	joinAttempt = 0;
+	joinAttemptTickCount;
 }
 
 // Destructor
@@ -422,6 +424,30 @@ void OPUNetGameSelectWnd::OnTimer()
 		}
 	}
 
+	if ((joinAttempt > 0) && (joiningGame != 0))
+	{
+		joinAttemptTickCount++;
+		if (joinAttemptTickCount >= JoinAttemptInterval)
+		{
+			// Reset the tick count
+			joinAttemptTickCount = 0;
+
+			if (joinAttempt > MaxJoinAttempt)
+			{
+				joinAttempt = 0;
+				joiningGame = 0;
+
+				SetStatusText("Game join failed");
+			}
+			else
+			{
+				joinAttempt++;
+				// Resend the Join request
+				opuNetTransportLayer->JoinGame(*joiningGame, password);
+			}
+		}
+	}
+
 	// Check for network replies
 	while (opuNetTransportLayer->Receive(&packet))
 	{
@@ -703,7 +729,6 @@ void OPUNetGameSelectWnd::OnClickSearch()
 
 void OPUNetGameSelectWnd::OnClickJoin()
 {
-	char password[16];
 	LVITEM item;
 
 
@@ -737,6 +762,7 @@ void OPUNetGameSelectWnd::OnClickJoin()
 	SetStatusText("Sending Join request...");
 
 
+	joinAttempt = 1;
 	// Send the Join request
 	opuNetTransportLayer->JoinGame(*joiningGame, password);
 }
