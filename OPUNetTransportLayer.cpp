@@ -5,11 +5,19 @@
 #include "OPUNetTransportLayer.h"
 
 
-// **DEBUG** Start
+char sectionName[64] = "";
+
+
+
+// ** Begin Debug Code
 #include <iostream.h>
 #include <fstream.h>
+#include <objbase.h>
 
+
+// Global Debug file
 ofstream logFile("log.txt");
+
 
 void DumpIP(unsigned long ip)
 {
@@ -18,16 +26,19 @@ void DumpIP(unsigned long ip)
 		<< "." << ((ip >> 16) & 255) 
 		<< "." << ((ip >> 24) & 255);
 }
+
 void DumpAddr(sockaddr_in &addr)
 {
 	logFile << "(AF:" << addr.sin_family << ") ";
 	DumpIP(addr.sin_addr.s_addr);
 	logFile << ":" << ntohs(addr.sin_port);
 }
+
 void DumpPlayerNetID(int playerNetID)
 {
 	logFile << "[" << (playerNetID & ~7) << "." << (playerNetID & 7) << "]";
 }
+
 void DumpAddrList(PeerInfo* peerInfo)
 {
 	int i;
@@ -42,6 +53,7 @@ void DumpAddrList(PeerInfo* peerInfo)
 		logFile << "}" << endl;
 	}
 }
+
 void DumpGuid(GUID &guid)
 {
 	int i;
@@ -53,6 +65,7 @@ void DumpGuid(GUID &guid)
 	}
 	logFile << "}" << dec;
 }
+
 void DumpPacket(Packet* packet)
 {
 	logFile << " Source: " << packet->header.sourcePlayerNetID << endl;
@@ -62,7 +75,7 @@ void DumpPacket(Packet* packet)
 	logFile << " checksum : " << hex << packet->Checksum() << dec << endl;
 	logFile << " commandType : " << packet->tlMessage.tlHeader.commandType << endl;
 }
-// **DEBUG** End debug code
+// ** End Debug Code
 
 
 
@@ -1248,11 +1261,11 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddr)
 	char addrString[256];
 
 	// Get the address string
-	config.GetString("GameServer", "GameServerAddr", addrString, sizeof(addrString), "");
+	GetGameServerAddressString(addrString, sizeof(addrString));
 
 	// Set default address values
 	gameServerAddr.sin_family = AF_INET;
-	gameServerAddr.sin_port = htons(47777);
+	gameServerAddr.sin_port = htons(DefaultGameServerPort);
 	memset(gameServerAddr.sin_zero, 0, sizeof(gameServerAddr.sin_zero));
 
 	// Convert the address string to a sockaddr_in struct
@@ -1263,4 +1276,8 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddr)
 		return false;		// Error
 }
 
-
+void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressString, int maxLength)
+{
+	// Get the address string
+	config.GetString(sectionName, "GameServerAddr", gameServerAddressString, maxLength, "");
+}

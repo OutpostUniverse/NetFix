@@ -414,16 +414,16 @@ void OPUNetGameSelectWnd::OnTimer()
 
 		// First check a game server for games (if info is setup)
 		char addrString[128];
-		config.GetString("GameServer", "GameServerAddr", addrString, sizeof(addrString), "");
+		opuNetTransportLayer->GetGameServerAddressString(addrString, sizeof(addrString));
 		if (addrString[0] != 0)
 		{
 			// Check the game server for a list of games
-			opuNetTransportLayer->SearchForGames(addrString, 47777);
+			opuNetTransportLayer->SearchForGames(addrString, DefaultGameServerPort);
 		}
 		else
 		{
 			// Game server not available. Broadcast a search query  (Broadcast to LAN)
-			opuNetTransportLayer->SearchForGames(0, 47800);
+			opuNetTransportLayer->SearchForGames(0, DefaultClientPort);
 		}
 	}
 
@@ -690,7 +690,7 @@ void OPUNetGameSelectWnd::OnClickSearch()
 	// Get the server address
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, WM_GETTEXT, (WPARAM)sizeof(serverAddress), (LPARAM)serverAddress);
 	// Request games list from server
-	errorCode = opuNetTransportLayer->SearchForGames(serverAddress, 47800);
+	errorCode = opuNetTransportLayer->SearchForGames(serverAddress, DefaultClientPort);
 
 	// Check if the request was successfully sent
 	if (errorCode != 0)
@@ -781,7 +781,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 
 
 	// Try to Host
-	errorCode = opuNetTransportLayer->HostGame(47800, password, hostGameParameters.gameCreatorName, maxPlayers, gameType);
+	errorCode = opuNetTransportLayer->HostGame(DefaultClientPort, password, hostGameParameters.gameCreatorName, maxPlayers, gameType);
 	// Check for errors
 	if (errorCode == false)
 	{

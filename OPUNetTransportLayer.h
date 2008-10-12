@@ -11,6 +11,10 @@ using namespace OP2ForcedExport;
 const int MaxRemotePlayers = 6;
 const int JoinTimeOut = 3000;		// 3 seconds
 
+// Default Ports
+const int DefaultGameServerPort = 47777;
+const int DefaultClientPort = 47800;
+
 
 struct HostedGameInfo
 {
@@ -46,6 +50,7 @@ public:
 	void OnJoinAccepted(Packet &packet);
 	// Properties
 	int GetNumPlayers();
+	void GetGameServerAddressString(char* gameServerAddressString, int maxLength);
 
 	// Virtual member functions
 	// ------------------------
