@@ -147,6 +147,7 @@ bool OPUNetTransportLayer::CreateSocket()
 		else
 		{
 			logFile << "Warning: Could not bind to ForcedPort = " << forcedPort << endl;
+			forcedPort = 0;		// Clear this so we don't try to use it when joining games
 		}
 	}
 
