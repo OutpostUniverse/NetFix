@@ -1,12 +1,7 @@
 // **TODO**
-// Add a status bar  (added)
-// Fix the graphically ugly message boxes  (replaced by status bar messages)
-// Allow port numbers to be specified when hosting, and when searching for games  (done searching part)
 // Change the text of the network game type button  ("Serial")
+// Allow port numbers to be specified when hosting
 // Integrate this with Outpost2.exe a little better  (think: next patch)
-// Specify GameServerAddress seperately in the .ini file? 
-//   (Need a game server address to advertise to, so it's not really part of game join info)
-// Make a game server that works with all this
 // Have listed games timeout eventually and remove from list
 //  (on receive of new hosted game?)  (the list is cleared if they click search)
 
