@@ -92,6 +92,7 @@ private:
 	bool bInitialized;
 	SOCKET netSocket;
 	SOCKET hostSocket;
+	int forcedPort;
 	// Peer Info
 	PeerInfo peerInfo[MaxRemotePlayers];
 	// Traffic counters

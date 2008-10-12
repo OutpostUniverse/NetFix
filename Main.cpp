@@ -10,7 +10,8 @@ using namespace OP2ForcedExport;
 
 HINSTANCE hInstance;
 OPUNetGameProtocol opuNetGameProtocol;
-char sectionName[64] = "";		// Ini file section name, for loading additional parameters
+char sectionName[64] = "";				// Ini file section name, for loading additional parameters
+const DefaultProtocolIndex = 3;			// "Serial"
 
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
@@ -29,10 +30,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 		// Store the module handle
 		hInstance = (HINSTANCE)hModule;
 
-		// **TODO** Set the button text, and settle on a button
-		// Insert new multiplayer protocol type  (overwrite SIGS)   ** (overwrite Serial) **
-		protocolList[3].netGameProtocol = &opuNetGameProtocol;
-
 		break;
 	case DLL_PROCESS_DETACH:
 		break;
@@ -45,4 +42,9 @@ extern "C" __declspec(dllexport) void __stdcall InitModFunc(char* iniSectionName
 {
 	// Store the .ini section name
 	strncpy(sectionName, iniSectionName, sizeof(sectionName));
+
+	int protocolIndex;
+	protocolIndex = config.GetInt(sectionName, "ProtocolIndex", DefaultProtocolIndex);
+	// Set a new multiplayer protocol type
+	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
 }
