@@ -17,6 +17,9 @@
 #include "resource.h"
 
 
+extern char sectionName[];
+
+
 const char* GameTypeName[] = 
 {
 	"",
@@ -420,7 +423,7 @@ void OPUNetGameSelectWnd::OnTimer()
 		else
 		{
 			// Game server not available. Broadcast a search query  (Broadcast to LAN)
-			opuNetTransportLayer->SearchForGames(0, DefaultClientPort);
+			opuNetTransportLayer->SearchForGames(0, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
 		}
 	}
 
@@ -711,7 +714,7 @@ void OPUNetGameSelectWnd::OnClickSearch()
 	// Get the server address
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, WM_GETTEXT, (WPARAM)sizeof(serverAddress), (LPARAM)serverAddress);
 	// Request games list from server
-	errorCode = opuNetTransportLayer->SearchForGames(serverAddress, DefaultClientPort);
+	errorCode = opuNetTransportLayer->SearchForGames(serverAddress, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
 
 	// Check if the request was successfully sent
 	if (errorCode != 0)
@@ -802,7 +805,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 
 
 	// Try to Host
-	errorCode = opuNetTransportLayer->HostGame(DefaultClientPort, password, hostGameParameters.gameCreatorName, maxPlayers, gameType);
+	errorCode = opuNetTransportLayer->HostGame(config.GetInt(sectionName, "HostPort", DefaultClientPort), password, hostGameParameters.gameCreatorName, maxPlayers, gameType);
 	// Check for errors
 	if (errorCode == false)
 	{
