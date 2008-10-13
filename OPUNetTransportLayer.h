@@ -12,7 +12,7 @@ const int MaxRemotePlayers = 6;
 const int JoinTimeOut = 3000;		// 3 seconds
 
 // Default Ports
-const int DefaultGameServerPort = 47777;
+const int DefaultGameServerPort = 47800;
 const int DefaultClientPort = 47800;
 
 
