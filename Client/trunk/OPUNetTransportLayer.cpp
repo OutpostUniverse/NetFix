@@ -1161,6 +1161,21 @@ logFile << endl;
 			SendTo(packet, from);
 
 			return true;			// Packet handled
+		case tlcJoinHelpRequest:
+			// Verify packet size
+			if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest))
+				return true;		// Packet handled (discard)
+			// Check the session identifier
+			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier)
+				return true;		// Packet handled (discard)
+
+			// Send something to create router mappings
+			tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
+			if (tlMessage.joinHelpRequest.returnPortNum != 0)
+				tlMessage.joinHelpRequest.clientAddr.sin_port = htons(tlMessage.joinHelpRequest.returnPortNum);
+			sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
+
+			break;
 		}
 	}
 
