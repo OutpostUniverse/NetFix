@@ -2,7 +2,7 @@
 #include <windows.h>
 
 // Force Exports from Outpost2.exe
-#include "..\API\ForcedExports\ForcedExports.h"
+#include "ForcedExports/ForcedExports.h"
 using namespace OP2ForcedExport;
 
 #include "OPUNetGameProtocol.h"

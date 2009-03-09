@@ -1,4 +1,4 @@
-#include "..\API\ForcedExports\ForcedExports.h"
+#include "ForcedExports/ForcedExports.h"
 using namespace OP2ForcedExport;
 
 #include "OPUNetGameSelectWnd.h"

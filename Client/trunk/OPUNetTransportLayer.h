@@ -3,7 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 
-#include "..\API\ForcedExports\ForcedExports.h"
+#include "ForcedExports/ForcedExports.h"
 using namespace OP2ForcedExport;
 
 
