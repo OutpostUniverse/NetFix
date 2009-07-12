@@ -83,6 +83,7 @@ private:
 	bool DoImmediateProcessing(Packet& packet, sockaddr_in& from);
 	bool PokeGameServer(PokeStatusCode status);
 	bool GetGameServerAddress(sockaddr_in &gameServerAddr);
+	void CheckSourcePort(Packet& packet, sockaddr_in& from);
 
 private:
 	// Member variables

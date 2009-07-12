@@ -702,6 +702,9 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 		trafficCounters.numPacketsReceived++;
 		trafficCounters.numBytesReceived += packet->header.sizeOfPayload + sizeof(packet->header);
 
+		// Check for unexpected source ports
+		CheckSourcePort(*packet, from);
+
 		// Determine if immediate processing is required
 		bRetVal = DoImmediateProcessing(*packet, from);
 
@@ -1355,4 +1358,27 @@ void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressStr
 	config.GetString(sectionName, "GameServerAddr", gameServerAddressString, maxLength, "");
 
 	logFile << "[" << sectionName << "]" << " GameServerAddr = " << gameServerAddressString << endl;
+}
+
+
+void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
+{
+	int sourcePlayerIndex = packet.header.sourcePlayerNetID & 7;
+
+	if (bGameStarted)
+	{
+		PeerInfo &sourcePlayerPeerInfo = peerInfo[sourcePlayerIndex];
+		unsigned short expectedPort = sourcePlayerPeerInfo.address.sin_port;
+		unsigned short sourcePort = from.sin_port;
+
+		// Verify source port
+		if (expectedPort != sourcePort)
+		{
+			// Port mismatch. Issue warning, and update source port.
+			logFile << "Packet from player " << sourcePlayerIndex << " (";
+			DumpAddr(from);
+			logFile << ") recived on unexpected port (" << ntohs(sourcePort) << " instead of " << ntohs(expectedPort) << ")" << endl;
+			sourcePlayerPeerInfo.address.sin_port = sourcePort;
+		}
+	}
 }
