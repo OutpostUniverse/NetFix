@@ -1363,7 +1363,11 @@ void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressStr
 
 void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 {
-	int sourcePlayerIndex = packet.header.sourcePlayerNetID & 7;
+	int sourcePlayerNetId = packet.header.sourcePlayerNetID;
+	int sourcePlayerIndex = sourcePlayerNetId & 7;
+
+	if (sourcePlayerNetId == 0)
+		return;		// Don't try to update if they don't explicitly say who it's from
 
 	if (bGameStarted)
 	{
@@ -1372,13 +1376,14 @@ void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 		unsigned short sourcePort = from.sin_port;
 
 		// Verify source port
-		if (expectedPort != sourcePort)
+		if ((expectedPort != sourcePort) && (expectedPort != 0))
 		{
-			// Port mismatch. Issue warning, and update source port.
+			// Port mismatch. Issue warning
 			logFile << "Packet from player " << sourcePlayerIndex << " (";
 			DumpAddr(from);
-			logFile << ") recived on unexpected port (" << ntohs(sourcePort) << " instead of " << ntohs(expectedPort) << ")" << endl;
-			sourcePlayerPeerInfo.address.sin_port = sourcePort;
+			logFile << ") received on unexpected port (" << ntohs(sourcePort) << " instead of " << ntohs(expectedPort) << ")  [PlayerNetId: " << sourcePlayerNetId << "]" << endl;
 		}
+		// Update the source port
+		sourcePlayerPeerInfo.address.sin_port = sourcePort;
 	}
 }
