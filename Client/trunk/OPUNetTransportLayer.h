@@ -51,6 +51,9 @@ public:
 	// Properties
 	int GetNumPlayers();
 	void GetGameServerAddressString(char* gameServerAddressString, int maxLength);
+	int GetPort();
+	bool GetAddress(sockaddr_in& addr);
+	bool GetExternalAddress();
 
 	// Virtual member functions
 	// ------------------------
