@@ -11,6 +11,7 @@
 #include <mmsystem.h>
 #include <objbase.h>
 #include <shlobj.h>
+#include <stdio.h>
 
 #include "OPUNetGameSelectWnd.h"
 #include "OPUNetTransportLayer.h"
@@ -45,6 +46,13 @@ OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 	joiningGame = 0;
 	joinAttempt = 0;
 	joinAttemptTickCount;
+	internalPort = 0;
+	externalPort = 0;
+	externalIp.S_un.S_addr = INADDR_ANY;
+	bReceivedInternal = false;
+	bTwoExternal = false;
+	numEchoRequestsSent = 0;
+	echoTick = EchoTickInterval - 1;	// Check external address right away
 }
 
 // Destructor
@@ -451,6 +459,25 @@ void OPUNetGameSelectWnd::OnTimer()
 		}
 	}
 
+	if ((externalPort == 0) && (numEchoRequestsSent < MaxEchoAttempt))
+	{
+		echoTick++;
+		if (echoTick >= EchoTickInterval)
+		{
+			if (numEchoRequestsSent == 0)
+			{
+				internalPort = opuNetTransportLayer->GetPort();
+			}
+
+			// Reset the tick count
+			echoTick = 0;
+			numEchoRequestsSent++;
+
+			// Request external address
+			opuNetTransportLayer->GetExternalAddress();
+		}
+	}
+
 	// Check for network replies
 	while (opuNetTransportLayer->Receive(&packet))
 	{
@@ -580,6 +607,49 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 
 		// Reset joining game status
 		joiningGame = 0;
+		return;							// Packet handled
+	case tlcEchoExternalAddress:
+		// Verify packet size
+		if (packet.header.sizeOfPayload != sizeof(EchoExternalAddress))
+			return;						// Discard packet
+		// Verify packet came from game server **TODO**
+
+		// Check where the information came from
+		if (packet.tlMessage.echoExternalAddress.replyPort == internalPort)
+		{
+			bReceivedInternal = true;
+		}
+		// Check if we've received a different external port than previous
+		if (ntohs(packet.tlMessage.echoExternalAddress.addr.sin_port) != externalPort)
+		{
+			if (externalPort != 0)
+			{
+				bTwoExternal = true;	// Received two distinct external ports
+			}
+		}
+		// Record external information
+		externalIp = packet.tlMessage.echoExternalAddress.addr.sin_addr;
+		if ((externalPort == 0) || (externalPort == internalPort))
+		{
+			externalPort = ntohs(packet.tlMessage.echoExternalAddress.addr.sin_port);
+		}
+
+		// Build new net info text string
+		char text[128];
+		_snprintf(text, sizeof(text), "External IP: %d.%d.%d.%d:%d", (externalIp.s_addr & 255), (externalIp.s_addr >> 8 & 255), (externalIp.s_addr >> 16 & 255), (externalIp.s_addr >> 24 & 255), externalPort);
+		// Check if internal address received
+		if (bReceivedInternal)
+		{
+			// Not quite true, since internal port might be random (no hosting, but possibly still open)
+			//strncat(text, " (Direct Host Capable)", sizeof(text));
+		}
+		if (bTwoExternal)
+		{
+			strncat(text, "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.", sizeof(text));
+		}
+		// Update net info text
+		SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)&text);
+
 		return;							// Packet handled
 	}
 }

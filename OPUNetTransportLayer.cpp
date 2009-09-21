@@ -269,6 +269,39 @@ logFile << "Error informing game server" << endl;
 	return true;				// Success
 }
 
+bool OPUNetTransportLayer::GetExternalAddress()
+{
+	bool errorCode;
+	sockaddr_in gameServerAddr;
+	Packet packet;
+
+	// Build the request packet
+	packet.header.sourcePlayerNetID = 0;
+	packet.header.destPlayerNetID = 0;
+	packet.header.sizeOfPayload = sizeof(RequestExternalAddress);
+	packet.header.type = 1;
+	packet.tlMessage.tlHeader.commandType = tlcRequestExternalAddress;
+	packet.tlMessage.requestExternalAddress.internalPort = GetPort();
+
+	// Get the game server address
+	if (!GetGameServerAddress(gameServerAddr))
+	{
+		// Error. Could not obtain game server address
+		return false;		// Error
+	}
+
+	// Send the request packet to the game server (first port)
+	errorCode = SendTo(packet, gameServerAddr);
+	if (errorCode == false)
+		return false;		// Error
+
+	// Send the request packet to the game server (second port)
+	gameServerAddr.sin_port = htons(ntohs(gameServerAddr.sin_port) + 1);
+	errorCode = SendTo(packet, gameServerAddr);
+
+	return errorCode;
+}
+
 bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned short defaultHostPort)
 {
 	Packet packet;
@@ -400,6 +433,34 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 int OPUNetTransportLayer::GetNumPlayers()
 {
 	return numPlayers;
+}
+
+
+int OPUNetTransportLayer::GetPort()
+{
+	int errorCode;
+	sockaddr_in addr;
+	int len = sizeof(addr);
+
+	// Get the local socket address
+	errorCode = getsockname(netSocket, (sockaddr*)&addr, &len);
+	if (errorCode == SOCKET_ERROR)
+		return 0;		// Error
+
+	// Return the port number
+	return ntohs(addr.sin_port);
+}
+
+bool OPUNetTransportLayer::GetAddress(sockaddr_in& addr)
+{
+	int errorCode;
+	int len = sizeof(addr);
+
+	// Get the local socket address
+	errorCode = getsockname(netSocket, (sockaddr*)&addr, &len);
+
+	// Return true if failed
+	return (errorCode == SOCKET_ERROR);
 }
 
 

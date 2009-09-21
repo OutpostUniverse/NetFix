@@ -9,6 +9,8 @@ const int timerInterval = 50;
 const int SearchTickInterval = 60;
 const int JoinAttemptInterval = 20;
 const int MaxJoinAttempt = 3;
+const int EchoTickInterval = 20;
+const int MaxEchoAttempt = 3;
 
 
 class OPUNetGameSelectWnd : public IDlgWnd
@@ -54,6 +56,13 @@ private:
 	char password[16];
 	UINT joinAttempt;
 	UINT joinAttemptTickCount;
+	USHORT internalPort;
+	USHORT externalPort;
+	in_addr externalIp;
+	bool bReceivedInternal;
+	bool bTwoExternal;
+	UCHAR numEchoRequestsSent;
+	UCHAR echoTick;
 };
 
 

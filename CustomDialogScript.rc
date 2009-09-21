@@ -26,41 +26,42 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_MultiSetupDialog DIALOG DISCARDABLE  0, 0, 301, 254
+IDD_MultiSetupDialog DIALOG DISCARDABLE  0, 0, 301, 287
 STYLE DS_MODALFRAME | DS_NOIDLEMSG | DS_CENTER | WS_POPUP | WS_CAPTION
 CAPTION "OPU Net"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Welcome to OPU Net",IDC_STATIC,7,7,287,8
-    LTEXT           "Common Info",IDC_STATIC,7,22,141,8
-    GROUPBOX        "",IDC_STATIC,7,28,141,43
-    LTEXT           "&Name :",IDC_STATIC,13,41,48,8
-    EDITTEXT        IDC_PlayerName,66,39,76,12,ES_AUTOHSCROLL
-    LTEXT           "&Password :",IDC_STATIC,13,57,48,8
-    EDITTEXT        IDC_Password,66,55,76,12,ES_PASSWORD | ES_AUTOHSCROLL
-    LTEXT           "Game Create Info",IDC_STATIC,154,22,141,8
-    GROUPBOX        "",IDC_STATIC,153,28,141,43
-    LTEXT           "&Max Players :",IDC_STATIC,161,41,51,8
-    COMBOBOX        IDC_MaxPlayers,215,39,73,93,CBS_DROPDOWNLIST | 
+    LTEXT           "Common Info",IDC_STATIC,7,57,141,8
+    GROUPBOX        "",IDC_STATIC,7,63,141,43
+    LTEXT           "&Name :",IDC_STATIC,13,76,48,8
+    EDITTEXT        IDC_PlayerName,66,74,76,12,ES_AUTOHSCROLL
+    LTEXT           "&Password :",IDC_STATIC,13,92,48,8
+    EDITTEXT        IDC_Password,66,90,76,12,ES_PASSWORD | ES_AUTOHSCROLL
+    LTEXT           "Game Create Info",IDC_STATIC,154,57,141,8
+    GROUPBOX        "",IDC_STATIC,153,63,141,43
+    LTEXT           "&Max Players :",IDC_STATIC,161,76,51,8
+    COMBOBOX        IDC_MaxPlayers,215,74,73,93,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Game &Type :",IDC_STATIC,161,57,51,8
-    COMBOBOX        IDC_GameType,215,55,73,79,CBS_DROPDOWNLIST | WS_VSCROLL | 
+    LTEXT           "Game &Type :",IDC_STATIC,161,92,51,8
+    COMBOBOX        IDC_GameType,215,90,73,79,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    LTEXT           "Game Join Info",IDC_STATIC,7,76,287,8
-    GROUPBOX        "",IDC_STATIC,7,82,287,136
-    LTEXT           "Server &Address :",IDC_STATIC,13,93,72,8
-    COMBOBOX        IDC_ServerAddress,90,91,198,120,CBS_DROPDOWN | 
+    LTEXT           "Game Join Info",IDC_STATIC,7,111,287,8
+    GROUPBOX        "",IDC_STATIC,7,117,287,136
+    LTEXT           "Server &Address :",IDC_STATIC,13,128,72,8
+    COMBOBOX        IDC_ServerAddress,90,126,198,120,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "&Games",IDC_STATIC,13,105,275,8
+    LTEXT           "&Games",IDC_STATIC,13,140,275,8
     CONTROL         "List2",IDC_GamesList,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | 
-                    WS_BORDER | WS_TABSTOP,13,115,275,97
-    DEFPUSHBUTTON   "&Search",IDC_SearchButton,7,224,67,14
-    PUSHBUTTON      "&Join",IDC_JoinButton,80,224,67,14
-    PUSHBUTTON      "C&reate",IDC_CreateButton,153,224,67,14
-    PUSHBUTTON      "&Cancel",IDC_CancelButton,226,224,67,14
+                    WS_BORDER | WS_TABSTOP,13,150,275,97
+    DEFPUSHBUTTON   "&Search",IDC_SearchButton,7,259,67,14
+    PUSHBUTTON      "&Join",IDC_JoinButton,80,259,67,14
+    PUSHBUTTON      "C&reate",IDC_CreateButton,153,259,67,14
+    PUSHBUTTON      "&Cancel",IDC_CancelButton,226,259,67,14
     CONTROL         "",IDC_StatusBar,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,
-                    242,287,10
+                    275,287,10
+    LTEXT           "",IDC_NetInfo,7,19,287,35
 END
 
 
@@ -77,7 +78,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 294
         TOPMARGIN, 7
-        BOTTOMMARGIN, 247
+        BOTTOMMARGIN, 280
     END
 END
 #endif    // APSTUDIO_INVOKED
