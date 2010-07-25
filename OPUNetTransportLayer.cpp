@@ -8,6 +8,9 @@
 extern char sectionName[];
 
 
+bool ValidatePacket(Packet& packet, sockaddr_in& from);
+
+
 // ** Begin Debug Code
 #include <iostream.h>
 #include <fstream.h>
@@ -777,8 +780,12 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 		// Check if the packet was unhandled
 		if (bRetVal == false)
 		{
-			// Non immediate processed packet received. Return packet
-			return true;
+			// Validate packet makes sense (discard if it doesn't)
+			if (ValidatePacket(*packet, from))
+			{
+				// Non immediate processed packet received. Return packet
+				return true;
+			}
 		}
 	}
 }
