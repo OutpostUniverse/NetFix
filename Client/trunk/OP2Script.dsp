@@ -52,7 +52,7 @@ LINK32=link.exe
 # SUBTRACT LINK32 /map /debug
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Cmds=Copy   ReleaseMinSize\NetFixV3.dll   C:\Sierra\Outpost2\NetFix\ 
+PostBuild_Cmds=Copy  ReleaseMinSize\NetFixV3.dll  C:\Sierra\Outpost2\NetFix\ 
 # End Special Build Tool
 # Begin Target
 
@@ -75,6 +75,10 @@ SOURCE=.\OPUNetGameSelectWnd.cpp
 # Begin Source File
 
 SOURCE=.\OPUNetTransportLayer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ValidatePacket.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
