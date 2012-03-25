@@ -1,3 +1,6 @@
+// **TODO** Only answer first join request (game host)
+// **TODO** Discard packets from bad net ids (non-zero values that don't match up to proper index, (with proper source IP?))
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <mmsystem.h>
@@ -247,6 +250,7 @@ logFile << endl;
 
 	// Create a Host playerNetID
 	playerNetID = timeGetTime() & ~7;
+logFile << " Host playerNetID: " << playerNetID << endl;
 	// Set the host fields
 	peerInfo[0].playerNetID = playerNetID;
 	peerInfo[0].address = localAddress;			// Clear the local address
@@ -413,6 +417,8 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	peerInfo[localPlayerNum].address.sin_addr.s_addr = INADDR_ANY;	// Clear the address
 	peerInfo[localPlayerNum].status = 2;
 
+logFile << "OnJoinAcecpted" << endl;
+DumpAddrList(peerInfo);
 
 	// Update num players (for quit messages from cancelled games)
 	numPlayers = 1;
@@ -620,6 +626,8 @@ int OPUNetTransportLayer::Send(Packet* packet)
 	int packetSize;
 	sockaddr_in* address;
 
+	// Set the source player net ID
+	packet->header.sourcePlayerNetID = playerNetID;
 	// Calculate the packet size
 	packetSize = packet->header.sizeOfPayload + sizeof(packet->header);
 	// Calculate checksum
@@ -691,6 +699,8 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 	unsigned long numBytes;
 	sockaddr_in from;
 	bool bRetVal;
+	int sourcePlayerNetID;
+	int expectedPlayerNetID;
 
 	for (;;)
 	{
@@ -704,8 +714,10 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 				if (peerInfo[i].bReturnJoinPacket)
 				{
 					// Construct the JoinGranted packet
-					packet->header.sourcePlayerNetID = 0;
-					packet->header.destPlayerNetID = peerInfo[0].playerNetID;
+					// Note: This packet is returned as if it was received over the network
+					// Note: Required sourcePlayerNetID=0 for: 1=JoinGranted, 3=RemoteStart, 4=SetPlayerList
+					packet->header.sourcePlayerNetID = 0;	// Must be 0 to be processed
+					packet->header.destPlayerNetID = playerNetID;		// Send fake packet to self
 					packet->header.sizeOfPayload = sizeof(JoinReturned);
 					packet->header.type = 1;
 					packet->tlMessage.tlHeader.commandType = tlcJoinGranted;
@@ -752,7 +764,9 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 
 
 // **DEBUG**
-//logFile << "ReadSocket: " << packet->tlMessage.tlHeader.commandType << endl;
+//logFile << "ReadSocket: type = " << (int)packet->header.type
+//		<< "  commandType = " << packet->tlMessage.tlHeader.commandType
+//		<< "  sourcePlayerNetID = " << packet->header.sourcePlayerNetID << endl;
 
 		// Error check the packet
 		if (numBytes < sizeof(PacketHeader))
@@ -761,6 +775,24 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 			continue;		// Discard packet
 		if (packet->header.checksum != packet->Checksum())
 			continue;		// Discard packet
+
+		// Check for packets with invalid playerNetID
+		sourcePlayerNetID = packet->header.sourcePlayerNetID;
+		if (sourcePlayerNetID != 0)
+		{
+			// Make sure index is valid
+			if ((sourcePlayerNetID & 7) >= MaxRemotePlayers)
+				continue;	// Discard packet
+			expectedPlayerNetID = peerInfo[sourcePlayerNetID & 7].playerNetID;
+			if (expectedPlayerNetID != 0 && expectedPlayerNetID != sourcePlayerNetID)
+			{
+				logFile << "Received packet with bad sourcePlayerNetID: " << sourcePlayerNetID << " from ";
+				DumpAddr(from);
+				logFile << endl;
+				logFile << " Packet.type = " << (int)packet->header.type << endl;
+				logFile << " Packet.commandType = " << packet->tlMessage.tlHeader.commandType << endl;
+			}
+		}
 
 		// Count the received packet
 		trafficCounters.numPacketsReceived++;
@@ -1044,6 +1076,7 @@ bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
 	int packetSize;
 	int errorCode;
 
+//logFile << "SendTo: Packet.commandType = " << packet.tlMessage.tlHeader.commandType << endl;
 
 	// Calculate Packet size
 	packetSize = packet.header.sizeOfPayload + sizeof(packet.header);
@@ -1086,6 +1119,8 @@ bool OPUNetTransportLayer::SendStatusUpdate()
 	packet.header.type = 1;
 	packet.tlMessage.tlHeader.commandType = tlcUpdateStatus;
 	packet.tlMessage.statusUpdate.newStatus = peerInfo[playerNetID & 7].status;		// Copy local status
+
+//logFile << "SendStatusUpdate()" << endl;
 
 	// Send the new status to the host
 	return SendTo(packet, peerInfo[0].address);
@@ -1240,6 +1275,10 @@ logFile << endl;
 			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier)
 				return true;		// Packet handled (discard)
 
+			// Log JoinHelpRequest parameters
+			logFile << "JoinHelpRequest: Client: ";
+			DumpAddr(tlMessage.joinHelpRequest.clientAddr);
+			logFile << "  Return Port: " << tlMessage.joinHelpRequest.returnPortNum << endl;
 			// Send something to create router mappings
 			tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
 			if (tlMessage.joinHelpRequest.returnPortNum != 0)
@@ -1346,7 +1385,7 @@ logFile << endl;
 			if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier)
 				return true;		// Packet handled (discard)
 
-			// Update the interal address if needed
+			// Update the internal address if needed
 			if (packet.tlMessage.searchReply.hostAddress.sin_addr.s_addr == 0)
 			{
 				// Update the from address to that of the sender  (NAT will hide the real return address from the sender)
