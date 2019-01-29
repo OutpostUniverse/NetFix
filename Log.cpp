@@ -1,6 +1,6 @@
 #include <winsock2.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <objbase.h>
 #include "OPUNetTransportLayer.h"
 

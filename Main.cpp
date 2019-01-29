@@ -7,7 +7,7 @@ using namespace OP2Internal;
 
 #include "OPUNetGameProtocol.h"
 
-#include <fstream.h>
+#include <fstream>
 extern ofstream logFile;
 
 
