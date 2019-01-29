@@ -1,0 +1,7 @@
+.build
+*.userprefs
+.vs
+Debug
+Release
+ReleaseMinSize
+*.user
