@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OP2Script", "OP2Script.vcxproj", "{2DD1CECD-4B6E-4835-985C-A2ED06DC06C6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release MinSize|x86 = Release MinSize|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2DD1CECD-4B6E-4835-985C-A2ED06DC06C6}.Release MinSize|x86.ActiveCfg = Release MinSize|Win32
+		{2DD1CECD-4B6E-4835-985C-A2ED06DC06C6}.Release MinSize|x86.Build.0 = Release MinSize|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EEE0E1CE-5892-4492-9E31-C6C694642F63}
+	EndGlobalSection
+EndGlobal
