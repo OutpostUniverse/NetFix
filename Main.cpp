@@ -14,7 +14,7 @@ extern ofstream logFile;
 HINSTANCE hInstance;
 OPUNetGameProtocol opuNetGameProtocol;
 char sectionName[64] = "";				// Ini file section name, for loading additional parameters
-const DefaultProtocolIndex = 4;			// "SIGS"
+const int DefaultProtocolIndex = 4;		// "SIGS"
 const int ExpectedOutpost2Addr = 0x00400000;
 
 

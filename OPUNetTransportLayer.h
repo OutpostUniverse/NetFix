@@ -115,5 +115,5 @@ private:
 };
 
 
-const RandValueXor = 0xC37A4219;
+const unsigned int RandValueXor = 0xC37A4219;
 
