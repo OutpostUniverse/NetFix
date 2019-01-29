@@ -4,8 +4,8 @@
 #include <winsock2.h>
 
 
-#include <ForcedExports/ForcedExports.h>
-using namespace OP2ForcedExport;
+#include <OP2Internal.h>
+using namespace OP2Internal;
 
 
 bool ValidatePacket(Packet& packet, sockaddr_in& from)

@@ -1,5 +1,5 @@
-#include <ForcedExports/ForcedExports.h>
-using namespace OP2ForcedExport;
+#include <OP2Internal.h>
+using namespace OP2Internal;
 
 class OPUNetTransportLayer;
 struct HostedGameInfo;
