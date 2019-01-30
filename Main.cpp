@@ -8,7 +8,7 @@ using namespace OP2Internal;
 #include "OPUNetGameProtocol.h"
 
 #include <fstream>
-extern ofstream logFile;
+extern std::ofstream logFile;
 
 
 HINSTANCE hInstance;
@@ -60,7 +60,7 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	int protocolIndex;
 	// Get button index to replace functionality of
 	protocolIndex = GetPrivateProfileInt(sectionName, "ProtocolIndex", DefaultProtocolIndex, ".\\Outpost2.ini");
-	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << endl;
+	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << std::endl;
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
 }

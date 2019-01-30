@@ -4,7 +4,7 @@
 class ofstream;
 
 // Global Debug file
-extern ofstream logFile;
+extern std::ofstream logFile;
 
 
 void Log(char* string);
