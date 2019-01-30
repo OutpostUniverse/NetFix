@@ -70,8 +70,6 @@
       <LinkDLL>true</LinkDLL>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>ReleaseMinSize/NetFixV3.dll</OutputFile>
-      <ImportLibrary>.\ReleaseMinSize\NetFixV3.lib</ImportLibrary>
       <BaseAddress>0x14000000</BaseAddress>
       <AdditionalDependencies>wsock32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
