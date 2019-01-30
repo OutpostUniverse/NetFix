@@ -78,15 +78,18 @@
     <ResourceCompile Include="CustomDialogScript.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="OPUNetGameSelectWnd.cpp" />
     <ClCompile Include="OPUNetTransportLayer.cpp" />
     <ClCompile Include="ValidatePacket.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Log.h" />
     <ClInclude Include="OPUNetGameProtocol.h" />
     <ClInclude Include="OPUNetGameSelectWnd.h" />
     <ClInclude Include="OPUNetTransportLayer.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="OP2Internal\OP2Internal.vcxproj">
