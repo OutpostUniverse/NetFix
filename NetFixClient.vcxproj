@@ -51,7 +51,8 @@
       <ProgramDataBaseFileName>.\ReleaseMinSize\</ProgramDataBaseFileName>
     </ClCompile>
     <PostBuildEvent>
-      <Command>Copy  ReleaseMinSize\NetFixV3.dll  C:\Sierra\Outpost2\NetFix\</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Midl>
       <TypeLibraryName>.\ReleaseMinSize\OP2Script.tlb</TypeLibraryName>
