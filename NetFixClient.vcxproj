@@ -51,8 +51,7 @@
       <ProgramDataBaseFileName>.\ReleaseMinSize\</ProgramDataBaseFileName>
     </ClCompile>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>xcopy /y /d "$(TargetPath)" ".\Outpost2\NetFix\"</Command>
     </PostBuildEvent>
     <Midl>
       <TypeLibraryName>.\ReleaseMinSize\OP2Script.tlb</TypeLibraryName>
