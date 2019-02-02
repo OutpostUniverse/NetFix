@@ -3,5 +3,4 @@
 .vs
 Debug
 Release
-ReleaseMinSize
 *.user
