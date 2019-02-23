@@ -2,19 +2,19 @@
 #include <windows.h>
 
 // Force Exports from Outpost2.exe
-#include <ForcedExports/ForcedExports.h>
-using namespace OP2ForcedExport;
+#include <OP2Internal.h>
+using namespace OP2Internal;
 
 #include "OPUNetGameProtocol.h"
 
-#include <fstream.h>
-extern ofstream logFile;
+#include <fstream>
+extern std::ofstream logFile;
 
 
 HINSTANCE hInstance;
 OPUNetGameProtocol opuNetGameProtocol;
 char sectionName[64] = "";				// Ini file section name, for loading additional parameters
-const DefaultProtocolIndex = 4;			// "SIGS"
+const int DefaultProtocolIndex = 4;		// "SIGS"
 const int ExpectedOutpost2Addr = 0x00400000;
 
 
@@ -60,7 +60,7 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	int protocolIndex;
 	// Get button index to replace functionality of
 	protocolIndex = GetPrivateProfileInt(sectionName, "ProtocolIndex", DefaultProtocolIndex, ".\\Outpost2.ini");
-	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << endl;
+	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << std::endl;
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
 }

@@ -3,8 +3,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 
-#include <ForcedExports/ForcedExports.h>
-using namespace OP2ForcedExport;
+#include <OP2Internal.h>
+using namespace OP2Internal;
 
 
 // Max number of remote players
@@ -115,5 +115,5 @@ private:
 };
 
 
-const RandValueXor = 0xC37A4219;
+const unsigned int RandValueXor = 0xC37A4219;
 

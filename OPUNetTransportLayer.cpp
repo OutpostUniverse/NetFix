@@ -79,11 +79,11 @@ bool OPUNetTransportLayer::CreateSocket()
 		// Check for success
 		if (retVal == 0)
 		{
-			logFile << "ForcedPort = " << forcedPort << endl;
+			logFile << "ForcedPort = " << forcedPort << std::endl;
 		}
 		else
 		{
-			logFile << "Warning: Could not bind to ForcedPort = " << forcedPort << endl;
+			logFile << "Warning: Could not bind to ForcedPort = " << forcedPort << std::endl;
 			forcedPort = 0;		// Clear this so we don't try to use it when joining games
 		}
 	}
@@ -150,7 +150,7 @@ logFile.open("logHost.txt");
 		}
 
 // **DEBUG**
-logFile << "Bound to server port: " << port << endl;
+logFile << "Bound to server port: " << port << std::endl;
 	}
 
 
@@ -177,11 +177,11 @@ logFile << "Bound to server port: " << port << endl;
 // **DEBUG**
 logFile << " Session ID: ";
 DumpGuid(hostedGameInfo.sessionIdentifier);
-logFile << endl;
+logFile << std::endl;
 
 	// Create a Host playerNetID
 	playerNetID = timeGetTime() & ~7;
-logFile << " Host playerNetID: " << playerNetID << endl;
+logFile << " Host playerNetID: " << playerNetID << std::endl;
 	// Set the host fields
 	peerInfo[0].playerNetID = playerNetID;
 	peerInfo[0].address = localAddress;			// Clear the local address
@@ -199,7 +199,7 @@ logFile << " Host playerNetID: " << playerNetID << endl;
 	if (errorCode == 0)
 	{
 // **DEBUG**
-logFile << "Error informing game server" << endl;
+logFile << "Error informing game server" << std::endl;
 	}
 
 
@@ -269,7 +269,7 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned shor
 // **DEBUG**
 logFile << "Search for games: ";
 DumpAddr(hostAddress);
-logFile << endl;
+logFile << std::endl;
 
 	// Send the HostGameSearchQuery
 	return SendTo(packet, hostAddress);
@@ -307,9 +307,9 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 // **DEBUG**
 logFile << "Sending join request: ";
 DumpAddr(game.address);
-logFile << endl << "  Session ID: ";
+logFile << std::endl << "  Session ID: ";
 DumpGuid(packet.tlMessage.joinRequest.sessionIdentifier);
-logFile << endl;
+logFile << std::endl;
 //DumpPacket(&packet);
 
 	sockaddr_in gameServerAddr;
@@ -348,7 +348,7 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	peerInfo[localPlayerNum].address.sin_addr.s_addr = INADDR_ANY;	// Clear the address
 	peerInfo[localPlayerNum].status = 2;
 
-logFile << "OnJoinAcecpted" << endl;
+logFile << "OnJoinAcecpted" << std::endl;
 DumpAddrList(peerInfo);
 
 	// Update num players (for quit messages from cancelled games)
@@ -719,9 +719,9 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 			{
 				logFile << "Received packet with bad sourcePlayerNetID: " << sourcePlayerNetID << " from ";
 				DumpAddr(from);
-				logFile << endl;
-				logFile << " Packet.type = " << (int)packet->header.type << endl;
-				logFile << " Packet.commandType = " << packet->tlMessage.tlHeader.commandType << endl;
+				logFile << std::endl;
+				logFile << " Packet.type = " << (int)packet->header.type << std::endl;
+				logFile << " Packet.commandType = " << packet->tlMessage.tlHeader.commandType << std::endl;
 			}
 		}
 
@@ -1029,8 +1029,8 @@ bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
 		// **DEBUG**
 		logFile << "SendTo error: ";
 		DumpAddr(to);
-		logFile << endl;
-		logFile << WSAGetLastError() << endl;
+		logFile << std::endl;
+		logFile << WSAGetLastError() << std::endl;
 	}
 
 	return (errorCode != SOCKET_ERROR);
@@ -1149,12 +1149,12 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 				// **DEBUG**
 				logFile << "Client join accepted: ";
 				DumpAddr(from);
-				logFile << " (" << tlMessage.joinReply.newPlayerNetID << ")" << endl;
+				logFile << " (" << tlMessage.joinReply.newPlayerNetID << ")" << std::endl;
 
 				// Check if a forced return port has been set
 				if (returnPortNum != 0)
 				{
-					logFile << "Return Port forced to " << returnPortNum << endl;
+					logFile << "Return Port forced to " << returnPortNum << std::endl;
 					// Set the new return port number
 					peerInfo[tlMessage.joinReply.newPlayerNetID & 7].address.sin_port = returnPortNum;
 				}
@@ -1165,7 +1165,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 				// **DEBUG**
 				logFile << "Client join refused: ";
 				DumpAddr(from);
-				logFile << endl;
+				logFile << std::endl;
 			}
 
 			// Send the reply
@@ -1179,7 +1179,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 // **DEBUG**
 logFile << "Game Search Query: ";
 DumpAddr(from);
-logFile << endl;
+logFile << std::endl;
 			// Verify Game Identifier
 			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier)
 				return true;		// Packet handled (discard)
@@ -1209,7 +1209,7 @@ logFile << endl;
 			// Log JoinHelpRequest parameters
 			logFile << "JoinHelpRequest: Client: ";
 			DumpAddr(tlMessage.joinHelpRequest.clientAddr);
-			logFile << "  Return Port: " << tlMessage.joinHelpRequest.returnPortNum << endl;
+			logFile << "  Return Port: " << tlMessage.joinHelpRequest.returnPortNum << std::endl;
 			// Send something to create router mappings
 			tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
 			if (tlMessage.joinHelpRequest.returnPortNum != 0)
@@ -1227,7 +1227,7 @@ logFile << endl;
 		{
 		case tlcStartGame:
 // **DEBUG**
-logFile << "GameStarting" << endl;
+logFile << "GameStarting" << std::endl;
 			break;
 		case tlcSetPlayersList:
 			// Verify packet size
@@ -1252,7 +1252,7 @@ logFile << "GameStarting" << endl;
 				}
 
 // **DEBUG**
-logFile << "Replicated Players List:" << endl;
+logFile << "Replicated Players List:" << std::endl;
 DumpAddrList(peerInfo);
 
 				// Form a new packet to return to the game
@@ -1308,7 +1308,7 @@ DumpAddrList(peerInfo);
 // **DEBUG**
 logFile << "Hosted Game Search Reply: ";
 DumpAddr(from);
-logFile << endl;
+logFile << std::endl;
 			// Verify packet size
 			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply))
 				return true;		// Packet handled (discard)
@@ -1395,7 +1395,7 @@ void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressStr
 	// Get the address string
 	config.GetString(sectionName, "GameServerAddr", gameServerAddressString, maxLength, "");
 
-	logFile << "[" << sectionName << "]" << " GameServerAddr = " << gameServerAddressString << endl;
+	logFile << "[" << sectionName << "]" << " GameServerAddr = " << gameServerAddressString << std::endl;
 }
 
 
@@ -1419,7 +1419,7 @@ void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 			// Port mismatch. Issue warning
 			logFile << "Packet from player " << sourcePlayerIndex << " (";
 			DumpAddr(from);
-			logFile << ") received on unexpected port (" << ntohs(sourcePort) << " instead of " << ntohs(expectedPort) << ")  [PlayerNetId: " << sourcePlayerNetId << "]" << endl;
+			logFile << ") received on unexpected port (" << ntohs(sourcePort) << " instead of " << ntohs(expectedPort) << ")  [PlayerNetId: " << sourcePlayerNetId << "]" << std::endl;
 		}
 		// Update the source port
 		sourcePlayerPeerInfo.address.sin_port = sourcePort;

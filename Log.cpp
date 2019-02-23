@@ -1,17 +1,17 @@
 #include <winsock2.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <objbase.h>
 #include "OPUNetTransportLayer.h"
 
 
 // Global Debug file
-ofstream logFile("log.txt");
+std::ofstream logFile("log.txt");
 
 
 void Log(char* string)
 {
-	logFile << string << endl;
+	logFile << string << std::endl;
 }
 
 void DumpIP(unsigned long ip)
@@ -45,7 +45,7 @@ void DumpAddrList(PeerInfo* peerInfo)
 		DumpAddr(peerInfo[i].address);
 		logFile << ", ";
 		DumpPlayerNetID(peerInfo[i].playerNetID);
-		logFile << "}" << endl;
+		logFile << "}" << std::endl;
 	}
 }
 
@@ -53,20 +53,20 @@ void DumpGuid(GUID &guid)
 {
 	int i;
 
-	logFile << hex << "{" << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3 << "-";
+	logFile << std::hex << "{" << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3 << "-";
 	for (i = 0; i < 8; i++)
 	{
 		logFile << (int)guid.Data4[i];
 	}
-	logFile << "}" << dec;
+	logFile << "}" << std::dec;
 }
 
 void DumpPacket(Packet* packet)
 {
-	logFile << " Source: " << packet->header.sourcePlayerNetID << endl;
-	logFile << " Dest  : " << packet->header.destPlayerNetID << endl;
-	logFile << " Size  : " << (unsigned int)packet->header.sizeOfPayload << endl;
-	logFile << " type  : " << (unsigned int)packet->header.type << endl;
-	logFile << " checksum : " << hex << packet->Checksum() << dec << endl;
-	logFile << " commandType : " << packet->tlMessage.tlHeader.commandType << endl;
+	logFile << " Source: " << packet->header.sourcePlayerNetID << std::endl;
+	logFile << " Dest  : " << packet->header.destPlayerNetID << std::endl;
+	logFile << " Size  : " << (unsigned int)packet->header.sizeOfPayload << std::endl;
+	logFile << " type  : " << (unsigned int)packet->header.type << std::endl;
+	logFile << " checksum : " << std::hex << packet->Checksum() << std::dec << std::endl;
+	logFile << " commandType : " << packet->tlMessage.tlHeader.commandType << std::endl;
 }

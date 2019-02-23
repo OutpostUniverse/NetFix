@@ -1,10 +1,10 @@
-#include <fstream.h>
+#include <fstream>
 #include "OPUNetTransportLayer.h"
 
 class ofstream;
 
 // Global Debug file
-extern ofstream logFile;
+extern std::ofstream logFile;
 
 
 void Log(char* string);
