@@ -1,0 +1,15 @@
+image: Visual Studio 2017
+configuration:
+  - Release
+cache:
+  - C:\Program Files\NASM\
+install:
+  # Install NASM (if not restored from cache)
+  - if not exist "%ProgramFiles%\NASM\"  choco install -y nasm
+  - set PATH=%ProgramFiles%\NASM;%PATH%
+  - nasm -v
+  # Download Git submodules
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - git submodule update --init --recursive
+build:
+  project: NetFixClient.sln
