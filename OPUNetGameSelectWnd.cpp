@@ -45,7 +45,7 @@ OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 	searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 	joiningGame = nullptr;
 	joinAttempt = 0;
-	joinAttemptTickCount;
+	joinAttemptTickCount = 0;
 	internalPort = 0;
 	externalPort = 0;
 	externalIp.S_un.S_addr = INADDR_ANY;
