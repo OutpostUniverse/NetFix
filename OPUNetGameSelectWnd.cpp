@@ -123,7 +123,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		OnDestroy();
 		return false;			// Should return 0 for this message
 	case WM_NCDESTROY:
-		hWnd = 0;
+		hWnd = nullptr;
 		return false;			// Should return 0 for this message
 	};
 
@@ -227,7 +227,7 @@ void OPUNetGameSelectWnd::OnInit()
 
 	// Create a timer
 	// --------------
-	timer = SetTimer(this->hWnd, 0, timerInterval, 0);
+	timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
 }
 
 
@@ -239,7 +239,7 @@ void OPUNetGameSelectWnd::InitNetLayer()
 	// Create NetTransportLayer
 	opuNetTransportLayer = OPUNetTransportLayer::Create();
 	// Check for errors
-	if (opuNetTransportLayer == 0)
+	if (opuNetTransportLayer == nullptr)
 	{
 		// Error creating the transport layer
 		EndDialog(this->hWnd, true);		// bCancel = true
@@ -256,7 +256,7 @@ bool OPUNetGameSelectWnd::InitGurManager()
 	int errorCode;
 
 	// Check if the Guaranteed Send Layer already exists
-	if (app.gurManager != 0)
+	if (app.gurManager != nullptr)
 	{
 		// Already exists. Delete the old one first
 		delete app.gurManager;
@@ -265,7 +265,7 @@ bool OPUNetGameSelectWnd::InitGurManager()
 	// Create the Guaranteed Send Layer
 	app.gurManager = new GurManager();
 	// Check for errors
-	if (app.gurManager == 0)
+	if (app.gurManager == nullptr)
 	{
 		// Failed to create the Guaranteed Send Layer. Inform User
 		SetStatusText("Out of memory.  Could not create Guaranteed Send Layer.");
@@ -299,7 +299,7 @@ void OPUNetGameSelectWnd::CleanupGurManager()
 	{
 		// Release the GurManager
 		delete app.gurManager;
-		app.gurManager = 0;
+		app.gurManager = nullptr;
 	}
 }
 
@@ -328,7 +328,7 @@ void OPUNetGameSelectWnd::ClearGamesList()
 			// Retrieve the HostedGameInfo pointer
 			hostedGameInfo = (HostedGameInfo*)item.lParam;
 			// Make sure the parameter was set
-			if (hostedGameInfo != 0)
+			if (hostedGameInfo != nullptr)
 				delete hostedGameInfo;	// Free the memory
 		}
 	}
@@ -396,7 +396,7 @@ void OPUNetGameSelectWnd::OnDestroy()
 		else
 		{
 			// Remove the string from the file
-			config.SetString("IPHistory", keyName, 0);
+			config.SetString("IPHistory", keyName, nullptr);
 		}
 	}
 
@@ -410,7 +410,7 @@ void OPUNetGameSelectWnd::OnTimer()
 	Packet packet;
 
 	// Make sure a network object exists
-	if (opuNetTransportLayer == 0)
+	if (opuNetTransportLayer == nullptr)
 		return;			// Abort
 
 	// Periodically search for games
@@ -431,11 +431,11 @@ void OPUNetGameSelectWnd::OnTimer()
 		else
 		{
 			// Game server not available. Broadcast a search query  (Broadcast to LAN)
-			opuNetTransportLayer->SearchForGames(0, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
+			opuNetTransportLayer->SearchForGames(nullptr, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
 		}
 	}
 
-	if ((joinAttempt > 0) && (joiningGame != 0))
+	if ((joinAttempt > 0) && (joiningGame != nullptr))
 	{
 		joinAttemptTickCount++;
 		if (joinAttemptTickCount >= JoinAttemptInterval)
@@ -446,7 +446,7 @@ void OPUNetGameSelectWnd::OnTimer()
 			if (joinAttempt > MaxJoinAttempt)
 			{
 				joinAttempt = 0;
-				joiningGame = 0;
+				joiningGame = nullptr;
 
 				SetStatusText("Game join failed");
 			}
@@ -526,7 +526,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 				// Retrieve the HostedGameListItem pointer
 				hostedGameInfo = (HostedGameInfo*)item.lParam;
 				// Make sure we have a valid pointer
-				if (hostedGameInfo != 0)
+				if (hostedGameInfo != nullptr)
 				{
 					// Check if it's the same game
 					//if (hostedGameInfo->sessionIdentifier == packet.tlMessage.searchReply.sessionIdentifier)
@@ -550,7 +550,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		// Allocate space to store info
 		hostedGameInfo = new HostedGameInfo;
 		// Check for allocation errors
-		if (hostedGameInfo == 0)
+		if (hostedGameInfo == nullptr)
 		{
 			// Out of memory. Inform user
 			SetStatusText("Out of memory");
@@ -574,7 +574,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		if (packet.header.sizeOfPayload != sizeof(JoinReply))
 			return;						// Discard packet
 		// Make sure we've requested to join a game
-		if (joiningGame == 0)
+		if (joiningGame == nullptr)
 		{
 			// **DEBUG**
 			SetStatusText("Unexpected Join reply received");
@@ -606,7 +606,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		}
 
 		// Reset joining game status
-		joiningGame = 0;
+		joiningGame = nullptr;
 		return;							// Packet handled
 	case tlcEchoExternalAddress:
 		// Verify packet size
@@ -761,7 +761,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 	else
 	{
 		// Game cancelled. Restart the update timer
-		timer = SetTimer(this->hWnd, 0, timerInterval, 0);
+		timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
 		searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 
 		// Send the player Quit message
@@ -816,10 +816,10 @@ void OPUNetGameSelectWnd::OnClickJoin()
 	if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&item))
 		joiningGame = (HostedGameInfo*)item.lParam;	// Retrieve the HostedGameListItem pointer
 	else
-		joiningGame = 0;		// Clear the joining game pointer
+		joiningGame = nullptr;		// Clear joining game
 
 	// Check if we have a bad pointer
-	if (joiningGame == 0)
+	if (joiningGame == nullptr)
 	{
 		// No game selected  (or selected item is not a game)
 		SetStatusText("Please select a game to join");
@@ -917,7 +917,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 		SetStatusText("Game Cancelled");
 
 		// Restart the update timer
-		timer = SetTimer(this->hWnd, 0, timerInterval, 0);
+		timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
 		searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 	}
 }
