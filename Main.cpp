@@ -41,14 +41,14 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	// Sanity check the DLL load address
 	if (hInstance != desiredLoadAddress)
 	{
-		MessageBox(0, "DLL loaded to bad address", "NetFix Load Failed", 0);
+		MessageBox(nullptr, "DLL loaded to bad address", "NetFix Load Failed", 0);
 		return;
 	}
 	// Sanity check the Outpost2.exe load address
 	void* op2ModuleBase = GetModuleHandle("Outpost2.exe");
 	if (ExpectedOutpost2Addr != (int)op2ModuleBase)
 	{
-		MessageBox(0, "Outpost2.exe module not loaded at usual address", "NetFix Load Failed", 0);
+		MessageBox(nullptr, "Outpost2.exe module not loaded at usual address", "NetFix Load Failed", 0);
 		return;
 	}
 
