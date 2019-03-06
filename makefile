@@ -13,7 +13,7 @@ DEPDIR := $(BUILDDIR)/obj
 OUTPUT := NetFix.dll
 
 CPPFLAGS := -I OP2Internal/
-CXXFLAGS := -std=c++17 -g -Wall -Wno-unknown-pragmas
+CXXFLAGS := -std=c++17 -g -Wall -Wno-unknown-pragmas -Wzero-as-null-pointer-constant
 LDFLAGS := -shared -LOP2Internal/
 LDLIBS := -lOP2Internal -lws2_32
 
