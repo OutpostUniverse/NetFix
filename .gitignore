@@ -1,7 +1,9 @@
 Debug/
 Release/
+Outpost2/
 .vs/
 .build/
 *.userprefs
 *.user
+*.aps
 NetFix*.dll

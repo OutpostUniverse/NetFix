@@ -40,10 +40,10 @@ const char* GameTypeName[] =
 // Constructor
 OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 {
-	opuNetTransportLayer = 0;
+	opuNetTransportLayer = nullptr;
 	timer = 0;
 	searchTickCount = SearchTickInterval - 1;	// Broadcast right away
-	joiningGame = 0;
+	joiningGame = nullptr;
 	joinAttempt = 0;
 	joinAttemptTickCount;
 	internalPort = 0;
