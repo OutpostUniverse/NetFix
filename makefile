@@ -27,7 +27,10 @@ OBJS := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 FOLDERS := $(sort $(dir $(SRCS)))
 
 .PHONY:default, all, op2internal
-default: all
+# default: all
+# Project does not link correctly on Linux due to name mangling differences
+# For now, default build rules stop before the link step
+default: $(OBJS) | op2internal
 all: $(OUTPUT)
 
 op2internal:
