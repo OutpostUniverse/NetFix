@@ -651,6 +651,8 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)&text);
 
 		return;							// Packet handled
+	default:  // Silence warnings about unused enumeration value in switch
+		break;
 	}
 }
 

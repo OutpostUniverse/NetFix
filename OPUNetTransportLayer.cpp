@@ -1217,6 +1217,8 @@ logFile << std::endl;
 			sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
 
 			break;
+		default:  // Silence warnings about unused enumeration value in switch
+			break;
 		}
 	}
 
@@ -1329,6 +1331,8 @@ logFile << std::endl;
 			}
 
 			return false;			// Return Packet for processing
+		default:  // Silence warnings about unused enumeration value in switch
+			break;
 		}
 	}
 
