@@ -1,6 +1,8 @@
 .build
 *.userprefs
 .vs
+*.user
+*.aps
 Debug
 Release
-*.user
+Outpost2
