@@ -29,7 +29,7 @@ OPUNetTransportLayer* OPUNetTransportLayer::Create()		// Public static construct
 	{
 		// Error
 		delete opuNetTransportLayer;
-		return 0;
+		return nullptr;
 	}
 
 	// Create a socket for join/host
@@ -37,7 +37,7 @@ OPUNetTransportLayer* OPUNetTransportLayer::Create()		// Public static construct
 	{
 		// Error
 		delete opuNetTransportLayer;
-		return 0;
+		return nullptr;
 	}
 
 	// Return the newly constructed object
@@ -331,7 +331,7 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	bool bSuccess;
 
 	// Make sure a join was requested
-	if (joiningGameInfo == 0)
+	if (joiningGameInfo == nullptr)
 		return;			// Abort
 
 	// Join successful
@@ -361,7 +361,7 @@ DumpAddrList(peerInfo);
 	if (bSuccess == false)
 	{
 		// Error. Inform User
-		MsgBox(0, "Error sending updated status to host", "Error", 0);
+		MsgBox(nullptr, "Error sending updated status to host", "Error", 0);
 	}
 
 
@@ -826,7 +826,7 @@ OPUNetTransportLayer::OPUNetTransportLayer()	// Private Constructor  [Prevent ob
 	memset(&hostedGameInfo, 0, sizeof(hostedGameInfo));
 	hostedGameInfo.ping = -1;
 	ResetTrafficCounters();
-	joiningGameInfo = 0;
+	joiningGameInfo = nullptr;
 	numJoining = 0;
 	randValue = timeGetTime() ^ RandValueXor;
 }
@@ -875,7 +875,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 	int port;
 
 	// Check if a specific host address was indicated
-	if (hostAddressString == 0)
+	if (hostAddressString == nullptr)
 		return 1;				// Failed (no address specified)
 
 	// Convert hostAddress string to network address
@@ -887,7 +887,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 
 	// Check if a port number was specified
 	portNumString = strchr(hostAddressString, ':');
-	if (portNumString != 0)
+	if (portNumString != nullptr)
 	{
 		// Convert the port number
 		port = atoi(&portNumString[1]);
@@ -901,7 +901,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 	// Check if the address part is empty  (in which case use the default)
 	if (hostAddressString[0] == 0)
 	{
-		if (portNumString != 0)
+		if (portNumString != nullptr)
 			portNumString[0] = ':';		// Restore string
 		return 1;					// Failed (no address specified)
 	}
@@ -915,9 +915,9 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 		// Try looking up the address
 		hostEnt = gethostbyname(hostAddressString);
 		// Check for failure
-		if (hostEnt == 0)
+		if (hostEnt == nullptr)
 		{
-			if (portNumString != 0)
+			if (portNumString != nullptr)
 				portNumString[0] = ':';		// Restore string
 			return 0;				// Failed (invalid address)
 		}
@@ -925,7 +925,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 		hostAddress.sin_addr.S_un.S_addr = *(unsigned long*)hostEnt->h_addr_list[0];
 	}
 
-	if (portNumString != 0)
+	if (portNumString != nullptr)
 		portNumString[0] = ':';		// Restore string
 	return -1;						// Success
 }
@@ -1217,6 +1217,8 @@ logFile << std::endl;
 			sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
 
 			break;
+		default:  // Silence warnings about unused enumeration value in switch
+			break;
 		}
 	}
 
@@ -1329,6 +1331,8 @@ logFile << std::endl;
 			}
 
 			return false;			// Return Packet for processing
+		default:  // Silence warnings about unused enumeration value in switch
+			break;
 		}
 	}
 

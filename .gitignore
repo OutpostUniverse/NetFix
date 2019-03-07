@@ -1,8 +1,9 @@
-.build
+Debug/
+Release/
+Outpost2/
+.vs/
+.build/
 *.userprefs
-.vs
 *.user
 *.aps
-Debug
-Release
-Outpost2
+NetFix*.dll
