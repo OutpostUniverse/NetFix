@@ -8,6 +8,8 @@ This project can be used in conjunction with the [NetFixServer](https://github.c
 
 Use of the NetFixServer is optional. The NetFixClient was designed to work even without an operational game server, albeit in a degraded mode. Without the server running, there is typically no automatic game list. Instead, users can enter the IP address of a game host to see and join their hosted game.
 
+When creating a game, the server at `GameServerAddr` configured in `outpost2.ini` is automatically notified of the new hosted game.
+
 ## NetFix In Game Menu Options
 
 #### Common Info
@@ -19,19 +21,25 @@ Use of the NetFixServer is optional. The NetFixClient was designed to work even 
  - **Game Type:** Restricts from selecting missions of different types.
 
 #### Game Join Info
- - **Server Address:** The address to find NetFixServer or a specific host. Default is to leave blank and NetFixClient will search address listed in .ini file.
- - **Games:** A list of games being hosted on the NetFixServer. If an IP address not containing NetFixServer is used, will only display a single game intiated by the host.
+ - **Server Address:** The address to find a specific host, or an alternate game server (NetFixServer). Default is to leave blank and NetFixClient will search the `GameServerAddr` address listed in the `outpost2.ini` file.
+ - **Games:** A list of games present on the NetFixServer, or a single game on a specific host.
 
 #### Bottom Buttons  
- - **Search:** Sends a single request to NetFixServer for a list of games and waits for a responsse.
+ - **Search:** Sends a single request to `Server Address` (if specified), or the default configured NetFixServer for a list of games.
  - **Join:** Join the selected game.
  - **Create:** Create a new game using the Common Info and Game Create Info
  - **Cancel:** Return to the main menu.
 
-### .ini settings
+### outpost2.ini module settings
  - **Dll:** Relative path of the NetFix dll from the Outpost 2 executable
- - **GameServerAddr:** Default server address. Can contain an IP address or a URL.
- - **ProtocolIndex:** ???
+ - **GameServerAddr:** Default server address. Can contain an IP address or a DNS name.
+ - **ProtocolIndex:** Which button on the multiplayer menu to hook when the module loads.
+  - 0 = TCP
+  - 1 = IPX
+  - 2 = Modem
+  - 3 = Serial
+  - 4 = SIGS (Default)
+  Historical note: At one point in the past, the menu had been edited to hide the defunct "SIGS" button, and so the NetFixClient used to hook the "Serial" button. The menu has since been restored and re-edited, with the "SIGS" button being renamed to "NetFix", which the NetFixClient now uses.
 
 ## Known Limitations
 
