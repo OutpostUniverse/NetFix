@@ -30,7 +30,7 @@ When creating a game, the server at `GameServerAddr` configured in `outpost2.ini
  - **Create:** Create a new game using the Common Info and Game Create Info
  - **Cancel:** Return to the main menu.
 
-### outpost2.ini module settings
+## outpost2.ini module settings
  - **Dll:** Relative path of the NetFix dll from the Outpost 2 executable
  - **GameServerAddr:** Default server address. Can contain an IP address or a DNS name.
  - **ProtocolIndex:** Which button on the multiplayer menu to hook when the module loads.
