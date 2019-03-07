@@ -34,12 +34,13 @@ When creating a game, the server at `GameServerAddr` configured in `outpost2.ini
  - **Dll:** Relative path of the NetFix dll from the Outpost 2 executable
  - **GameServerAddr:** Default server address. Can contain an IP address or a DNS name.
  - **ProtocolIndex:** Which button on the multiplayer menu to hook when the module loads.
-  - 0 = TCP
-  - 1 = IPX
-  - 2 = Modem
-  - 3 = Serial
-  - 4 = SIGS (Default)
-  Historical note: At one point in the past, the menu had been edited to hide the defunct "SIGS" button, and so the NetFixClient used to hook the "Serial" button. The menu has since been restored and re-edited, with the "SIGS" button being renamed to "NetFix", which the NetFixClient now uses.
+   - 0 = TCP
+   - 1 = IPX
+   - 2 = Modem
+   - 3 = Serial
+   - 4 = SIGS (Default)
+
+Historical note: At one point in the past, the menu had been edited to hide the defunct "SIGS" button, and so the NetFixClient used to hook the "Serial" button. The menu has since been restored and re-edited, with the "SIGS" button being renamed to "NetFix", which the NetFixClient now uses.
 
 ## Known Limitations
 
