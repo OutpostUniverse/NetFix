@@ -34,13 +34,13 @@ When creating a game, the server at `GameServerAddr` configured in `outpost2.ini
  - **Dll:** Relative path of the NetFix dll from the Outpost 2 executable
  - **GameServerAddr:** Default server address. Can contain an IP address or a DNS name.
  - **ProtocolIndex:** Which button on the multiplayer menu to hook when the module loads.
-   - 0 = TCP
+   - 0 = TCP (Named "Internet (TCP/IP)")
    - 1 = IPX
    - 2 = Modem
-   - 3 = Serial
-   - 4 = SIGS (Default)
+   - 3 = Serial (Renamed "Net Fix") (Default `outpost2.ini` setting, as distributed)
+   - 4 = SIGS (Button removed) (Default in source code, overridden by `outpost2.ini` setting)
 
-Historical note: At one point in the past, the menu had been edited to hide the defunct "SIGS" button, and so the NetFixClient used to hook the "Serial" button. The menu has since been restored and re-edited, with the "SIGS" button being renamed to "NetFix", which the NetFixClient now uses.
+Historical note: The NetFixClient was originally written to hook the SIGS button. As the module provided a server managed game list, this seemed like the closest match. However, about the time NetFixClient was being developed, but before it was released, another developer removed the SIGS button from the game. At that point, SIGS had long since ceased being operational, with little hope it would ever come back online for Outpost 2. Hence, when NetFixClient was finally released, the settings were changed to hook the Serial button, as this option was deemed to be of little current use. Eventually the menu got edited again, and the Serial button was renamed to Net Fix.
 
 ## Known Limitations
 
