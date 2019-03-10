@@ -1323,10 +1323,8 @@ bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 
 bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddr)
 {
-	int errorCode;
-	char addrString[256];
-
 	// Get the address string
+	char addrString[256];
 	GetGameServerAddressString(addrString, sizeof(addrString));
 
 	// Set default address values
@@ -1335,7 +1333,7 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddr)
 	memset(gameServerAddr.sin_zero, 0, sizeof(gameServerAddr.sin_zero));
 
 	// Convert the address string to a sockaddr_in struct
-	errorCode = GetHostAddress(addrString, gameServerAddr);
+	int errorCode = GetHostAddress(addrString, gameServerAddr);
 	if (errorCode == -1)
 		return true;		// Success
 	else
