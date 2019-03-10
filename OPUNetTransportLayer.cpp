@@ -626,20 +626,13 @@ int OPUNetTransportLayer::Send(Packet* packet)
 
 int OPUNetTransportLayer::Receive(Packet* packet)
 {
-	int i;
-	unsigned long numBytes;
-	sockaddr_in from;
-	bool bRetVal;
-	int sourcePlayerNetID;
-	int expectedPlayerNetID;
-
 	for (;;)
 	{
 		// Check if we need to return a JoinReturned packet
 		if (numJoining != 0)
 		{
 			// Check each player for joining
-			for (i = 0; i < MaxRemotePlayers; i++)
+			for (int i = 0; i < MaxRemotePlayers; i++)
 			{
 				// Check if this player is joining
 				if (peerInfo[i].bReturnJoinPacket)
@@ -682,7 +675,8 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 
 
 		// Try to read from the net socket
-		numBytes = ReadSocket(netSocket, *packet, from);
+		sockaddr_in from;
+		unsigned long numBytes = ReadSocket(netSocket, *packet, from);
 		// Check for errors
 		if (numBytes == -1)
 		{
@@ -708,13 +702,13 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 			continue;		// Discard packet
 
 		// Check for packets with invalid playerNetID
-		sourcePlayerNetID = packet->header.sourcePlayerNetID;
+		int sourcePlayerNetID = packet->header.sourcePlayerNetID;
 		if (sourcePlayerNetID != 0)
 		{
 			// Make sure index is valid
 			if ((sourcePlayerNetID & 7) >= MaxRemotePlayers)
 				continue;	// Discard packet
-			expectedPlayerNetID = peerInfo[sourcePlayerNetID & 7].playerNetID;
+			int expectedPlayerNetID = peerInfo[sourcePlayerNetID & 7].playerNetID;
 			if (expectedPlayerNetID != 0 && expectedPlayerNetID != sourcePlayerNetID)
 			{
 				logFile << "Received packet with bad sourcePlayerNetID: " << sourcePlayerNetID << " from ";
@@ -733,7 +727,7 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 		CheckSourcePort(*packet, from);
 
 		// Determine if immediate processing is required
-		bRetVal = DoImmediateProcessing(*packet, from);
+		bool bRetVal = DoImmediateProcessing(*packet, from);
 
 
 		// Check destination
