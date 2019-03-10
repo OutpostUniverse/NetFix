@@ -964,18 +964,15 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
 {
-	int packetSize;
-	int errorCode;
-
 //logFile << "SendTo: Packet.commandType = " << packet.tlMessage.tlHeader.commandType << endl;
 
 	// Calculate Packet size
-	packetSize = packet.header.sizeOfPayload + sizeof(packet.header);
+	int packetSize = packet.header.sizeOfPayload + sizeof(packet.header);
 	// Calculate Packet checksum
 	packet.header.checksum = packet.Checksum();
 
 	// Send the packet
-	errorCode = sendto(netSocket, (char*)&packet, packetSize, 0, (sockaddr*)&to, sizeof(to));
+	int errorCode = sendto(netSocket, (char*)&packet, packetSize, 0, (sockaddr*)&to, sizeof(to));
 
 	// Check for errors
 	if (errorCode != SOCKET_ERROR)
