@@ -805,14 +805,12 @@ OPUNetTransportLayer::OPUNetTransportLayer()	// Private Constructor  [Prevent ob
 
 bool OPUNetTransportLayer::InitializeWinsock()
 {
-	WSADATA wsaData;
-	int err;
-	WORD version = MAKEWORD(2, 2);
-
 	if (!bInitialized)
 	{
 		// Initialize Winsock
-		err = WSAStartup(version, &wsaData);
+		WORD version = MAKEWORD(2, 2);
+		WSADATA wsaData;
+		int err = WSAStartup(version, &wsaData);
 
 		// Check for success
 		if (err == 0)
