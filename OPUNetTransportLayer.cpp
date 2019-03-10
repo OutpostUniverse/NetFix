@@ -454,11 +454,8 @@ void OPUNetTransportLayer::ShutDownInvite()
 
 int OPUNetTransportLayer::ReplicatePlayersList()
 {
-	int i;
-	int retVal;
-	Packet packet;
-
 	// Fill in the packet header
+	Packet packet;
 	packet.header.sourcePlayerNetID = 0;
 	packet.header.destPlayerNetID = 0;
 	packet.header.sizeOfPayload = sizeof(PlayersList);
@@ -467,7 +464,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 	packet.tlMessage.playersList.commandType = tlcSetPlayersList;
 	packet.tlMessage.playersList.numPlayers = numPlayers;
 	// Copy the players list
-	for (i = 0; i < MaxRemotePlayers; i++)
+	for (int i = 0; i < MaxRemotePlayers; i++)
 	{
 		packet.tlMessage.playersList.netPeerInfo[i].ip = peerInfo[i].address.sin_addr.s_addr;
 		packet.tlMessage.playersList.netPeerInfo[i].port = peerInfo[i].address.sin_port;
@@ -477,7 +474,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 
 
 	// Send the Player List
-	retVal = SendUntilStatusUpdate(&packet, 3, 16, 500);
+	int retVal = SendUntilStatusUpdate(&packet, 3, 16, 500);
 
 
 	// Check for errors
