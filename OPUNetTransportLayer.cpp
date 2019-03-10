@@ -277,13 +277,9 @@ logFile << std::endl;
 
 bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 {
-	int i;
-	Packet packet;
-
-
 	// Clear internal players state
 	numPlayers = 0;
-	for (i = 0; i < MaxRemotePlayers; i++)
+	for (int i = 0; i < MaxRemotePlayers; i++)
 	{
 		peerInfo[i].status = 0;
 		peerInfo[i].playerNetID = 0;
@@ -295,6 +291,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 	joiningGameInfo = &game;
 
 	// Construct the JoinRequest packet
+	Packet packet;
 	packet.header.sourcePlayerNetID = 0;
 	packet.header.destPlayerNetID = 0;
 	packet.header.sizeOfPayload = sizeof(JoinRequest);
