@@ -838,9 +838,6 @@ bool OPUNetTransportLayer::InitializeWinsock()
 // Returns: -1 = Success, 0 = Failed (bad addr), 1 = Failed (no addr specified)
 int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &hostAddress)
 {
-	char* portNumString;
-	int port;
-
 	// Check if a specific host address was indicated
 	if (hostAddressString == nullptr)
 		return 1;				// Failed (no address specified)
@@ -853,11 +850,11 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 		hostAddressString++;
 
 	// Check if a port number was specified
-	portNumString = strchr(hostAddressString, ':');
+	char* portNumString = strchr(hostAddressString, ':');
 	if (portNumString != nullptr)
 	{
 		// Convert the port number
-		port = atoi(&portNumString[1]);
+		int port = atoi(&portNumString[1]);
 		// Make sure a number was actually specified  (otherwise use the default port)
 		if (port != 0)
 			hostAddress.sin_port = htons(port);
