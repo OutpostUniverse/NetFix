@@ -534,10 +534,8 @@ int OPUNetTransportLayer::GetOpponentNetIDList(int netIDList[], int maxNumID)
 
 void OPUNetTransportLayer::RemovePlayer(int playerNetID)
 {
-	unsigned int playerIndex;
-
 	// Detemine which player to remove
-	playerIndex = playerNetID & 7;
+	unsigned int playerIndex = playerNetID & 7;
 
 	// Make sure the player exists
 	if (peerInfo[playerIndex].status != 0)
