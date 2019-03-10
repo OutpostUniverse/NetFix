@@ -1018,30 +1018,23 @@ bool OPUNetTransportLayer::SendStatusUpdate()
 
 bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet *packet, int untilStatus, int maxTries, int repeatDelay)
 {
-	int numTries;
-	int numPlayers;
-	int playerNum;
-	int index;
-	bool bStillWaiting;
-	int playerNetIDList[MaxRemotePlayers];
-	Packet dummyPacket;
-
 	// Checksum the packet
 	packet->header.checksum = packet->Checksum();
 
 	// Get the opponent playerNetIDList
-	numPlayers = GetOpponentNetIDList(playerNetIDList, MaxRemotePlayers);
+	int playerNetIDList[MaxRemotePlayers];
+	int numPlayers = GetOpponentNetIDList(playerNetIDList, MaxRemotePlayers);
 
 	// Repeat sending packet
-	for (numTries = 0; numTries < maxTries; numTries++)
+	for (int numTries = 0; numTries < maxTries; numTries++)
 	{
 		// Haven't yet sent any packets
-		bStillWaiting = false;
+		bool bStillWaiting = false;
 		// Resend packet to all players who haven't updated status
-		for (playerNum = 0; playerNum < numPlayers; playerNum++)
+		for (int playerNum = 0; playerNum < numPlayers; playerNum++)
 		{
 			// Get the index of the current player peer info
-			index = playerNetIDList[playerNum] & 7;
+			int index = playerNetIDList[playerNum] & 7;
 			if (peerInfo[index].status != untilStatus)
 			{
 				// Sent packet to this player
@@ -1057,6 +1050,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet *packet, int untilStatus
 		Sleep(repeatDelay);
 
 		// Pump the message receive processing
+		Packet dummyPacket;
 		while(Receive(&dummyPacket))
 			;
 	}
