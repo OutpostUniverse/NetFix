@@ -900,14 +900,12 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 // Returns a new playerNetID
 int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
 {
-	int newPlayerIndex;
-
 	// Make sure there is room for a new player
 	if (numPlayers >= hostedGameInfo.createGameInfo.startupFlags.maxPlayers)
 		return 0;		// Failed
 
 	// Find an empty slot
-	for (newPlayerIndex = 0; newPlayerIndex < MaxRemotePlayers; newPlayerIndex++)
+	for (int newPlayerIndex = 0; newPlayerIndex < MaxRemotePlayers; newPlayerIndex++)
 	{
 		// Check if this slot is empty
 		if (peerInfo[newPlayerIndex].status == 0)
