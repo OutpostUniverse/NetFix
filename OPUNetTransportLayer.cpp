@@ -242,21 +242,19 @@ bool OPUNetTransportLayer::GetExternalAddress()
 
 bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned short defaultHostPort)
 {
-	Packet packet;
-	sockaddr_in hostAddress;
-	int errorCode;
-
 	// Create the default host address
+	sockaddr_in hostAddress;
 	hostAddress.sin_family = AF_INET;
 	hostAddress.sin_port = htons(defaultHostPort);
 	hostAddress.sin_addr.S_un.S_addr = INADDR_BROADCAST;
 
 	// Try to convert the string fields
-	errorCode = GetHostAddress(hostAddressString, hostAddress);
+	int errorCode = GetHostAddress(hostAddressString, hostAddress);
 	if (errorCode == 0)
 		return false;
 
 	// Construct the SearchQuery packet
+	Packet packet;
 	packet.header.sourcePlayerNetID = 0;
 	packet.header.destPlayerNetID = 0;
 	packet.header.sizeOfPayload = sizeof(HostedGameSearchQuery);
