@@ -1292,17 +1292,15 @@ logFile << std::endl;
 
 bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 {
-	Packet packet;
-	sockaddr_in gameServerAddr;
-	int errorCode;
-
 	// Find the game server address
-	errorCode = GetGameServerAddress(gameServerAddr);
+	sockaddr_in gameServerAddr;
+	int errorCode = GetGameServerAddress(gameServerAddr);
 	// Check for errors
 	if (errorCode == 0)
 		return false;
 
 	// Fill in the packet header
+	Packet packet;
 	packet.header.sourcePlayerNetID = 0;
 	packet.header.destPlayerNetID = 0;
 	packet.header.sizeOfPayload = sizeof(GameServerPoke);
