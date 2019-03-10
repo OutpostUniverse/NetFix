@@ -327,9 +327,6 @@ logFile << std::endl;
 
 void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 {
-	int localPlayerNum;
-	bool bSuccess;
-
 	// Make sure a join was requested
 	if (joiningGameInfo == nullptr)
 		return;			// Abort
@@ -342,7 +339,7 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	peerInfo[0].status = 2;										// **
 	// Get the assigned playerNetID
 	playerNetID = packet.tlMessage.joinReply.newPlayerNetID;	// Store playerNetID
-	localPlayerNum = playerNetID & 7;							// Cache (frequently used)
+	int localPlayerNum = playerNetID & 7;   // Cache (frequently used)
 	// Update local info
 	peerInfo[localPlayerNum].playerNetID = playerNetID;
 	peerInfo[localPlayerNum].address.sin_addr.s_addr = INADDR_ANY;	// Clear the address
@@ -356,7 +353,7 @@ DumpAddrList(peerInfo);
 
 
 	// Send updated status to host
-	bSuccess = SendStatusUpdate();
+	bool bSuccess = SendStatusUpdate();
 	// Check for errors replying
 	if (bSuccess == false)
 	{
