@@ -934,16 +934,13 @@ int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
 
 int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from)
 {
-	int errorCode;
-	unsigned long numBytes;
-	int fromLen = sizeof(from);
-
 	// Check if the host socket is in use
 	if (sourceSocket == INVALID_SOCKET)
 		return -1;		// Abort
 
 	// Check the server port for data
-	errorCode = ioctlsocket(sourceSocket, FIONREAD, &numBytes);
+	unsigned long numBytes;
+	int errorCode = ioctlsocket(sourceSocket, FIONREAD, &numBytes);
 	// Check for success
 	if (errorCode == SOCKET_ERROR)
 		return -1;		// Abort
@@ -951,6 +948,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 		return -1;		// Abort
 
 	// Read the data
+	int fromLen = sizeof(from);
 	numBytes = recvfrom(sourceSocket, (char*)&packet, sizeof(packet), 0, (sockaddr*)&from, &fromLen);
 
 	// Check for errors
