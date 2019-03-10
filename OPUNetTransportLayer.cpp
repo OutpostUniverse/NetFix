@@ -742,14 +742,11 @@ int OPUNetTransportLayer::F1()
 
 int OPUNetTransportLayer::GetAddressString(int playerNetID, char* addressString, int bufferSize)
 {
-	int playerIndex;
-	sockaddr_in* address;
-
 	// Determine the playerIndex
-	playerIndex = (playerNetID & 7);
+	int playerIndex = (playerNetID & 7);
 
 	// Get the address and convert it to a string
-	address = &peerInfo[playerIndex].address;
+	sockaddr_in* address = &peerInfo[playerIndex].address;
 	scr_snprintf(addressString, bufferSize, "%i.%i.%i.%i", address->sin_addr.S_un.S_un_b.s_b1, address->sin_addr.S_un.S_un_b.s_b2, address->sin_addr.S_un.S_un_b.s_b3, address->sin_addr.S_un.S_un_b.s_b4);
 
 	return true;		// Success
