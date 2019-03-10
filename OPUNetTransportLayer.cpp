@@ -998,9 +998,8 @@ bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
 
 bool OPUNetTransportLayer::SendStatusUpdate()
 {
-	Packet packet;
-
 	// Fill in a Status Update packet
+	Packet packet;
 	packet.header.destPlayerNetID = 0;
 	packet.header.sourcePlayerNetID = playerNetID;
 	packet.header.sizeOfPayload = sizeof(StatusUpdate);
