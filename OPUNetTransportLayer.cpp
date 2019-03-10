@@ -378,12 +378,11 @@ int OPUNetTransportLayer::GetNumPlayers()
 
 int OPUNetTransportLayer::GetPort()
 {
-	int errorCode;
 	sockaddr_in addr;
 	int len = sizeof(addr);
 
 	// Get the local socket address
-	errorCode = getsockname(netSocket, (sockaddr*)&addr, &len);
+	int errorCode = getsockname(netSocket, (sockaddr*)&addr, &len);
 	if (errorCode == SOCKET_ERROR)
 		return 0;		// Error
 
@@ -393,11 +392,10 @@ int OPUNetTransportLayer::GetPort()
 
 bool OPUNetTransportLayer::GetAddress(sockaddr_in& addr)
 {
-	int errorCode;
 	int len = sizeof(addr);
 
 	// Get the local socket address
-	errorCode = getsockname(netSocket, (sockaddr*)&addr, &len);
+	int errorCode = getsockname(netSocket, (sockaddr*)&addr, &len);
 
 	// Return true if failed
 	return (errorCode == SOCKET_ERROR);
