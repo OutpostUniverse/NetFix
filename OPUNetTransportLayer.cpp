@@ -553,14 +553,10 @@ void OPUNetTransportLayer::RemovePlayer(int playerNetID)
 
 int OPUNetTransportLayer::Send(Packet* packet)
 {
-	int errorCode;
-	int packetSize;
-	sockaddr_in* address;
-
 	// Set the source player net ID
 	packet->header.sourcePlayerNetID = playerNetID;
 	// Calculate the packet size
-	packetSize = packet->header.sizeOfPayload + sizeof(packet->header);
+	int packetSize = packet->header.sizeOfPayload + sizeof(packet->header);
 	// Calculate checksum
 	packet->header.checksum = packet->Checksum();
 
@@ -568,10 +564,9 @@ int OPUNetTransportLayer::Send(Packet* packet)
 	if (packet->header.destPlayerNetID == 0)
 	{
 		// Broadcast
-		unsigned int i;
 
 		// Send packet to all players
-		for (i = 0; i < MaxRemotePlayers; i++)
+		for (unsigned int i = 0; i < MaxRemotePlayers; i++)
 		{
 			// Make sure the player record is valid
 			if (peerInfo[i].status != 0)
@@ -580,8 +575,8 @@ int OPUNetTransportLayer::Send(Packet* packet)
 				if (peerInfo[i].playerNetID != playerNetID)
 				{
 					// Send the packet to current player
-					address = &peerInfo[i].address;
-					errorCode = sendto(netSocket, (char*)packet, packetSize, 0, (sockaddr*)address, sizeof(*address));
+					sockaddr_in* address = &peerInfo[i].address;
+					int errorCode = sendto(netSocket, (char*)packet, packetSize, 0, (sockaddr*)address, sizeof(*address));
 
 					// Check for success
 					if (errorCode != SOCKET_ERROR)
@@ -597,18 +592,17 @@ int OPUNetTransportLayer::Send(Packet* packet)
 	else
 	{
 		// Singlecast
-		int i;
 
 		// Get the PeerInfo index
-		i = (packet->header.destPlayerNetID & 7);
+		int i = (packet->header.destPlayerNetID & 7);
 		// Make sure the player record is valid
 		if (peerInfo[i].status != 0)
 		{
 			// Don't send to self
 			if (peerInfo[i].playerNetID != playerNetID)
 			{
-				address = &peerInfo[i].address;
-				errorCode = sendto(netSocket, (char*)packet, packetSize, 0, (sockaddr*)address, sizeof(*address));
+				sockaddr_in* address = &peerInfo[i].address;
+				int errorCode = sendto(netSocket, (char*)packet, packetSize, 0, (sockaddr*)address, sizeof(*address));
 
 				// Check for success
 				if (errorCode != SOCKET_ERROR)
