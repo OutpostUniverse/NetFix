@@ -209,11 +209,8 @@ logFile << "Error informing game server" << std::endl;
 
 bool OPUNetTransportLayer::GetExternalAddress()
 {
-	bool errorCode;
-	sockaddr_in gameServerAddr;
-	Packet packet;
-
 	// Build the request packet
+	Packet packet;
 	packet.header.sourcePlayerNetID = 0;
 	packet.header.destPlayerNetID = 0;
 	packet.header.sizeOfPayload = sizeof(RequestExternalAddress);
@@ -222,6 +219,7 @@ bool OPUNetTransportLayer::GetExternalAddress()
 	packet.tlMessage.requestExternalAddress.internalPort = GetPort();
 
 	// Get the game server address
+	sockaddr_in gameServerAddr;
 	if (!GetGameServerAddress(gameServerAddr))
 	{
 		// Error. Could not obtain game server address
@@ -229,6 +227,7 @@ bool OPUNetTransportLayer::GetExternalAddress()
 	}
 
 	// Send the request packet to the game server (first port)
+	bool errorCode;
 	errorCode = SendTo(packet, gameServerAddr);
 	if (errorCode == false)
 		return false;		// Error
