@@ -17,8 +17,8 @@ public:
 
 public:
 	// Virtual member functions
-	virtual bool IsEnabled() {return 1;};
-	virtual bool DoStart()
+	virtual bool IsEnabled() override {return 1;};
+	virtual bool DoStart() override
 	{
 		int retVal;
 
@@ -32,7 +32,7 @@ public:
 		// Return if the game was cancelled (or should be starting)
 		return (retVal != 0);
 	};
-	virtual bool F1() {return 1;};
-	virtual const char* GetProtocolName() {return "OPU.Net";};
+	virtual bool F1() override {return 1;};
+	virtual const char* GetProtocolName() override {return "OPU.Net";};
 };
 
