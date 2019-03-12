@@ -1037,6 +1037,8 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet *packet, int untilStatus
 			int index = playerNetIDList[playerNum] & 7;
 			if (peerInfo[index].status != untilStatus)
 			{
+				// Must wait for a response from this player
+				bStillWaiting = true;
 				// Sent packet to this player
 				SendTo(*packet, peerInfo[index].address);
 			}
