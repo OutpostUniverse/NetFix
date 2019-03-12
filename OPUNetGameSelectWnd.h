@@ -17,8 +17,8 @@ class OPUNetGameSelectWnd : public IDlgWnd
 {
 public:
 	// Virtual functions
-	virtual ~OPUNetGameSelectWnd();
-	virtual int DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	virtual ~OPUNetGameSelectWnd() override;
+	virtual int DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
 	// Constructor
 	OPUNetGameSelectWnd();

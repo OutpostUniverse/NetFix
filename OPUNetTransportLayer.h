@@ -57,20 +57,20 @@ public:
 
 	// Virtual member functions
 	// ------------------------
-	virtual ~OPUNetTransportLayer();
-	virtual int GetHostPlayerNetID();
-	virtual void ShutDownInvite();
-	virtual int ReplicatePlayersList();
-	virtual int GetOpponentNetIDList(int netIDList[], int maxNumID);
-	virtual void RemovePlayer(int playerNetID);
-	virtual int Send(Packet* packet);
-	virtual int Receive(Packet* packet);
-	virtual int IsHost();
-	virtual int IsValidPlayer();
-	virtual int F1();
-	virtual int GetAddressString(int playerNetID, char* addressString, int bufferSize);
-	virtual int ResetTrafficCounters();
-	virtual int GetTrafficCounts(TrafficCounters* trafficCounters);
+	virtual ~OPUNetTransportLayer() override;
+	virtual int GetHostPlayerNetID() override;
+	virtual void ShutDownInvite() override;
+	virtual int ReplicatePlayersList() override;
+	virtual int GetOpponentNetIDList(int netIDList[], int maxNumID) override;
+	virtual void RemovePlayer(int playerNetID) override;
+	virtual int Send(Packet* packet) override;
+	virtual int Receive(Packet* packet) override;
+	virtual int IsHost() override;
+	virtual int IsValidPlayer() override;
+	virtual int F1()  override;
+	virtual int GetAddressString(int playerNetID, char* addressString, int bufferSize) override;
+	virtual int ResetTrafficCounters() override;
+	virtual int GetTrafficCounts(TrafficCounters* trafficCounters) override;
 
 private:
 	// Private member functions
