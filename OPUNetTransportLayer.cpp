@@ -1051,8 +1051,8 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet *packet, int untilStatus
 
 		// Pump the message receive processing
 		Packet dummyPacket;
-		while(Receive(&dummyPacket))
-			;
+		while(Receive(&dummyPacket)) {
+		}
 	}
 
 	return false;		// Failed
