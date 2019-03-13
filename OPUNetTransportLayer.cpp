@@ -463,7 +463,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 
 
 	// Send the Player List
-	int retVal = SendUntilStatusUpdate(&packet, 3, 16, 500);
+	int retVal = SendUntilStatusUpdate(packet, 3, 16, 500);
 
 
 	// Check for errors
@@ -477,7 +477,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 		packet.tlMessage.tlHeader.commandType = tlcSetPlayersListFailed;
 
 		// Wait until all clients acknowledge failure
-		SendUntilStatusUpdate(&packet, 4, 16, 500);
+		SendUntilStatusUpdate(packet, 4, 16, 500);
 		return -1;		// Failed
 	}
 
@@ -1016,10 +1016,10 @@ bool OPUNetTransportLayer::SendStatusUpdate()
 
 // -------------------------------------------
 
-bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet *packet, int untilStatus, int maxTries, int repeatDelay)
+bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus, int maxTries, int repeatDelay)
 {
 	// Checksum the packet
-	packet->header.checksum = packet->Checksum();
+	packet.header.checksum = packet.Checksum();
 
 	// Get the opponent playerNetIDList
 	int playerNetIDList[MaxRemotePlayers];
@@ -1040,7 +1040,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet *packet, int untilStatus
 				// Must wait for a response from this player
 				bStillWaiting = true;
 				// Sent packet to this player
-				SendTo(*packet, peerInfo[index].address);
+				SendTo(packet, peerInfo[index].address);
 			}
 		}
 

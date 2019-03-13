@@ -82,7 +82,7 @@ private:
 	int ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from);
 	bool SendTo(Packet& packet, sockaddr_in& to);
 	bool SendStatusUpdate();
-	bool SendUntilStatusUpdate(Packet *packet, int untilStatus, int maxTries, int repeatDelay);
+	bool SendUntilStatusUpdate(Packet& packet, int untilStatus, int maxTries, int repeatDelay);
 	bool DoImmediateProcessing(Packet& packet, sockaddr_in& from);
 	bool PokeGameServer(PokeStatusCode status);
 	bool GetGameServerAddress(sockaddr_in &gameServerAddr);
