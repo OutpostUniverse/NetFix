@@ -70,7 +70,7 @@ public:
 	virtual int F1()  override;
 	virtual int GetAddressString(int playerNetID, char* addressString, int bufferSize) override;
 	virtual int ResetTrafficCounters() override;
-	virtual int GetTrafficCounts(TrafficCounters* trafficCounters) override;
+	virtual int GetTrafficCounts(TrafficCounters& trafficCounters) override;
 
 private:
 	// Private member functions

@@ -761,10 +761,10 @@ int OPUNetTransportLayer::ResetTrafficCounters()
 	return true;		// Success
 }
 
-int OPUNetTransportLayer::GetTrafficCounts(TrafficCounters* trafficCounters)
+int OPUNetTransportLayer::GetTrafficCounts(TrafficCounters& trafficCounters)
 {
 	// Copy the TrafficCounter to the supplied buffer
-	*trafficCounters = this->trafficCounters;
+	trafficCounters = this->trafficCounters;
 
 	return true;		// Success
 }
