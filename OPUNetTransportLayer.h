@@ -63,8 +63,8 @@ public:
 	virtual int ReplicatePlayersList() override;
 	virtual int GetOpponentNetIDList(int netIDList[], int maxNumID) override;
 	virtual void RemovePlayer(int playerNetID) override;
-	virtual int Send(Packet* packet) override;
-	virtual int Receive(Packet* packet) override;
+	virtual int Send(Packet& packet) override;
+	virtual int Receive(Packet& packet) override;
 	virtual int IsHost() override;
 	virtual int IsValidPlayer() override;
 	virtual int F1()  override;

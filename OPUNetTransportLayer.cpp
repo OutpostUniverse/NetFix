@@ -535,7 +535,7 @@ void OPUNetTransportLayer::RemovePlayer(int playerNetID)
 	}
 }
 
-int OPUNetTransportLayer::Send(Packet* packet)
+int OPUNetTransportLayer::Send(Packet& packet)
 {
 	// Set the source player net ID
 	packet->header.sourcePlayerNetID = playerNetID;
@@ -602,7 +602,7 @@ int OPUNetTransportLayer::Send(Packet* packet)
 	return true;		// Success
 }
 
-int OPUNetTransportLayer::Receive(Packet* packet)
+int OPUNetTransportLayer::Receive(Packet& packet)
 {
 	for (;;)
 	{
@@ -1053,7 +1053,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus
 
 		// Pump the message receive processing
 		Packet dummyPacket;
-		while(Receive(&dummyPacket)) {
+		while(Receive(dummyPacket)) {
 		}
 	}
 
