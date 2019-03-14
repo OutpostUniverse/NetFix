@@ -463,7 +463,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 
 
 	// Send the Player List
-	int retVal = SendUntilStatusUpdate(&packet, 3, 16, 500);
+	int retVal = SendUntilStatusUpdate(packet, 3, 16, 500);
 
 
 	// Check for errors
@@ -477,7 +477,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 		packet.tlMessage.tlHeader.commandType = tlcSetPlayersListFailed;
 
 		// Wait until all clients acknowledge failure
-		SendUntilStatusUpdate(&packet, 4, 16, 500);
+		SendUntilStatusUpdate(packet, 4, 16, 500);
 		return -1;		// Failed
 	}
 
@@ -535,17 +535,17 @@ void OPUNetTransportLayer::RemovePlayer(int playerNetID)
 	}
 }
 
-int OPUNetTransportLayer::Send(Packet* packet)
+int OPUNetTransportLayer::Send(Packet& packet)
 {
 	// Set the source player net ID
-	packet->header.sourcePlayerNetID = playerNetID;
+	packet.header.sourcePlayerNetID = playerNetID;
 	// Calculate the packet size
-	int packetSize = packet->header.sizeOfPayload + sizeof(packet->header);
+	int packetSize = packet.header.sizeOfPayload + sizeof(packet.header);
 	// Calculate checksum
-	packet->header.checksum = packet->Checksum();
+	packet.header.checksum = packet.Checksum();
 
 	// Check if this packet should be broadcast
-	if (packet->header.destPlayerNetID == 0)
+	if (packet.header.destPlayerNetID == 0)
 	{
 		// Broadcast
 
@@ -560,7 +560,7 @@ int OPUNetTransportLayer::Send(Packet* packet)
 				{
 					// Send the packet to current player
 					sockaddr_in* address = &peerInfo[i].address;
-					int errorCode = sendto(netSocket, (char*)packet, packetSize, 0, (sockaddr*)address, sizeof(*address));
+					int errorCode = sendto(netSocket, reinterpret_cast<char*>(&packet), packetSize, 0, (sockaddr*)address, sizeof(*address));
 
 					// Check for success
 					if (errorCode != SOCKET_ERROR)
@@ -578,7 +578,7 @@ int OPUNetTransportLayer::Send(Packet* packet)
 		// Singlecast
 
 		// Get the PeerInfo index
-		int i = (packet->header.destPlayerNetID & 7);
+		int i = (packet.header.destPlayerNetID & 7);
 		// Make sure the player record is valid
 		if (peerInfo[i].status != 0)
 		{
@@ -586,7 +586,7 @@ int OPUNetTransportLayer::Send(Packet* packet)
 			if (peerInfo[i].playerNetID != playerNetID)
 			{
 				sockaddr_in* address = &peerInfo[i].address;
-				int errorCode = sendto(netSocket, (char*)packet, packetSize, 0, (sockaddr*)address, sizeof(*address));
+				int errorCode = sendto(netSocket, reinterpret_cast<char*>(&packet), packetSize, 0, (sockaddr*)address, sizeof(*address));
 
 				// Check for success
 				if (errorCode != SOCKET_ERROR)
@@ -602,7 +602,7 @@ int OPUNetTransportLayer::Send(Packet* packet)
 	return true;		// Success
 }
 
-int OPUNetTransportLayer::Receive(Packet* packet)
+int OPUNetTransportLayer::Receive(Packet& packet)
 {
 	for (;;)
 	{
@@ -618,12 +618,12 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 					// Construct the JoinGranted packet
 					// Note: This packet is returned as if it was received over the network
 					// Note: Required sourcePlayerNetID=0 for: 1=JoinGranted, 3=RemoteStart, 4=SetPlayerList
-					packet->header.sourcePlayerNetID = 0;	// Must be 0 to be processed
-					packet->header.destPlayerNetID = playerNetID;		// Send fake packet to self
-					packet->header.sizeOfPayload = sizeof(JoinReturned);
-					packet->header.type = 1;
-					packet->tlMessage.tlHeader.commandType = tlcJoinGranted;
-					packet->tlMessage.joinReturned.newPlayerNetID = peerInfo[i].playerNetID;
+					packet.header.sourcePlayerNetID = 0;	// Must be 0 to be processed
+					packet.header.destPlayerNetID = playerNetID;		// Send fake packet to self
+					packet.header.sizeOfPayload = sizeof(JoinReturned);
+					packet.header.type = 1;
+					packet.tlMessage.tlHeader.commandType = tlcJoinGranted;
+					packet.tlMessage.joinReturned.newPlayerNetID = peerInfo[i].playerNetID;
 
 					// Mark as returned
 					peerInfo[i].bReturnJoinPacket = false;
@@ -654,12 +654,12 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 
 		// Try to read from the net socket
 		sockaddr_in from;
-		unsigned long numBytes = ReadSocket(netSocket, *packet, from);
+		unsigned long numBytes = ReadSocket(netSocket, packet, from);
 		// Check for errors
 		if (numBytes == -1)
 		{
 			// Try to read from the host socket
-			numBytes = ReadSocket(hostSocket, *packet, from);
+			numBytes = ReadSocket(hostSocket, packet, from);
 			// Check for errors
 			if (numBytes == -1)
 				return false;		// Abort
@@ -667,20 +667,20 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 
 
 // **DEBUG**
-//logFile << "ReadSocket: type = " << (int)packet->header.type
-//		<< "  commandType = " << packet->tlMessage.tlHeader.commandType
-//		<< "  sourcePlayerNetID = " << packet->header.sourcePlayerNetID << endl;
+//logFile << "ReadSocket: type = " << (int)packet.header.type
+//		<< "  commandType = " << packet.tlMessage.tlHeader.commandType
+//		<< "  sourcePlayerNetID = " << packet.header.sourcePlayerNetID << endl;
 
 		// Error check the packet
 		if (numBytes < sizeof(PacketHeader))
 			continue;		// Discard packet
-		if (numBytes < sizeof(PacketHeader) + packet->header.sizeOfPayload)
+		if (numBytes < sizeof(PacketHeader) + packet.header.sizeOfPayload)
 			continue;		// Discard packet
-		if (packet->header.checksum != packet->Checksum())
+		if (packet.header.checksum != packet.Checksum())
 			continue;		// Discard packet
 
 		// Check for packets with invalid playerNetID
-		int sourcePlayerNetID = packet->header.sourcePlayerNetID;
+		int sourcePlayerNetID = packet.header.sourcePlayerNetID;
 		if (sourcePlayerNetID != 0)
 		{
 			// Make sure index is valid
@@ -692,31 +692,31 @@ int OPUNetTransportLayer::Receive(Packet* packet)
 				logFile << "Received packet with bad sourcePlayerNetID: " << sourcePlayerNetID << " from ";
 				DumpAddr(from);
 				logFile << std::endl;
-				logFile << " Packet.type = " << (int)packet->header.type << std::endl;
-				logFile << " Packet.commandType = " << packet->tlMessage.tlHeader.commandType << std::endl;
+				logFile << " Packet.type = " << (int)packet.header.type << std::endl;
+				logFile << " Packet.commandType = " << packet.tlMessage.tlHeader.commandType << std::endl;
 			}
 		}
 
 		// Count the received packet
 		trafficCounters.numPacketsReceived++;
-		trafficCounters.numBytesReceived += packet->header.sizeOfPayload + sizeof(packet->header);
+		trafficCounters.numBytesReceived += packet.header.sizeOfPayload + sizeof(packet.header);
 
 		// Check for unexpected source ports
-		CheckSourcePort(*packet, from);
+		CheckSourcePort(packet, from);
 
 		// Determine if immediate processing is required
-		bool bRetVal = DoImmediateProcessing(*packet, from);
+		bool bRetVal = DoImmediateProcessing(packet, from);
 
 
 		// Check destination
-		if ((packet->header.destPlayerNetID != 0) && (packet->header.destPlayerNetID != playerNetID))
+		if ((packet.header.destPlayerNetID != 0) && (packet.header.destPlayerNetID != playerNetID))
 			continue;		// Discard packet
 
 		// Check if the packet was unhandled
 		if (bRetVal == false)
 		{
 			// Validate packet makes sense (discard if it doesn't)
-			if (ValidatePacket(*packet, from))
+			if (ValidatePacket(packet, from))
 			{
 				// Non immediate processed packet received. Return packet
 				return true;
@@ -761,10 +761,10 @@ int OPUNetTransportLayer::ResetTrafficCounters()
 	return true;		// Success
 }
 
-int OPUNetTransportLayer::GetTrafficCounts(TrafficCounters* trafficCounters)
+int OPUNetTransportLayer::GetTrafficCounts(TrafficCounters& trafficCounters)
 {
 	// Copy the TrafficCounter to the supplied buffer
-	*trafficCounters = this->trafficCounters;
+	trafficCounters = this->trafficCounters;
 
 	return true;		// Success
 }
@@ -1016,10 +1016,10 @@ bool OPUNetTransportLayer::SendStatusUpdate()
 
 // -------------------------------------------
 
-bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet *packet, int untilStatus, int maxTries, int repeatDelay)
+bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus, int maxTries, int repeatDelay)
 {
 	// Checksum the packet
-	packet->header.checksum = packet->Checksum();
+	packet.header.checksum = packet.Checksum();
 
 	// Get the opponent playerNetIDList
 	int playerNetIDList[MaxRemotePlayers];
@@ -1040,7 +1040,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet *packet, int untilStatus
 				// Must wait for a response from this player
 				bStillWaiting = true;
 				// Sent packet to this player
-				SendTo(*packet, peerInfo[index].address);
+				SendTo(packet, peerInfo[index].address);
 			}
 		}
 
@@ -1053,7 +1053,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet *packet, int untilStatus
 
 		// Pump the message receive processing
 		Packet dummyPacket;
-		while(Receive(&dummyPacket)) {
+		while(Receive(dummyPacket)) {
 		}
 	}
 

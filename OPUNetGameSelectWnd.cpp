@@ -479,7 +479,7 @@ void OPUNetGameSelectWnd::OnTimer()
 	}
 
 	// Check for network replies
-	while (opuNetTransportLayer->Receive(&packet))
+	while (opuNetTransportLayer->Receive(packet))
 	{
 		// Process the packet
 		OnReceive(packet);
@@ -898,7 +898,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 
 	
 	// Show Pre-Game Setup window
-	errorCode = multiplayerPreGameSetupWnd.ShowHostGame(&hostGameParameters);
+	errorCode = multiplayerPreGameSetupWnd.ShowHostGame(hostGameParameters);
 
 
 	// Check if a game is starting

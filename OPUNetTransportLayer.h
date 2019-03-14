@@ -63,14 +63,14 @@ public:
 	virtual int ReplicatePlayersList() override;
 	virtual int GetOpponentNetIDList(int netIDList[], int maxNumID) override;
 	virtual void RemovePlayer(int playerNetID) override;
-	virtual int Send(Packet* packet) override;
-	virtual int Receive(Packet* packet) override;
+	virtual int Send(Packet& packet) override;
+	virtual int Receive(Packet& packet) override;
 	virtual int IsHost() override;
 	virtual int IsValidPlayer() override;
 	virtual int F1()  override;
 	virtual int GetAddressString(int playerNetID, char* addressString, int bufferSize) override;
 	virtual int ResetTrafficCounters() override;
-	virtual int GetTrafficCounts(TrafficCounters* trafficCounters) override;
+	virtual int GetTrafficCounts(TrafficCounters& trafficCounters) override;
 
 private:
 	// Private member functions
@@ -82,7 +82,7 @@ private:
 	int ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from);
 	bool SendTo(Packet& packet, sockaddr_in& to);
 	bool SendStatusUpdate();
-	bool SendUntilStatusUpdate(Packet *packet, int untilStatus, int maxTries, int repeatDelay);
+	bool SendUntilStatusUpdate(Packet& packet, int untilStatus, int maxTries, int repeatDelay);
 	bool DoImmediateProcessing(Packet& packet, sockaddr_in& from);
 	bool PokeGameServer(PokeStatusCode status);
 	bool GetGameServerAddress(sockaddr_in &gameServerAddr);
