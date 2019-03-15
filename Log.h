@@ -1,7 +1,14 @@
 #include <fstream>
-#include "OPUNetTransportLayer.h"
 
-class ofstream;
+struct sockaddr_in;
+struct _GUID;
+typedef _GUID GUID;
+
+struct PeerInfo;
+namespace OP2Internal {
+	class Packet;
+};
+
 
 // Global Debug file
 extern std::ofstream logFile;
@@ -13,4 +20,4 @@ void DumpAddr(sockaddr_in &addr);
 void DumpPlayerNetID(int playerNetID);
 void DumpAddrList(PeerInfo* peerInfo);
 void DumpGuid(GUID &guid);
-void DumpPacket(Packet* packet);
+void DumpPacket(OP2Internal::Packet& packet);
