@@ -139,11 +139,13 @@ logFile.open("logHost.txt");
 			// Could not bind to the socket. Get client socket port info
 			i = sizeof(localAddress);
 			errorCode = getsockname(netSocket, (sockaddr*)&localAddress, &i);
-			if (errorCode == SOCKET_ERROR)
-				return false;		// Failed
+			if (errorCode == SOCKET_ERROR) {
+				return false;
+			}
 			// Check if client socket port doesn't match
-			if (ntohs(localAddress.sin_port) != port)
-				return false;		// Failed
+			if (ntohs(localAddress.sin_port) != port) {
+				return false;
+			}
 
 			// Ports match, use the client socket
 			hostSocket = netSocket;
@@ -227,10 +229,10 @@ bool OPUNetTransportLayer::GetExternalAddress()
 	}
 
 	// Send the request packet to the game server (first port)
-	bool errorCode;
-	errorCode = SendTo(packet, gameServerAddr);
-	if (errorCode == false)
-		return false;		// Error
+	bool errorCode = SendTo(packet, gameServerAddr);
+	if (errorCode == false) {
+		return false;
+	}
 
 	// Send the request packet to the game server (second port)
 	gameServerAddr.sin_port = htons(ntohs(gameServerAddr.sin_port) + 1);
@@ -249,8 +251,9 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned shor
 
 	// Try to convert the string fields
 	int errorCode = GetHostAddress(hostAddressString, hostAddress);
-	if (errorCode == 0)
+	if (errorCode == 0) {
 		return false;
+	}
 
 	// Construct the SearchQuery packet
 	Packet packet;
@@ -322,8 +325,9 @@ logFile << std::endl;
 void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 {
 	// Make sure a join was requested
-	if (joiningGameInfo == nullptr)
-		return;			// Abort
+	if (joiningGameInfo == nullptr) {
+		return;
+	}
 
 	// Join successful
 	// ---------------
@@ -374,8 +378,9 @@ int OPUNetTransportLayer::GetPort()
 
 	// Get the local socket address
 	int errorCode = getsockname(netSocket, (sockaddr*)&addr, &len);
-	if (errorCode == SOCKET_ERROR)
+	if (errorCode == SOCKET_ERROR) {
 		return 0;		// Error
+	}
 
 	// Return the port number
 	return ntohs(addr.sin_port);
@@ -415,10 +420,12 @@ OPUNetTransportLayer::~OPUNetTransportLayer()
 	if (bInitialized)
 	{
 		// Release the sockets
-		if (netSocket != INVALID_SOCKET)
+		if (netSocket != INVALID_SOCKET) {
 			closesocket(netSocket);
-		if (hostSocket != INVALID_SOCKET)
+		}
+		if (hostSocket != INVALID_SOCKET) {
 			closesocket(hostSocket);
+		}
 
 		// Shutdown Winsock
 		WSACleanup();
@@ -505,8 +512,9 @@ int OPUNetTransportLayer::GetOpponentNetIDList(int netIDList[], int maxNumID)
 			if (peerInfo[i].playerNetID != playerNetID)
 			{
 				// Abort if the output buffer is full
-				if (j >= maxNumID)
+				if (j >= maxNumID) {
 					return -1;		// Error. Buffer too small
+				}
 
 				// Copy it to the dest buffer
 				netIDList[j] = peerInfo[i].playerNetID;
@@ -661,8 +669,9 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 			// Try to read from the host socket
 			numBytes = ReadSocket(hostSocket, packet, from);
 			// Check for errors
-			if (numBytes == -1)
-				return false;		// Abort
+			if (numBytes == -1) {
+				return false;
+			}
 		}
 
 
@@ -672,20 +681,24 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 //		<< "  sourcePlayerNetID = " << packet.header.sourcePlayerNetID << endl;
 
 		// Error check the packet
-		if (numBytes < sizeof(PacketHeader))
+		if (numBytes < sizeof(PacketHeader)) {
 			continue;		// Discard packet
-		if (numBytes < sizeof(PacketHeader) + packet.header.sizeOfPayload)
+		}
+		if (numBytes < sizeof(PacketHeader) + packet.header.sizeOfPayload) {
 			continue;		// Discard packet
-		if (packet.header.checksum != packet.Checksum())
+		}
+		if (packet.header.checksum != packet.Checksum()) {
 			continue;		// Discard packet
+		}
 
 		// Check for packets with invalid playerNetID
 		int sourcePlayerNetID = packet.header.sourcePlayerNetID;
 		if (sourcePlayerNetID != 0)
 		{
 			// Make sure index is valid
-			if ((sourcePlayerNetID & 7) >= MaxRemotePlayers)
+			if ((sourcePlayerNetID & 7) >= MaxRemotePlayers) {
 				continue;	// Discard packet
+			}
 			int expectedPlayerNetID = peerInfo[sourcePlayerNetID & 7].playerNetID;
 			if (expectedPlayerNetID != 0 && expectedPlayerNetID != sourcePlayerNetID)
 			{
@@ -709,8 +722,9 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 
 
 		// Check destination
-		if ((packet.header.destPlayerNetID != 0) && (packet.header.destPlayerNetID != playerNetID))
+		if ((packet.header.destPlayerNetID != 0) && (packet.header.destPlayerNetID != playerNetID)) {
 			continue;		// Discard packet
+		}
 
 		// Check if the packet was unhandled
 		if (bRetVal == false)
@@ -839,15 +853,17 @@ bool OPUNetTransportLayer::InitializeWinsock()
 int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &hostAddress)
 {
 	// Check if a specific host address was indicated
-	if (hostAddressString == nullptr)
+	if (hostAddressString == nullptr) {
 		return 1;				// Failed (no address specified)
+	}
 
 	// Convert hostAddress string to network address
 	// ---------------------------------------------
 
 	// Skip any leading spaces
-	while (hostAddressString[0] == ' ' || hostAddressString[0] == '\t')
+	while (hostAddressString[0] == ' ' || hostAddressString[0] == '\t') {
 		hostAddressString++;
+	}
 
 	// Check if a port number was specified
 	char* portNumString = strchr(hostAddressString, ':');
@@ -856,8 +872,9 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 		// Convert the port number
 		int port = atoi(&portNumString[1]);
 		// Make sure a number was actually specified  (otherwise use the default port)
-		if (port != 0)
+		if (port != 0) {
 			hostAddress.sin_port = htons(port);
+		}
 		// Truncate the address string, so lookup succeeds
 		portNumString[0] = 0;
 	}
@@ -865,8 +882,9 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 	// Check if the address part is empty  (in which case use the default)
 	if (hostAddressString[0] == 0)
 	{
-		if (portNumString != nullptr)
+		if (portNumString != nullptr) {
 			portNumString[0] = ':';		// Restore string
+		}
 		return 1;					// Failed (no address specified)
 	}
 
@@ -881,16 +899,18 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 		// Check for failure
 		if (hostEnt == nullptr)
 		{
-			if (portNumString != nullptr)
+			if (portNumString != nullptr) {
 				portNumString[0] = ':';		// Restore string
+			}
 			return 0;				// Failed (invalid address)
 		}
 		// Get the host IP address
 		hostAddress.sin_addr.S_un.S_addr = *(unsigned long*)hostEnt->h_addr_list[0];
 	}
 
-	if (portNumString != nullptr)
+	if (portNumString != nullptr) {
 		portNumString[0] = ':';		// Restore string
+	}
 	return -1;						// Success
 }
 
@@ -901,8 +921,9 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
 {
 	// Make sure there is room for a new player
-	if (numPlayers >= hostedGameInfo.createGameInfo.startupFlags.maxPlayers)
+	if (numPlayers >= hostedGameInfo.createGameInfo.startupFlags.maxPlayers) {
 		return 0;		// Failed
+	}
 
 	// Find an empty slot
 	for (int newPlayerIndex = 0; newPlayerIndex < MaxRemotePlayers; newPlayerIndex++)
@@ -935,25 +956,29 @@ int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
 int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from)
 {
 	// Check if the host socket is in use
-	if (sourceSocket == INVALID_SOCKET)
+	if (sourceSocket == INVALID_SOCKET) {
 		return -1;		// Abort
+	}
 
 	// Check the server port for data
 	unsigned long numBytes;
 	int errorCode = ioctlsocket(sourceSocket, FIONREAD, &numBytes);
 	// Check for success
-	if (errorCode == SOCKET_ERROR)
+	if (errorCode == SOCKET_ERROR) {
 		return -1;		// Abort
-	if (numBytes == 0)
+	}
+	if (numBytes == 0) {
 		return -1;		// Abort
+	}
 
 	// Read the data
 	int fromLen = sizeof(from);
 	numBytes = recvfrom(sourceSocket, (char*)&packet, sizeof(packet), 0, (sockaddr*)&from, &fromLen);
 
 	// Check for errors
-	if (numBytes == SOCKET_ERROR)
+	if (numBytes == SOCKET_ERROR) {
 		return -1;		// Abort
+	}
 
 	// Return number of bytes read
 	return numBytes;
@@ -1045,8 +1070,9 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus
 		}
 
 		// Check for success
-		if (bStillWaiting == false)
-			return true;		// Success
+		if (bStillWaiting == false) {
+			return true;
+		}
 
 		// Wait
 		Sleep(repeatDelay);
@@ -1067,8 +1093,9 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus
 bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &from)
 {
 	// Make sure it's an immediately processed TransportLayer message
-	if (packet.header.type != 1)
+	if (packet.header.type != 1) {
 		return false;				// Abort. Non immediate transport message
+	}
 
 	// Create shorthand reference to known packet type
 	TransportLayerMessage &tlMessage = packet.tlMessage;
@@ -1082,11 +1109,13 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 		{
 		case tlcJoinRequest:		// 0: JoinRequest
 			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(JoinRequest))
+			if (packet.header.sizeOfPayload != sizeof(JoinRequest)) {
 				return true;		// Packet handled (discard)
+			}
 			// Check the session identifier
-			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier)
+			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
 				return true;		// Packet handled (discard)
+			}
 
 			returnPortNum = tlMessage.joinRequest.returnPortNum;
 
@@ -1126,18 +1155,21 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			return true;			// Packet handled
 		case tlcHostedGameSearchQuery:		// 7: HostedGameSearchQuery  [Custom format]
 			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchQuery))
+			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchQuery)) {
 				return true;		// Packet handled (discard)
+			}
 // **DEBUG**
 logFile << "Game Search Query: ";
 DumpAddr(from);
 logFile << std::endl;
 			// Verify Game Identifier
-			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier)
+			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
 				return true;		// Packet handled (discard)
+			}
 			// Verify password
-			if (strncmp(tlMessage.searchQuery.password, password, sizeof(password)) != 0)
+			if (strncmp(tlMessage.searchQuery.password, password, sizeof(password)) != 0) {
 				return true;		// Packet handled (discard)
+			}
 
 			// Create a reply
 			packet.header.sizeOfPayload = sizeof(HostedGameSearchReply);
@@ -1152,11 +1184,13 @@ logFile << std::endl;
 			return true;			// Packet handled
 		case tlcJoinHelpRequest:
 			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest))
+			if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest)) {
 				return true;		// Packet handled (discard)
+			}
 			// Check the session identifier
-			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier)
+			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
 				return true;		// Packet handled (discard)
+			}
 
 			// Log JoinHelpRequest parameters
 			logFile << "JoinHelpRequest: Client: ";
@@ -1164,8 +1198,9 @@ logFile << std::endl;
 			logFile << "  Return Port: " << tlMessage.joinHelpRequest.returnPortNum << std::endl;
 			// Send something to create router mappings
 			tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
-			if (tlMessage.joinHelpRequest.returnPortNum != 0)
+			if (tlMessage.joinHelpRequest.returnPortNum != 0) {
 				tlMessage.joinHelpRequest.clientAddr.sin_port = htons(tlMessage.joinHelpRequest.returnPortNum);
+			}
 			sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
 
 			break;
@@ -1185,8 +1220,9 @@ logFile << "GameStarting" << std::endl;
 			break;
 		case tlcSetPlayersList:
 			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(PlayersList))
+			if (packet.header.sizeOfPayload != sizeof(PlayersList)) {
 				return true;		// Packet handled (discard)
+			}
 
 			if (peerInfo[playerNetID & 7].status == 2)
 			{
@@ -1238,8 +1274,9 @@ DumpAddrList(peerInfo);
 
 		case tlcUpdateStatus:
 			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(StatusUpdate))
+			if (packet.header.sizeOfPayload != sizeof(StatusUpdate)) {
 				return true;		// Packet handled (discard)
+			}
 
 			// Cache which peerInfo struct needs to be updated
 			PeerInfo* updatedPeerInfo;
@@ -1253,8 +1290,9 @@ DumpAddrList(peerInfo);
 			}
 
 			// Update the Player Status
-			if (updatedPeerInfo->status <= tlMessage.statusUpdate.newStatus)
+			if (updatedPeerInfo->status <= tlMessage.statusUpdate.newStatus) {
 				updatedPeerInfo->status = tlMessage.statusUpdate.newStatus;
+			}
 
 			return true;			// Packet handled
 
@@ -1264,12 +1302,15 @@ logFile << "Hosted Game Search Reply: ";
 DumpAddr(from);
 logFile << std::endl;
 			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply))
+			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
 				return true;		// Packet handled (discard)
+			}
+			
 			// Check the game identifier
-			if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier)
+			if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier) {
 				return true;		// Packet handled (discard)
-
+			}
+			
 			// Update the internal address if needed
 			if (packet.tlMessage.searchReply.hostAddress.sin_addr.s_addr == 0)
 			{
@@ -1298,8 +1339,9 @@ bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 	sockaddr_in gameServerAddr;
 	int errorCode = GetGameServerAddress(gameServerAddr);
 	// Check for errors
-	if (errorCode == 0)
+	if (errorCode == 0) {
 		return false;
+	}
 
 	// Fill in the packet header
 	Packet packet;
@@ -1336,10 +1378,11 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddr)
 
 	// Convert the address string to a sockaddr_in struct
 	int errorCode = GetHostAddress(addrString, gameServerAddr);
-	if (errorCode == -1)
+	if (errorCode == -1) {
 		return true;		// Success
-	else
-		return false;		// Error
+	}
+	
+	return false;		// Error
 }
 
 void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressString, int maxLength)
@@ -1356,8 +1399,9 @@ void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 	int sourcePlayerNetId = packet.header.sourcePlayerNetID;
 	int sourcePlayerIndex = sourcePlayerNetId & 7;
 
-	if (sourcePlayerNetId == 0)
+	if (sourcePlayerNetId == 0) {
 		return;		// Don't try to update if they don't explicitly say who it's from
+	}
 
 	if (bGameStarted)
 	{

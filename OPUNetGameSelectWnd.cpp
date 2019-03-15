@@ -372,8 +372,9 @@ void OPUNetGameSelectWnd::OnDestroy()
 	char keyValue[MaxServerAddressLen];
 
 	// Kill the timer
-	if (timer != 0)
+	if (timer != 0) {
 		KillTimer(this->hWnd, timer);
+	}
 
 	// Save the PlayerName
 	GetDlgItemText(this->hWnd, IDC_PlayerName, keyValue, sizeof(keyValue));
@@ -410,8 +411,9 @@ void OPUNetGameSelectWnd::OnTimer()
 	Packet packet;
 
 	// Make sure a network object exists
-	if (opuNetTransportLayer == nullptr)
-		return;			// Abort
+	if (opuNetTransportLayer == nullptr) {
+		return;
+	}
 
 	// Periodically search for games
 	searchTickCount++;
@@ -495,19 +497,22 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 	LVITEM item;
 
 	// Make sure the packet is of the correct format
-	if (packet.header.type != 1)
-		return;			// Abort
+	if (packet.header.type != 1) {
+		return;
+	}
 
 	// Determine which message type was received
 	switch(packet.tlMessage.tlHeader.commandType)
 	{
 	case tlcHostedGameSearchReply:		// [Custom format]
 		// Verify packet size
-		if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply))
+		if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
 			return;						// Discard packet
+		}
 		// Check the game identifier
-		if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier)
+		if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier) {
 			return;						// Discard Packet
+		}
 
 		// Check if we already know about this game
 		// ----------------------------------------
@@ -571,8 +576,9 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 	case tlcJoinGranted:		// [Fall through]
 	case tlcJoinRefused:
 		// Verify packet size
-		if (packet.header.sizeOfPayload != sizeof(JoinReply))
+		if (packet.header.sizeOfPayload != sizeof(JoinReply)) {
 			return;						// Discard packet
+		}
 		// Make sure we've requested to join a game
 		if (joiningGame == nullptr)
 		{
@@ -610,8 +616,9 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		return;							// Packet handled
 	case tlcEchoExternalAddress:
 		// Verify packet size
-		if (packet.header.sizeOfPayload != sizeof(EchoExternalAddress))
+		if (packet.header.sizeOfPayload != sizeof(EchoExternalAddress)) {
 			return;						// Discard packet
+		}
 		// Verify packet came from game server **TODO**
 
 		// Check where the information came from
@@ -692,8 +699,9 @@ void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameI
 	// Game Type
 	item.iSubItem = 1;
 	i = -(hostedGameInfo->createGameInfo.startupFlags.missionType);
-	if ((i < 0) || (i > 8))
+	if ((i < 0) || (i > 8)) {
 		i = 0;
+	}
 	scr_snprintf(buffer, sizeof(buffer), "%s", GameTypeName[i]);
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_SETITEM, 0, (LPARAM)&item);
 	// Num Players
@@ -815,10 +823,12 @@ void OPUNetGameSelectWnd::OnClickJoin()
 	// Get the selected game to join
 	item.iItem = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETSELECTIONMARK, 0, 0);
 	// Get the item data
-	if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&item))
+	if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&item)) {
 		joiningGame = (HostedGameInfo*)item.lParam;	// Retrieve the HostedGameListItem pointer
-	else
+	}
+	else {
 		joiningGame = nullptr;		// Clear joining game
+	}
 
 	// Check if we have a bad pointer
 	if (joiningGame == nullptr)
