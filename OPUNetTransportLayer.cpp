@@ -304,7 +304,7 @@ DumpAddr(game.address);
 logFile << std::endl << "  Session ID: ";
 DumpGuid(packet.tlMessage.joinRequest.sessionIdentifier);
 logFile << std::endl;
-//DumpPacket(&packet);
+//DumpPacket(packet);
 
 	sockaddr_in gameServerAddr;
 	// Check if a Game Server is set

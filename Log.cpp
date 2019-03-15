@@ -55,12 +55,12 @@ void DumpGuid(GUID &guid)
 	logFile << "}" << std::dec;
 }
 
-void DumpPacket(Packet* packet)
+void DumpPacket(Packet& packet)
 {
-	logFile << " Source: " << packet->header.sourcePlayerNetID << std::endl;
-	logFile << " Dest  : " << packet->header.destPlayerNetID << std::endl;
-	logFile << " Size  : " << static_cast<unsigned int>(packet->header.sizeOfPayload) << std::endl;
-	logFile << " type  : " << static_cast<unsigned int>(packet->header.type) << std::endl;
-	logFile << " checksum : " << std::hex << packet->Checksum() << std::dec << std::endl;
-	logFile << " commandType : " << packet->tlMessage.tlHeader.commandType << std::endl;
+	logFile << " Source: " << packet.header.sourcePlayerNetID << std::endl;
+	logFile << " Dest  : " << packet.header.destPlayerNetID << std::endl;
+	logFile << " Size  : " << static_cast<unsigned int>(packet.header.sizeOfPayload) << std::endl;
+	logFile << " type  : " << static_cast<unsigned int>(packet.header.type) << std::endl;
+	logFile << " checksum : " << std::hex << packet.Checksum() << std::dec << std::endl;
+	logFile << " commandType : " << packet.tlMessage.tlHeader.commandType << std::endl;
 }

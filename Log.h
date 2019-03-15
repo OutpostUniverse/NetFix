@@ -14,4 +14,4 @@ void DumpAddr(sockaddr_in &addr);
 void DumpPlayerNetID(int playerNetID);
 void DumpAddrList(PeerInfo* peerInfo);
 void DumpGuid(GUID &guid);
-void DumpPacket(Packet* packet);
+void DumpPacket(Packet& packet);
