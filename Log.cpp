@@ -35,9 +35,7 @@ void DumpPlayerNetID(int playerNetID)
 
 void DumpAddrList(PeerInfo* peerInfo)
 {
-	int i;
-
-	for (i = 0; i < MaxRemotePlayers; i++)
+	for (int i = 0; i < MaxRemotePlayers; ++i)
 	{
 		logFile << " " << i << ") {" << peerInfo[i].status << ", ";
 		//DumpIP(peerInfo[i].address.sin_addr.s_addr);
@@ -50,11 +48,8 @@ void DumpAddrList(PeerInfo* peerInfo)
 
 void DumpGuid(GUID &guid)
 {
-	int i;
-
 	logFile << std::hex << "{" << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3 << "-";
-	for (i = 0; i < 8; i++)
-	{
+	for (int i = 0; i < 8; ++i)	{
 		logFile << (int)guid.Data4[i];
 	}
 	logFile << "}" << std::dec;
