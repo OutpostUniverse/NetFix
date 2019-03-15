@@ -1,4 +1,6 @@
 #include "Log.h"
+#include "OPUNetTransportLayer.h"
+#include <winsock2.h>
 #include <iostream>
 #include <fstream>
 #include <objbase.h>
@@ -55,7 +57,7 @@ void DumpGuid(GUID &guid)
 	logFile << "}" << std::dec;
 }
 
-void DumpPacket(Packet& packet)
+void DumpPacket(OP2Internal::Packet& packet)
 {
 	logFile << " Source: " << packet.header.sourcePlayerNetID << std::endl;
 	logFile << " Dest  : " << packet.header.destPlayerNetID << std::endl;
