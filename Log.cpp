@@ -4,51 +4,62 @@
 #include <objbase.h>
 #include <iostream>
 #include <fstream>
-
+#include <sstream>
+#include <string>
 
 // Global Debug file
 std::ofstream logFile("log.txt");
 
+std::string FormatIP4Address(unsigned long ip);
+std::string FormatPlayerNetID(int playerNetID);
 
 void Log(char* string)
 {
 	logFile << string << std::endl;
 }
 
-void DumpIP(unsigned long ip)
+std::string FormatIP4Address(unsigned long ip)
 {
-	logFile << (ip & 255) 
-		<< "." << ((ip >> 8) & 255) 
-		<< "." << ((ip >> 16) & 255) 
-		<< "." << ((ip >> 24) & 255);
+	std::stringstream ss;
+
+	ss << (ip & 255) << "." 
+		<< ((ip >> 8) & 255) << "." 
+		<< ((ip >> 16) & 255) << "." 
+		<< ((ip >> 24) & 255);
+
+	return ss.str();
 }
 
-void DumpAddr(sockaddr_in &addr)
+void LogAddress(sockaddr_in &addr)
 {
 	logFile << "(AF:" << addr.sin_family << ") ";
-	DumpIP(addr.sin_addr.s_addr);
+	logFile << FormatIP4Address(addr.sin_addr.s_addr);
 	logFile << ":" << ntohs(addr.sin_port);
 }
 
-void DumpPlayerNetID(int playerNetID)
+std::string FormatPlayerNetID(int playerNetID)
 {
-	logFile << "[" << (playerNetID & ~7) << "." << (playerNetID & 7) << "]";
+	std::stringstream ss;
+
+	ss << "[" << (playerNetID & ~7) << "." << (playerNetID & 7) << "]";
+
+	return ss.str();
 }
 
-void DumpAddrList(PeerInfo* peerInfo)
+void LogAddressList(PeerInfo* peerInfo)
 {
 	for (int i = 0; i < MaxRemotePlayers; ++i)
 	{
 		logFile << " " << i << ") {" << peerInfo[i].status << ", ";
-		//DumpIP(peerInfo[i].address.sin_addr.s_addr);
-		DumpAddr(peerInfo[i].address);
+		//logFile << FormatIP4Address(peerInfo[i].address.sin_addr.s_addr);
+		LogAddress(peerInfo[i].address);
 		logFile << ", ";
-		DumpPlayerNetID(peerInfo[i].playerNetID);
+		logFile << FormatPlayerNetID(peerInfo[i].playerNetID);
 		logFile << "}" << std::endl;
 	}
 }
 
-void DumpGuid(GUID &guid)
+void LogGuid(GUID &guid)
 {
 	logFile << std::hex << "{" << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3 << "-";
 	for (int i = 0; i < 8; ++i)	{
@@ -57,7 +68,7 @@ void DumpGuid(GUID &guid)
 	logFile << "}" << std::dec;
 }
 
-void DumpPacket(OP2Internal::Packet& packet)
+void LogPacket(OP2Internal::Packet& packet)
 {
 	logFile << " Source: " << packet.header.sourcePlayerNetID << std::endl;
 	logFile << " Dest  : " << packet.header.destPlayerNetID << std::endl;
