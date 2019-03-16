@@ -6,7 +6,7 @@ typedef _GUID GUID;
 
 struct PeerInfo;
 namespace OP2Internal {
-	class Packet;
+	struct Packet;
 };
 
 
