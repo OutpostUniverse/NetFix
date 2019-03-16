@@ -15,9 +15,8 @@ extern std::ofstream logFile;
 
 
 void Log(char* string);
-void DumpIP(unsigned long ip);
-void DumpAddr(sockaddr_in &addr);
-void DumpPlayerNetID(int playerNetID);
-void DumpAddrList(PeerInfo* peerInfo);
-void DumpGuid(GUID &guid);
-void DumpPacket(OP2Internal::Packet& packet);
+
+void LogAddress(sockaddr_in &addr);
+void LogAddressList(PeerInfo* peerInfo);
+void LogGuid(GUID &guid);
+void LogPacket(OP2Internal::Packet& packet);
