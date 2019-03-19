@@ -13,9 +13,12 @@ class OPUNetGameProtocol : public NetGameProtocol
 {
 public:
 	// Virtual member functions
-	virtual bool IsEnabled() override {return 1;};
-	virtual bool DoStart() override
-	{
+
+	virtual bool IsEnabled() override {
+		return 1;
+	};
+
+	virtual bool DoStart() override {
 		// Construct game select window
 		OPUNetGameSelectWnd opuNetGameSelectWnd;
 
@@ -29,7 +32,13 @@ public:
 		// Return if the game was cancelled (or should be starting)
 		return (retVal != 0);
 	};
-	virtual bool F1() override {return 1;};
-	virtual const char* GetProtocolName() override {return "OPU.Net";};
+
+	virtual bool F1() override {
+		return 1;
+	};
+
+	virtual const char* GetProtocolName() override {
+		return "OPU.Net";
+	};
 };
 
