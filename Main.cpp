@@ -74,12 +74,17 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 
 std::string GetOutpost2Directory()
 {
-	char buffer[MAX_PATH];
-	std::size_t bufferSize = GetGameDir_s(buffer, MAX_PATH);
+	std::string buffer;
 
-	if (bufferSize != 0) {
-		throw std::runtime_error("Absolute directory to Outpost 2 must be less than " + MAX_PATH);
-	}
+	// Pass size of 0 to get exact buffer size
+	std::size_t bufferSize = GetGameDir_s(&buffer[0], 0);
 
-	return std::string(buffer);
+	buffer.resize(bufferSize);
+	GetGameDir_s(&buffer[0], bufferSize);
+
+	// String concatinations (string1 + string2) will not provide expected results
+	// if the std::string explicity has a null terminator
+	buffer.erase(std::find(buffer.begin(), buffer.end(), '\0'), buffer.end());
+
+	return buffer;
 }
