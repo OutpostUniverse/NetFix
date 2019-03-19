@@ -2,10 +2,10 @@
 #include "OPUNetTransportLayer.h"
 #include <winsock2.h>
 #include <objbase.h>
+#include <windows.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
 
 // Global Debug file
 std::ofstream logFile("log.txt");
@@ -16,6 +16,12 @@ std::string FormatPlayerNetID(int playerNetID);
 void Log(const char* string)
 {
 	logFile << string << std::endl;
+}
+
+void LogWithModalDialog(const std::string& message)
+{
+	MessageBox(nullptr, message.c_str(), "NetFixClient Error", 0);
+	Log(message.c_str());
 }
 
 std::string FormatIP4Address(unsigned long ip)

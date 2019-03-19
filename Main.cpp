@@ -1,3 +1,4 @@
+#include "Log.h"
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 
@@ -41,14 +42,14 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	// Sanity check the DLL load address
 	if (hInstance != desiredLoadAddress)
 	{
-		MessageBox(nullptr, "DLL loaded to bad address", "NetFix Load Failed", 0);
+		LogWithModalDialog("NetFixClient DLL loaded to incorrect address");
 		return;
 	}
 	// Sanity check the Outpost2.exe load address
 	void* op2ModuleBase = GetModuleHandle("Outpost2.exe");
 	if (ExpectedOutpost2Addr != (int)op2ModuleBase)
 	{
-		MessageBox(nullptr, "Outpost2.exe module not loaded at usual address", "NetFix Load Failed", 0);
+		LogWithModalDialog("Outpost2.exe module not loaded at usual address");
 		return;
 	}
 
