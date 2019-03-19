@@ -13,7 +13,7 @@ std::ofstream logFile("log.txt");
 std::string FormatIP4Address(unsigned long ip);
 std::string FormatPlayerNetID(int playerNetID);
 
-void Log(char* string)
+void Log(const char* string)
 {
 	logFile << string << std::endl;
 }
