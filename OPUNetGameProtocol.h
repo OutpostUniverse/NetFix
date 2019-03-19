@@ -12,20 +12,17 @@ extern HINSTANCE hInstance;
 class OPUNetGameProtocol : public NetGameProtocol
 {
 public:
-	// Member variables
-	OPUNetGameSelectWnd opuNetGameSelectWnd;
-
-public:
 	// Virtual member functions
 	virtual bool IsEnabled() override {return 1;};
 	virtual bool DoStart() override
 	{
-		int retVal;
+		// Construct game select window
+		OPUNetGameSelectWnd opuNetGameSelectWnd;
 
 		// Enable Skinning
 		app.mainWnd->PreCreateDlg();
 		// Create the multiplayer setup dialog
-		retVal = opuNetGameSelectWnd.DoModal(MAKEINTRESOURCE(IDD_MultiSetupDialog), hInstance);
+		int retVal = opuNetGameSelectWnd.DoModal(MAKEINTRESOURCE(IDD_MultiSetupDialog), hInstance);
 		// Disable skinning
 		app.mainWnd->PostCreateDlg();
 
