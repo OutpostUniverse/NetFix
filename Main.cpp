@@ -21,6 +21,7 @@ const int ExpectedOutpost2Addr = 0x00400000;
 // Provide error in modal dialog box for user and then log message
 void LogWithModalDialog(const std::string& message);
 
+
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
 	switch (ul_reason_for_call)
@@ -55,8 +56,6 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 		return;
 	}
 
-
-
 	// Store the .ini section name
 	strncpy(sectionName, iniSectionName, sizeof(sectionName));
 
@@ -67,6 +66,7 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
 }
+
 
 void LogWithModalDialog(const std::string& message)
 {
