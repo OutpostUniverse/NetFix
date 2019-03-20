@@ -5,6 +5,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string>
+
 
 // Global Debug file
 std::ofstream logFile("log.txt");
