@@ -70,6 +70,6 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 
 void LogWithModalDialog(const std::string& message)
 {
-	MessageBox(nullptr, message.c_str(), "NetFixClient Error", 0);
 	Log(message.c_str());
+	MessageBox(nullptr, message.c_str(), "NetFixClient Error", 0);
 }
