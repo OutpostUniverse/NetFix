@@ -14,7 +14,7 @@ namespace OP2Internal {
 extern std::ofstream logFile;
 
 
-void Log(char* string);
+void Log(const char* string);
 
 void LogAddress(sockaddr_in &addr);
 void LogAddressList(PeerInfo* peerInfo);
