@@ -7,7 +7,7 @@
 using namespace OP2Internal;
 
 #include "OPUNetGameProtocol.h"
-
+#include <string>
 #include <fstream>
 extern std::ofstream logFile;
 
@@ -18,6 +18,8 @@ char sectionName[64] = "";				// Ini file section name, for loading additional p
 const int DefaultProtocolIndex = 4;		// "SIGS"
 const int ExpectedOutpost2Addr = 0x00400000;
 
+// Provide error in modal dialog box for user and then log message
+void LogWithModalDialog(const std::string& message);
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -39,13 +41,13 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 
 extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 {
-	// Sanity check the DLL load address
+	// Check the NetFixClient DLL load address
 	if (hInstance != desiredLoadAddress)
 	{
 		LogWithModalDialog("NetFixClient DLL loaded to incorrect address");
 		return;
 	}
-	// Sanity check the Outpost2.exe load address
+	// Check the Outpost2.exe load address
 	void* op2ModuleBase = GetModuleHandle("Outpost2.exe");
 	if (ExpectedOutpost2Addr != (int)op2ModuleBase)
 	{
@@ -64,4 +66,10 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << std::endl;
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
+}
+
+void LogWithModalDialog(const std::string& message)
+{
+	MessageBox(nullptr, message.c_str(), "NetFixClient Error", 0);
+	Log(message.c_str());
 }
