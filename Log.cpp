@@ -60,8 +60,7 @@ void LogAddressList(PeerInfo* peerInfo)
 	for (int i = 0; i < MaxRemotePlayers; ++i)
 	{
 		logFile << " " << i << ") {" << peerInfo[i].status << ", ";
-		//logFile << FormatIP4Address(peerInfo[i].address.sin_addr.s_addr);
-		LogAddress(peerInfo[i].address);
+		logFile << FormatAddress(peerInfo[i].address);
 		logFile << ", ";
 		logFile << FormatPlayerNetID(peerInfo[i].playerNetID);
 		logFile << "}" << std::endl;
