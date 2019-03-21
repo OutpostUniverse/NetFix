@@ -15,6 +15,7 @@
 
 #include "OPUNetGameSelectWnd.h"
 #include "OPUNetTransportLayer.h"
+#include "Log.h"
 #include "resource.h"
 
 
@@ -643,7 +644,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 
 		// Build new net info text string
 		char text[128];
-		_snprintf(text, sizeof(text), "External IP: %d.%d.%d.%d:%d", (externalIp.s_addr & 255), (externalIp.s_addr >> 8 & 255), (externalIp.s_addr >> 16 & 255), (externalIp.s_addr >> 24 & 255), externalPort);
+		_snprintf(text, sizeof(text), "External IP: %s:%d", FormatIP4Address(externalIp.s_addr).c_str(), externalPort);
 		// Check if internal address received
 		if (bReceivedInternal)
 		{
