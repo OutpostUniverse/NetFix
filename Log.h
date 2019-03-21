@@ -14,6 +14,10 @@ namespace OP2Internal {
 extern std::ofstream logFile;
 
 
+std::string FormatIP4Address(unsigned long ip);
+std::string FormatPlayerNetID(int playerNetID);
+
+
 void Log(const char* string);
 
 void LogAddress(sockaddr_in &addr);
