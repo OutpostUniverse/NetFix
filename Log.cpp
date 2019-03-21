@@ -35,6 +35,22 @@ std::string FormatIP4Address(unsigned long ip)
 	return ss.str();
 }
 
+std::string FormatPlayerList(PeerInfo* peerInfo)
+{
+	std::stringstream ss;
+
+	for (int i = 0; i < MaxRemotePlayers; ++i)
+	{
+		ss << " " << i << ") {" << peerInfo[i].status << ", ";
+		ss << FormatAddress(peerInfo[i].address);
+		ss << ", ";
+		ss << FormatPlayerNetID(peerInfo[i].playerNetID);
+		ss << "}" << std::endl;
+	}
+
+	return ss.str();
+}
+
 std::string FormatPlayerNetID(int playerNetID)
 {
 	std::stringstream ss;
@@ -57,14 +73,7 @@ void LogAddress(sockaddr_in &address)
 
 void LogAddressList(PeerInfo* peerInfo)
 {
-	for (int i = 0; i < MaxRemotePlayers; ++i)
-	{
-		logFile << " " << i << ") {" << peerInfo[i].status << ", ";
-		logFile << FormatAddress(peerInfo[i].address);
-		logFile << ", ";
-		logFile << FormatPlayerNetID(peerInfo[i].playerNetID);
-		logFile << "}" << std::endl;
-	}
+	logFile << FormatPlayerList(peerInfo); // Note: std::endl already included
 }
 
 void LogGuid(GUID &guid)
