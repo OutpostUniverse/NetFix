@@ -12,11 +12,6 @@
 std::ofstream logFile("log.txt");
 
 
-void Log(const char* string)
-{
-	logFile << string << std::endl;
-}
-
 std::string FormatIP4Address(unsigned long ip)
 {
 	std::stringstream ss;
@@ -29,13 +24,6 @@ std::string FormatIP4Address(unsigned long ip)
 	return ss.str();
 }
 
-void LogAddress(sockaddr_in &addr)
-{
-	logFile << "(AF:" << addr.sin_family << ") ";
-	logFile << FormatIP4Address(addr.sin_addr.s_addr);
-	logFile << ":" << ntohs(addr.sin_port);
-}
-
 std::string FormatPlayerNetID(int playerNetID)
 {
 	std::stringstream ss;
@@ -43,6 +31,19 @@ std::string FormatPlayerNetID(int playerNetID)
 	ss << "[" << (playerNetID & ~7) << "." << (playerNetID & 7) << "]";
 
 	return ss.str();
+}
+
+
+void Log(const char* string)
+{
+	logFile << string << std::endl;
+}
+
+void LogAddress(sockaddr_in &addr)
+{
+	logFile << "(AF:" << addr.sin_family << ") ";
+	logFile << FormatIP4Address(addr.sin_addr.s_addr);
+	logFile << ":" << ntohs(addr.sin_port);
 }
 
 void LogAddressList(PeerInfo* peerInfo)
