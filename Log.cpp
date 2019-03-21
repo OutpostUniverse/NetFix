@@ -73,6 +73,20 @@ std::string FormatGuid(GUID& guid)
 	return ss.str();
 }
 
+std::string FormatPacket(OP2Internal::Packet& packet)
+{
+	std::stringstream ss;
+
+	ss << " Source: " << packet.header.sourcePlayerNetID << std::endl;
+	ss << " Dest  : " << packet.header.destPlayerNetID << std::endl;
+	ss << " Size  : " << static_cast<unsigned int>(packet.header.sizeOfPayload) << std::endl;
+	ss << " type  : " << static_cast<unsigned int>(packet.header.type) << std::endl;
+	ss << " checksum : " << std::hex << packet.Checksum() << std::dec << std::endl;
+	ss << " commandType : " << packet.tlMessage.tlHeader.commandType << std::endl;
+
+	return ss.str();
+}
+
 
 void Log(const char* string)
 {
@@ -96,10 +110,5 @@ void LogGuid(GUID &guid)
 
 void LogPacket(OP2Internal::Packet& packet)
 {
-	logFile << " Source: " << packet.header.sourcePlayerNetID << std::endl;
-	logFile << " Dest  : " << packet.header.destPlayerNetID << std::endl;
-	logFile << " Size  : " << static_cast<unsigned int>(packet.header.sizeOfPayload) << std::endl;
-	logFile << " type  : " << static_cast<unsigned int>(packet.header.type) << std::endl;
-	logFile << " checksum : " << std::hex << packet.Checksum() << std::dec << std::endl;
-	logFile << " commandType : " << packet.tlMessage.tlHeader.commandType << std::endl;
+	logFile << FormatPacket(packet); // Note: std::endl already included
 }
