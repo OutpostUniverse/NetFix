@@ -12,7 +12,7 @@ OBJDIR := $(BUILDDIR)/obj
 DEPDIR := $(BUILDDIR)/obj
 OUTPUT := NetFix.dll
 
-CPPFLAGS := -I OP2Internal/ -I op2ext/
+CPPFLAGS := -I OP2Internal/src/ -I op2ext/
 CXXFLAGS := -std=c++17 -g -Wall -Wno-unknown-pragmas -Wzero-as-null-pointer-constant
 LDFLAGS := -shared -LOP2Internal/
 LDLIBS := -lOP2Internal -lws2_32
