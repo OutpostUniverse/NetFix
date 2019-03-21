@@ -21,11 +21,12 @@ public:
 	virtual bool DoStart() override {
 		// Construct game select window
 		OPUNetGameSelectWnd opuNetGameSelectWnd;
+		IDlgWnd& protocolMainScreen = opuNetGameSelectWnd;
 
 		// Enable Skinning
 		app.mainWnd->PreCreateDlg();
 		// Create the multiplayer setup dialog
-		int retVal = opuNetGameSelectWnd.DoModal(MAKEINTRESOURCE(IDD_MultiSetupDialog), hInstance);
+		int retVal = protocolMainScreen.DoModal(MAKEINTRESOURCE(IDD_MultiSetupDialog), hInstance);
 		// Disable skinning
 		app.mainWnd->PostCreateDlg();
 
