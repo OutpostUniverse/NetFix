@@ -60,6 +60,19 @@ std::string FormatPlayerNetID(int playerNetID)
 	return ss.str();
 }
 
+std::string FormatGuid(GUID& guid)
+{
+	std::stringstream ss;
+
+	ss << std::hex << "{" << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3 << "-";
+	for (int i = 0; i < 8; ++i)	{
+		ss << (int)guid.Data4[i];
+	}
+	ss << "}" << std::dec;
+
+	return ss.str();
+}
+
 
 void Log(const char* string)
 {
@@ -78,11 +91,7 @@ void LogAddressList(PeerInfo* peerInfo)
 
 void LogGuid(GUID &guid)
 {
-	logFile << std::hex << "{" << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3 << "-";
-	for (int i = 0; i < 8; ++i)	{
-		logFile << (int)guid.Data4[i];
-	}
-	logFile << "}" << std::dec;
+	logFile << FormatGuid(guid); // Note: No std::endl;
 }
 
 void LogPacket(OP2Internal::Packet& packet)
