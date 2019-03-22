@@ -57,7 +57,7 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	}
 
 	// Store the .ini section name
-	strncpy(sectionName, iniSectionName, sizeof(sectionName));
+	strncpy_s(sectionName, iniSectionName, sizeof(sectionName));
 
 	int protocolIndex;
 	// Get button index to replace functionality of

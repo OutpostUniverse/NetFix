@@ -643,7 +643,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 
 		// Build new net info text string
 		char text[128];
-		_snprintf(text, sizeof(text), "External IP: %d.%d.%d.%d:%d", (externalIp.s_addr & 255), (externalIp.s_addr >> 8 & 255), (externalIp.s_addr >> 16 & 255), (externalIp.s_addr >> 24 & 255), externalPort);
+		_snprintf_s(text, sizeof(text), "External IP: %d.%d.%d.%d:%d", (externalIp.s_addr & 255), (externalIp.s_addr >> 8 & 255), (externalIp.s_addr >> 16 & 255), (externalIp.s_addr >> 24 & 255), externalPort);
 		// Check if internal address received
 		if (bReceivedInternal)
 		{
@@ -652,7 +652,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		}
 		if (bTwoExternal)
 		{
-			strncat(text, "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.", sizeof(text));
+			strncat_s(text, "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.", sizeof(text));
 		}
 		// Update net info text
 		SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)&text);
