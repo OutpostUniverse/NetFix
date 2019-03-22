@@ -129,7 +129,7 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\op2ext\op2ext.vcxproj">
+    <ProjectReference Include="op2ext\op2ext.vcxproj">
       <Project>{6de3610c-c9ee-4fd3-bbd7-66382c16fde9}</Project>
     </ProjectReference>
     <ProjectReference Include="OP2Internal\src\OP2Internal.vcxproj">
