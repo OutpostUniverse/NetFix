@@ -653,7 +653,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		}
 		if (bTwoExternal)
 		{
-			std::strncat(text, "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.", sizeof(text));
+			strncat(text, "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.", sizeof(text));
 		}
 		// Update net info text
 		SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)&text);
