@@ -1,4 +1,3 @@
-#include "Log.h"
 #include "op2ext.h"
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
@@ -11,6 +10,8 @@ using namespace OP2Internal;
 #include <fstream>
 #include <cstddef>
 #include <string>
+#include <algorithm>
+
 extern std::ofstream logFile;
 
 
