@@ -12,6 +12,7 @@
 #include <objbase.h>
 #include <shlobj.h>
 #include <stdio.h>
+#include <cstring>
 
 #include "OPUNetGameSelectWnd.h"
 #include "OPUNetTransportLayer.h"
@@ -652,7 +653,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		}
 		if (bTwoExternal)
 		{
-			strncat_s(text, "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.", sizeof(text));
+			std::strncat(text, "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.", sizeof(text));
 		}
 		// Update net info text
 		SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)&text);
