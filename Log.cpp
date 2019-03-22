@@ -93,7 +93,7 @@ void Log(const char* string)
 	logFile << string << std::endl;
 }
 
-void LogAddress(const sockaddr_in &address)
+void LogAddress(const sockaddr_in& address)
 {
 	logFile << FormatAddress(address); // Note: No std::endl
 }
@@ -103,7 +103,7 @@ void LogAddressList(const PeerInfo* peerInfo)
 	logFile << FormatPlayerList(peerInfo); // Note: std::endl already included
 }
 
-void LogGuid(const GUID &guid)
+void LogGuid(const GUID& guid)
 {
 	logFile << FormatGuid(guid); // Note: No std::endl;
 }
