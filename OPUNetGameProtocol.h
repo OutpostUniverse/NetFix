@@ -21,11 +21,12 @@ public:
 	virtual bool DoStart() override {
 		// Construct game select window
 		OPUNetGameSelectWnd opuNetGameSelectWnd;
+		// Use a base class reference to force indirect calls through the virtual function table
 		IDlgWnd& protocolMainScreen = opuNetGameSelectWnd;
 
 		// Enable Skinning
 		app.mainWnd->PreCreateDlg();
-		// Create the multiplayer setup dialog
+		// Create the multiplayer setup dialog (this must go through the virtual function table)
 		int retVal = protocolMainScreen.DoModal(MAKEINTRESOURCE(IDD_MultiSetupDialog), hInstance);
 		// Disable skinning
 		app.mainWnd->PostCreateDlg();
