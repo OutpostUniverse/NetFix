@@ -12,6 +12,7 @@
 #include <objbase.h>
 #include <shlobj.h>
 #include <stdio.h>
+#include <string>
 
 #include "OPUNetGameSelectWnd.h"
 #include "OPUNetTransportLayer.h"
@@ -642,21 +643,23 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 			externalPort = ntohs(packet.tlMessage.echoExternalAddress.addr.sin_port);
 		}
 
-		// Build new net info text string
-		char text[128];
-		_snprintf(text, sizeof(text), "External IP: %s:%d", FormatIP4Address(externalIp.s_addr).c_str(), externalPort);
-		// Check if internal address received
-		if (bReceivedInternal)
+		// Confine scope of `std::string text` to within a single switch case
 		{
-			// Not quite true, since internal port might be random (no hosting, but possibly still open)
-			//strncat(text, " (Direct Host Capable)", sizeof(text));
+			// Build new net info text string
+			std::string text = "External IP: " + FormatIP4Address(externalIp.s_addr) + ":" + std::to_string(externalPort);
+			// Check if internal address received
+			if (bReceivedInternal)
+			{
+				// Not quite true, since internal port might be random (no hosting, but possibly still open)
+				//text += " (Direct Host Capable)";
+			}
+			if (bTwoExternal)
+			{
+				text += "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.";
+			}
+			// Update net info text
+			SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)text.c_str());
 		}
-		if (bTwoExternal)
-		{
-			strncat(text, "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.", sizeof(text));
-		}
-		// Update net info text
-		SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)&text);
 
 		return;							// Packet handled
 	default:  // Silence warnings about unused enumeration value in switch
