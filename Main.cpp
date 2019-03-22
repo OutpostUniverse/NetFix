@@ -1,3 +1,4 @@
+#include "Log.h"
 #include "op2ext.h"
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
@@ -7,7 +8,6 @@
 using namespace OP2Internal;
 
 #include "OPUNetGameProtocol.h"
-
 #include <fstream>
 #include <cstddef>
 #include <string>
@@ -19,6 +19,10 @@ OPUNetGameProtocol opuNetGameProtocol;
 char sectionName[64] = "";				// Ini file section name, for loading additional parameters
 const int DefaultProtocolIndex = 4;		// "SIGS"
 const int ExpectedOutpost2Addr = 0x00400000;
+
+// Provide error in modal dialog box for user and then log message
+void LogWithModalDialog(const std::string& message);
+std::string GetOutpost2Directory();
 
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
@@ -39,25 +43,22 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     return TRUE;
 }
 
-std::string GetOutpost2Directory();
 
 extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 {
-	// Sanity check the DLL load address
+	// Check the NetFixClient DLL load address
 	if (hInstance != desiredLoadAddress)
 	{
-		MessageBox(nullptr, "DLL loaded to bad address", "NetFix Load Failed", 0);
+		LogWithModalDialog("NetFixClient DLL loaded to incorrect address");
 		return;
 	}
-	// Sanity check the Outpost2.exe load address
+	// Check the Outpost2.exe load address
 	void* op2ModuleBase = GetModuleHandle("Outpost2.exe");
 	if (ExpectedOutpost2Addr != (int)op2ModuleBase)
 	{
-		MessageBox(nullptr, "Outpost2.exe module not loaded at usual address", "NetFix Load Failed", 0);
+		LogWithModalDialog("Outpost2.exe module not loaded at usual address");
 		return;
 	}
-
-
 
 	// Store the .ini section name
 	strncpy(sectionName, iniSectionName, sizeof(sectionName));
@@ -70,6 +71,13 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << std::endl;
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
+}
+
+
+void LogWithModalDialog(const std::string& message)
+{
+	Log(message.c_str());
+	MessageBox(nullptr, message.c_str(), "NetFixClient Error", 0);
 }
 
 std::string GetOutpost2Directory()
