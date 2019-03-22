@@ -11,12 +11,16 @@
 // Global Debug file
 std::ofstream logFile("log.txt");
 
-std::string FormatIP4Address(unsigned long ip);
-std::string FormatPlayerNetID(int playerNetID);
 
-void Log(const char* string)
+std::string FormatAddress(const sockaddr_in& address)
 {
-	logFile << string << std::endl;
+	std::stringstream ss;
+
+	ss << "(AF:" << address.sin_family << ") ";
+	ss << FormatIP4Address(address.sin_addr.s_addr);
+	ss << ":" << ntohs(address.sin_port);
+
+	return ss.str();
 }
 
 std::string FormatIP4Address(unsigned long ip)
@@ -31,11 +35,20 @@ std::string FormatIP4Address(unsigned long ip)
 	return ss.str();
 }
 
-void LogAddress(sockaddr_in &addr)
+std::string FormatPlayerList(const PeerInfo* peerInfo)
 {
-	logFile << "(AF:" << addr.sin_family << ") ";
-	logFile << FormatIP4Address(addr.sin_addr.s_addr);
-	logFile << ":" << ntohs(addr.sin_port);
+	std::stringstream ss;
+
+	for (int i = 0; i < MaxRemotePlayers; ++i)
+	{
+		ss << " " << i << ") {" << peerInfo[i].status << ", ";
+		ss << FormatAddress(peerInfo[i].address);
+		ss << ", ";
+		ss << FormatPlayerNetID(peerInfo[i].playerNetID);
+		ss << "}" << std::endl;
+	}
+
+	return ss.str();
 }
 
 std::string FormatPlayerNetID(int playerNetID)
@@ -47,34 +60,55 @@ std::string FormatPlayerNetID(int playerNetID)
 	return ss.str();
 }
 
-void LogAddressList(PeerInfo* peerInfo)
+std::string FormatGuid(const GUID& guid)
 {
-	for (int i = 0; i < MaxRemotePlayers; ++i)
-	{
-		logFile << " " << i << ") {" << peerInfo[i].status << ", ";
-		//logFile << FormatIP4Address(peerInfo[i].address.sin_addr.s_addr);
-		LogAddress(peerInfo[i].address);
-		logFile << ", ";
-		logFile << FormatPlayerNetID(peerInfo[i].playerNetID);
-		logFile << "}" << std::endl;
-	}
-}
+	std::stringstream ss;
 
-void LogGuid(GUID &guid)
-{
-	logFile << std::hex << "{" << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3 << "-";
+	ss << std::hex << "{" << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3 << "-";
 	for (int i = 0; i < 8; ++i)	{
-		logFile << (int)guid.Data4[i];
+		ss << (int)guid.Data4[i];
 	}
-	logFile << "}" << std::dec;
+	ss << "}" << std::dec;
+
+	return ss.str();
 }
 
-void LogPacket(OP2Internal::Packet& packet)
+std::string FormatPacket(const OP2Internal::Packet& packet)
 {
-	logFile << " Source: " << packet.header.sourcePlayerNetID << std::endl;
-	logFile << " Dest  : " << packet.header.destPlayerNetID << std::endl;
-	logFile << " Size  : " << static_cast<unsigned int>(packet.header.sizeOfPayload) << std::endl;
-	logFile << " type  : " << static_cast<unsigned int>(packet.header.type) << std::endl;
-	logFile << " checksum : " << std::hex << packet.Checksum() << std::dec << std::endl;
-	logFile << " commandType : " << packet.tlMessage.tlHeader.commandType << std::endl;
+	std::stringstream ss;
+
+	ss << " Source: " << packet.header.sourcePlayerNetID << std::endl;
+	ss << " Dest  : " << packet.header.destPlayerNetID << std::endl;
+	ss << " Size  : " << static_cast<unsigned int>(packet.header.sizeOfPayload) << std::endl;
+	ss << " type  : " << static_cast<unsigned int>(packet.header.type) << std::endl;
+	ss << " checksum : " << std::hex << packet.Checksum() << std::dec << std::endl;
+	ss << " commandType : " << packet.tlMessage.tlHeader.commandType << std::endl;
+
+	return ss.str();
+}
+
+
+void Log(const char* string)
+{
+	logFile << string << std::endl;
+}
+
+void LogAddress(const sockaddr_in& address)
+{
+	logFile << FormatAddress(address); // Note: No std::endl
+}
+
+void LogAddressList(const PeerInfo* peerInfo)
+{
+	logFile << FormatPlayerList(peerInfo); // Note: std::endl already included
+}
+
+void LogGuid(const GUID& guid)
+{
+	logFile << FormatGuid(guid); // Note: No std::endl;
+}
+
+void LogPacket(const OP2Internal::Packet& packet)
+{
+	logFile << FormatPacket(packet); // Note: std::endl already included
 }
