@@ -20,7 +20,7 @@ std::string FormatPlayerNetID(int playerNetID);
 
 void Log(const char* string);
 
-void LogAddress(sockaddr_in &addr);
-void LogAddressList(PeerInfo* peerInfo);
-void LogGuid(GUID &guid);
-void LogPacket(OP2Internal::Packet& packet);
+void LogAddress(const sockaddr_in &addr);
+void LogAddressList(const PeerInfo* peerInfo);
+void LogGuid(const GUID &guid);
+void LogPacket(const OP2Internal::Packet& packet);

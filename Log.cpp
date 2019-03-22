@@ -12,7 +12,7 @@
 std::ofstream logFile("log.txt");
 
 
-std::string FormatAddress(sockaddr_in& address)
+std::string FormatAddress(const sockaddr_in& address)
 {
 	std::stringstream ss;
 
@@ -35,7 +35,7 @@ std::string FormatIP4Address(unsigned long ip)
 	return ss.str();
 }
 
-std::string FormatPlayerList(PeerInfo* peerInfo)
+std::string FormatPlayerList(const PeerInfo* peerInfo)
 {
 	std::stringstream ss;
 
@@ -60,7 +60,7 @@ std::string FormatPlayerNetID(int playerNetID)
 	return ss.str();
 }
 
-std::string FormatGuid(GUID& guid)
+std::string FormatGuid(const GUID& guid)
 {
 	std::stringstream ss;
 
@@ -73,7 +73,7 @@ std::string FormatGuid(GUID& guid)
 	return ss.str();
 }
 
-std::string FormatPacket(OP2Internal::Packet& packet)
+std::string FormatPacket(const OP2Internal::Packet& packet)
 {
 	std::stringstream ss;
 
@@ -93,22 +93,22 @@ void Log(const char* string)
 	logFile << string << std::endl;
 }
 
-void LogAddress(sockaddr_in &address)
+void LogAddress(const sockaddr_in &address)
 {
 	logFile << FormatAddress(address); // Note: No std::endl
 }
 
-void LogAddressList(PeerInfo* peerInfo)
+void LogAddressList(const PeerInfo* peerInfo)
 {
 	logFile << FormatPlayerList(peerInfo); // Note: std::endl already included
 }
 
-void LogGuid(GUID &guid)
+void LogGuid(const GUID &guid)
 {
 	logFile << FormatGuid(guid); // Note: No std::endl;
 }
 
-void LogPacket(OP2Internal::Packet& packet)
+void LogPacket(const OP2Internal::Packet& packet)
 {
 	logFile << FormatPacket(packet); // Note: std::endl already included
 }
