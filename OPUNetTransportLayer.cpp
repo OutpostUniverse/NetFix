@@ -173,8 +173,8 @@ logFile << "Bound to server port: " << port << std::endl;
 	hostedGameInfo.createGameInfo.startupFlags.missionType = gameType;
 	hostedGameInfo.createGameInfo.startupFlags.numInitialVehicles = 0;
 	// Copy the game creator name and password
-	strncpy(hostedGameInfo.createGameInfo.gameCreatorName, creatorName, sizeof(hostedGameInfo.createGameInfo.gameCreatorName));
-	strncpy(this->password, password, sizeof(this->password));
+	strncpy_s(hostedGameInfo.createGameInfo.gameCreatorName, creatorName, sizeof(hostedGameInfo.createGameInfo.gameCreatorName));
+	strncpy_s(this->password, password, sizeof(this->password));
 
 // **DEBUG**
 logFile << " Session ID: ";
@@ -299,7 +299,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 	packet.tlMessage.joinRequest.commandType = tlcJoinRequest;
 	packet.tlMessage.joinRequest.sessionIdentifier = game.sessionIdentifier;
 	packet.tlMessage.joinRequest.returnPortNum = forcedPort;
-	strncpy(packet.tlMessage.joinRequest.password, password, sizeof(packet.tlMessage.joinRequest.password));
+	strncpy_s(packet.tlMessage.joinRequest.password, password, sizeof(packet.tlMessage.joinRequest.password));
 
 // **DEBUG**
 logFile << "Sending join request: ";

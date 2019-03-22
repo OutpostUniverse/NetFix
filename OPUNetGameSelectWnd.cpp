@@ -12,6 +12,7 @@
 #include <objbase.h>
 #include <shlobj.h>
 #include <stdio.h>
+#include <cstring>
 #include <string>
 
 #include "OPUNetGameSelectWnd.h"
@@ -200,22 +201,22 @@ void OPUNetGameSelectWnd::OnInit()
 	lvColumn.mask = LVCF_WIDTH | LVCF_TEXT;
 	// Insert each column
 	lvColumn.cx = 100;
-	lvColumn.pszText = "Host";
+	lvColumn.pszText = const_cast<char*>("Host");
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 0, (LPARAM)&lvColumn);
 	lvColumn.cx = 100;
-	lvColumn.pszText = "Game Type";
+	lvColumn.pszText = const_cast<char*>("Game Type");
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 1, (LPARAM)&lvColumn);
 	lvColumn.cx = 57;
-	lvColumn.pszText = "# Players";
+	lvColumn.pszText = const_cast<char*>("# Players");
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 2, (LPARAM)&lvColumn);
 	lvColumn.cx = 70;
-	lvColumn.pszText = "IP";
+	lvColumn.pszText = const_cast<char*>("IP");
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 3, (LPARAM)&lvColumn);
 	lvColumn.cx = 42;
-	lvColumn.pszText = "Port";
+	lvColumn.pszText = const_cast<char*>("Port");
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 4, (LPARAM)&lvColumn);
 	lvColumn.cx = 40;
-	lvColumn.pszText = "Ping";
+	lvColumn.pszText = const_cast<char*>("Ping");
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 5, (LPARAM)&lvColumn);
 	
 	// Turn on full row select in the list view
