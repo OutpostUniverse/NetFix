@@ -64,10 +64,8 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	// Store the .ini section name
 	strncpy(sectionName, iniSectionName, sizeof(sectionName));
 
-
 	// Get multiplayer button index that NetFix will replace
-	const std::string iniPath = GetOutpost2Directory() + "Outpost2.ini"; 
-
+	const std::string iniPath = GetOutpost2Directory() + "Outpost2.ini";
 	int protocolIndex = GetPrivateProfileInt(sectionName, "ProtocolIndex", DefaultProtocolIndex, iniPath.c_str());
 	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << std::endl;
 	// Set a new multiplayer protocol type
