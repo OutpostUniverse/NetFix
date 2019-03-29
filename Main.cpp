@@ -23,7 +23,6 @@ const int ExpectedOutpost2Addr = 0x00400000;
 
 // Provide error in modal dialog box for user and then log message
 void LogWithModalDialog(const std::string& message);
-std::string GetOutpost2Directory();
 
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
@@ -65,8 +64,7 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	strncpy_s(sectionName, iniSectionName, sizeof(sectionName));
 
 	// Get multiplayer button index that NetFix will replace
-	const std::string iniPath = GetOutpost2Directory() + "Outpost2.ini";
-	int protocolIndex = GetPrivateProfileInt(sectionName, "ProtocolIndex", DefaultProtocolIndex, iniPath.c_str());
+	int protocolIndex = config.GetInt(sectionName, "ProtocolIndex", DefaultProtocolIndex);
 	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << std::endl;
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
@@ -77,21 +75,4 @@ void LogWithModalDialog(const std::string& message)
 {
 	Log(message.c_str());
 	MessageBox(nullptr, message.c_str(), "NetFixClient Error", 0);
-}
-
-std::string GetOutpost2Directory()
-{
-	std::string buffer;
-
-	// Pass size of 0 to get exact buffer size
-	std::size_t bufferSize = GetGameDir_s(&buffer[0], 0);
-
-	buffer.resize(bufferSize);
-	GetGameDir_s(&buffer[0], bufferSize);
-
-	// String concatinations (string1 + string2) will not provide expected results
-	// if the std::string explicity has a null terminator
-	buffer.erase(std::find(buffer.begin(), buffer.end(), '\0'), buffer.end());
-
-	return buffer;
 }
