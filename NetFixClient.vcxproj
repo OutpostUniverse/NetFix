@@ -115,6 +115,7 @@
     <ResourceCompile Include="CustomDialogScript.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileSystemHelper.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="OPUNetGameSelectWnd.cpp" />
@@ -122,6 +123,7 @@
     <ClCompile Include="ValidatePacket.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileSystemHelper.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="OPUNetGameProtocol.h" />
     <ClInclude Include="OPUNetGameSelectWnd.h" />

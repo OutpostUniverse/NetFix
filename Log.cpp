@@ -1,5 +1,6 @@
 #include "Log.h"
 #include "OPUNetTransportLayer.h"
+#include "FileSystemHelper.h"
 #include <winsock2.h>
 #include <objbase.h>
 #include <iostream>
@@ -9,7 +10,7 @@
 
 
 // Global Debug file
-std::ofstream logFile("log.txt");
+std::ofstream logFile(GetOutpost2Directory() + "log.txt");
 
 
 std::string FormatAddress(const sockaddr_in& address)
