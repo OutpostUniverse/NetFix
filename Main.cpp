@@ -1,4 +1,4 @@
-#include "Log.h"
+#include "op2ext.h"
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 
@@ -7,8 +7,11 @@
 using namespace OP2Internal;
 
 #include "OPUNetGameProtocol.h"
-#include <string>
 #include <fstream>
+#include <cstddef>
+#include <string>
+#include <algorithm>
+
 extern std::ofstream logFile;
 
 
@@ -20,6 +23,7 @@ const int ExpectedOutpost2Addr = 0x00400000;
 
 // Provide error in modal dialog box for user and then log message
 void LogWithModalDialog(const std::string& message);
+std::string GetOutpost2Directory();
 
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
@@ -40,6 +44,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     return TRUE;
 }
 
+
 extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 {
 	// Check the NetFixClient DLL load address
@@ -59,9 +64,9 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	// Store the .ini section name
 	strncpy_s(sectionName, iniSectionName, sizeof(sectionName));
 
-	int protocolIndex;
-	// Get button index to replace functionality of
-	protocolIndex = GetPrivateProfileInt(sectionName, "ProtocolIndex", DefaultProtocolIndex, ".\\Outpost2.ini");
+	// Get multiplayer button index that NetFix will replace
+	const std::string iniPath = GetOutpost2Directory() + "Outpost2.ini";
+	int protocolIndex = GetPrivateProfileInt(sectionName, "ProtocolIndex", DefaultProtocolIndex, iniPath.c_str());
 	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << std::endl;
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
@@ -72,4 +77,21 @@ void LogWithModalDialog(const std::string& message)
 {
 	Log(message.c_str());
 	MessageBox(nullptr, message.c_str(), "NetFixClient Error", 0);
+}
+
+std::string GetOutpost2Directory()
+{
+	std::string buffer;
+
+	// Pass size of 0 to get exact buffer size
+	std::size_t bufferSize = GetGameDir_s(&buffer[0], 0);
+
+	buffer.resize(bufferSize);
+	GetGameDir_s(&buffer[0], bufferSize);
+
+	// String concatinations (string1 + string2) will not provide expected results
+	// if the std::string explicity has a null terminator
+	buffer.erase(std::find(buffer.begin(), buffer.end(), '\0'), buffer.end());
+
+	return buffer;
 }
