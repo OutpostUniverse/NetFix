@@ -336,8 +336,8 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	peerInfo[localPlayerNum].address.sin_addr.s_addr = INADDR_ANY;	// Clear the address
 	peerInfo[localPlayerNum].status = 2;
 
-logFile << "OnJoinAcecpted" << std::endl;
-LogAddressList(peerInfo);
+Log("OnJoinAcecpted");
+Log(FormatPlayerList(peerInfo));
 
 	// Update num players (for quit messages from cancelled games)
 	numPlayers = 1;
@@ -1230,8 +1230,8 @@ logFile << "GameStarting" << std::endl;
 				}
 
 // **DEBUG**
-logFile << "Replicated Players List:" << std::endl;
-LogAddressList(peerInfo);
+Log("Replicated Players List:");
+Log(FormatPlayerList(peerInfo));
 
 				// Form a new packet to return to the game
 				packet.header.sourcePlayerNetID = 0;

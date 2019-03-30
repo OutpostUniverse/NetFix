@@ -48,7 +48,7 @@ std::string FormatPlayerList(const PeerInfo* peerInfo)
 		ss << FormatAddress(peerInfo[i].address);
 		ss << ", ";
 		ss << FormatPlayerNetID(peerInfo[i].playerNetID);
-		ss << "}" << std::endl;
+		ss << "}";
 	}
 
 	return ss.str();
@@ -94,9 +94,4 @@ std::string FormatPacket(const OP2Internal::Packet& packet)
 void Log(const std::string& message)
 {
 	op2ext::Log(message.c_str());
-}
-
-void LogAddressList(const PeerInfo* peerInfo)
-{
-	logFile << FormatPlayerList(peerInfo); // Note: std::endl already included
 }
