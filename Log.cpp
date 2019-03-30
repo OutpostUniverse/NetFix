@@ -101,11 +101,6 @@ void LogAddressList(const PeerInfo* peerInfo)
 	logFile << FormatPlayerList(peerInfo); // Note: std::endl already included
 }
 
-void LogGuid(const GUID& guid)
-{
-	logFile << FormatGuid(guid); // Note: No std::endl;
-}
-
 void LogPacket(const OP2Internal::Packet& packet)
 {
 	logFile << FormatPacket(packet); // Note: std::endl already included

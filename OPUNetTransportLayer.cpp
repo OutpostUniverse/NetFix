@@ -177,9 +177,7 @@ logFile << "Bound to server port: " << port << std::endl;
 	strncpy_s(this->password, password, sizeof(this->password));
 
 // **DEBUG**
-logFile << " Session ID: ";
-LogGuid(hostedGameInfo.sessionIdentifier);
-logFile << std::endl;
+Log(" Session ID: " + FormatGuid(hostedGameInfo.sessionIdentifier));
 
 	// Create a Host playerNetID
 	playerNetID = timeGetTime() & ~7;
@@ -301,9 +299,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 
 // **DEBUG**
 Log("Sending join request: " + FormatAddress(game.address));
-logFile << "  Session ID: ";
-LogGuid(packet.tlMessage.joinRequest.sessionIdentifier);
-logFile << std::endl;
+Log("  Session ID: " + FormatGuid(packet.tlMessage.joinRequest.sessionIdentifier));
 //LogPacket(packet);
 
 	sockaddr_in gameServerAddr;
