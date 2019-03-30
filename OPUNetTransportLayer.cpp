@@ -300,7 +300,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 	strncpy_s(packet.tlMessage.joinRequest.password, password, sizeof(packet.tlMessage.joinRequest.password));
 
 // **DEBUG**
-	Log("Sending join request: " + FormatAddress(game.address));
+Log("Sending join request: " + FormatAddress(game.address));
 logFile << "  Session ID: ";
 LogGuid(packet.tlMessage.joinRequest.sessionIdentifier);
 logFile << std::endl;
