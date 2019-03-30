@@ -482,8 +482,6 @@ void OPUNetGameSelectWnd::OnTimer()
 
 void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 {
-	int gameCount;
-
 	// Make sure the packet is of the correct format
 	if (packet.header.type != 1) {
 		return;
@@ -492,7 +490,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 	// Determine which message type was received
 	switch(packet.tlMessage.tlHeader.commandType)
 	{
-	case tlcHostedGameSearchReply:		// [Custom format]
+	case tlcHostedGameSearchReply: {		// [Custom format]
 		// Verify packet size
 		if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
 			return;						// Discard packet
@@ -508,10 +506,10 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		LVITEM item;
 		item.mask = LVIF_PARAM;
 		item.iSubItem = 0;
-		
+
 		// Search the list of games
 		HostedGameInfo* hostedGameInfo;
-		gameCount = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
+		const int gameCount = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
 		for (int i = 0; i < gameCount; ++i)
 		{
 			// Specify exact item to retrieve
@@ -563,7 +561,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		SetGameListItem(-1, hostedGameInfo);
 
 		return;							// Packet handled
-
+	}
 	case tlcJoinGranted:		// [Fall through]
 	case tlcJoinRefused:
 		// Verify packet size
