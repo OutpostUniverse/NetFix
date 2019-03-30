@@ -7,12 +7,9 @@
 using namespace OP2Internal;
 
 #include "OPUNetGameProtocol.h"
-#include <fstream>
 #include <cstddef>
 #include <string>
 #include <algorithm>
-
-extern std::ofstream logFile;
 
 
 HINSTANCE hInstance;
@@ -65,7 +62,7 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 
 	// Get multiplayer button index that NetFix will replace
 	int protocolIndex = config.GetInt(sectionName, "ProtocolIndex", DefaultProtocolIndex);
-	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << std::endl;
+	Log("ProtocolIndex set to " + std::to_string(protocolIndex));
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
 }
