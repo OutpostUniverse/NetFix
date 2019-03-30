@@ -312,10 +312,10 @@ void OPUNetGameSelectWnd::ClearGamesList()
 	item.iSubItem = 0;
 
 	// Get the number of list items to delete
-	const int numItems = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
+	const int itemCount = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
 
 	// Release all the games info
-	for (int i = 0; i < numItems; ++i)
+	for (int i = 0; i < itemCount; ++i)
 	{
 		// Get the item data
 		item.iItem = i;
@@ -482,7 +482,7 @@ void OPUNetGameSelectWnd::OnTimer()
 
 void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 {
-	int numGames;
+	int gameCount;
 
 	// Make sure the packet is of the correct format
 	if (packet.header.type != 1) {
@@ -511,8 +511,8 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		
 		// Search the list of games
 		HostedGameInfo* hostedGameInfo;
-		numGames = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
-		for (int i = 0; i < numGames; ++i)
+		gameCount = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
+		for (int i = 0; i < gameCount; ++i)
 		{
 			// Specify exact item to retrieve
 			item.iItem = i;
