@@ -1,4 +1,4 @@
-#include "op2ext.h"
+#include "Log.h"
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 
@@ -73,6 +73,6 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 
 void LogWithModalDialog(const std::string& message)
 {
-	Log(message.c_str());
+	Log(message);
 	MessageBox(nullptr, message.c_str(), "NetFixClient Error", 0);
 }
