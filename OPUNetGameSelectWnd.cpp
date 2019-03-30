@@ -331,8 +331,9 @@ void OPUNetGameSelectWnd::ClearGamesList()
 			// Retrieve the HostedGameInfo pointer
 			hostedGameInfo = (HostedGameInfo*)item.lParam;
 			// Make sure the parameter was set
-			if (hostedGameInfo != nullptr)
+			if (hostedGameInfo != nullptr) {
 				delete hostedGameInfo;	// Free the memory
+			}
 		}
 	}
 
