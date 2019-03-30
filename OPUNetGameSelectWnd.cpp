@@ -138,7 +138,6 @@ void OPUNetGameSelectWnd::OnInit()
 {
 	// Initialize the data fields
 	// --------------------------
-	int i;
 	char buffer[MaxServerAddressLen];
 
 	// Set the default player name
@@ -147,7 +146,7 @@ void OPUNetGameSelectWnd::OnInit()
 
 	// Setup the MaxPlayers combo box
 	// Add the MaxPlayer options
-	for (i = 2; i <= 6; i++)
+	for (int i = 2; i <= 6; ++i)
 	{
 		// Add the number of player to the combo box
 		scr_snprintf(buffer, sizeof(buffer), "%i", i);
@@ -176,7 +175,7 @@ void OPUNetGameSelectWnd::OnInit()
 	// Set the maximum string length
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_LIMITTEXT, (WPARAM)MaxServerAddressLen, 0);
 	// Load the IPAddress history
-	for (i = 0; i < 10; i++)
+	for (int i = 0; i < 10; ++i)
 	{
 		// Form the keyName string (number)
 		scr_snprintf(buffer, sizeof(buffer), "%i", i);
@@ -256,8 +255,6 @@ void OPUNetGameSelectWnd::InitNetLayer()
 
 bool OPUNetGameSelectWnd::InitGurManager()
 {
-	int errorCode;
-
 	// Check if the Guaranteed Send Layer already exists
 	if (app.gurManager != nullptr)
 	{
@@ -275,7 +272,7 @@ bool OPUNetGameSelectWnd::InitGurManager()
 		return false;			// Abort
 	}
 	// Initialize the Guaranteed Send Layer
-	errorCode = app.gurManager->Initialize(opuNetTransportLayer);
+	const int errorCode = app.gurManager->Initialize(opuNetTransportLayer);
 	// Check for errors
 	if (errorCode == 0)
 	{
@@ -309,30 +306,27 @@ void OPUNetGameSelectWnd::CleanupGurManager()
 
 void OPUNetGameSelectWnd::ClearGamesList()
 {
-	int i;
-	int numItems;
-	LVITEM item;
-	HostedGameInfo* hostedGameInfo;
-
 	// Prepare a LVITEM struct
+	LVITEM item;
 	item.mask = LVIF_PARAM;
 	item.iSubItem = 0;
 
 	// Get the number of list items to delete
-	numItems = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
+	const int itemCount = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
 
 	// Release all the games info
-	for (i = 0; i < numItems; i++)
+	for (int i = 0; i < itemCount; ++i)
 	{
 		// Get the item data
 		item.iItem = i;
 		if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&item))
 		{
 			// Retrieve the HostedGameInfo pointer
-			hostedGameInfo = (HostedGameInfo*)item.lParam;
+			 HostedGameInfo* hostedGameInfo = (HostedGameInfo*)item.lParam;
 			// Make sure the parameter was set
-			if (hostedGameInfo != nullptr)
+			if (hostedGameInfo != nullptr) {
 				delete hostedGameInfo;	// Free the memory
+			}
 		}
 	}
 
@@ -343,10 +337,8 @@ void OPUNetGameSelectWnd::ClearGamesList()
 
 void OPUNetGameSelectWnd::AddServerAddress(const char* address)
 {
-	int index;
-
 	// Check if the address already exists in the combo box
-	index = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_FINDSTRINGEXACT, 1, (LPARAM)address);
+	const int index = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_FINDSTRINGEXACT, 1, (LPARAM)address);
 	if (index != CB_ERR)
 	{
 		// Remove the old address
@@ -369,28 +361,25 @@ void OPUNetGameSelectWnd::SetStatusText(const char* text)
 
 void OPUNetGameSelectWnd::OnDestroy()
 {
-	int i;
-	int retVal;
-	char keyName[16];
-	char keyValue[MaxServerAddressLen];
-
 	// Kill the timer
 	if (timer != 0) {
 		KillTimer(this->hWnd, timer);
 	}
 
 	// Save the PlayerName
+	char keyValue[MaxServerAddressLen];
 	GetDlgItemText(this->hWnd, IDC_PlayerName, keyValue, sizeof(keyValue));
 	config.SetString("Game", "Name", keyValue);
 
 	// Save the ServerAddress list
-	for (i = 0; i < 10; i++)
+	for (int i = 0; i < 10; ++i)
 	{
 		// Form the keyName string (number)
+		char keyName[16];
 		scr_snprintf(keyName, sizeof(keyName), "%i", i);
 
 		// Get the Server Address
-		retVal = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_GETLBTEXT, (WPARAM)i, (LPARAM)keyValue);
+		const int retVal = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_GETLBTEXT, (WPARAM)i, (LPARAM)keyValue);
 		// Check for errors
 		if (retVal != CB_ERR)
 		{
@@ -411,8 +400,6 @@ void OPUNetGameSelectWnd::OnDestroy()
 
 void OPUNetGameSelectWnd::OnTimer()
 {
-	Packet packet;
-
 	// Make sure a network object exists
 	if (opuNetTransportLayer == nullptr) {
 		return;
@@ -484,6 +471,7 @@ void OPUNetGameSelectWnd::OnTimer()
 	}
 
 	// Check for network replies
+	Packet packet;
 	while (opuNetTransportLayer->Receive(packet))
 	{
 		// Process the packet
@@ -494,11 +482,6 @@ void OPUNetGameSelectWnd::OnTimer()
 
 void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 {
-	int numGames;
-	int i;
-	HostedGameInfo* hostedGameInfo;
-	LVITEM item;
-
 	// Make sure the packet is of the correct format
 	if (packet.header.type != 1) {
 		return;
@@ -507,7 +490,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 	// Determine which message type was received
 	switch(packet.tlMessage.tlHeader.commandType)
 	{
-	case tlcHostedGameSearchReply:		// [Custom format]
+	case tlcHostedGameSearchReply: {		// [Custom format]
 		// Verify packet size
 		if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
 			return;						// Discard packet
@@ -520,11 +503,14 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		// Check if we already know about this game
 		// ----------------------------------------
 		// Prepare a LVITEM struct
+		LVITEM item;
 		item.mask = LVIF_PARAM;
 		item.iSubItem = 0;
+
 		// Search the list of games
-		numGames = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
-		for (i = 0; i < numGames; i++)
+		HostedGameInfo* hostedGameInfo;
+		const int gameCount = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
+		for (int i = 0; i < gameCount; ++i)
 		{
 			// Specify exact item to retrieve
 			item.iItem = i;
@@ -575,7 +561,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		SetGameListItem(-1, hostedGameInfo);
 
 		return;							// Packet handled
-
+	}
 	case tlcJoinGranted:		// [Fall through]
 	case tlcJoinRefused:
 		// Verify packet size
@@ -671,12 +657,10 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 
 void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameInfo)
 {
-	int i;
-	LVITEM item;
 	char buffer[32];
-	in_addr ip;
 
 	// Fill in new List Item fields
+	LVITEM item;
 	item.mask = LVIF_TEXT | LVIF_PARAM;
 	item.iItem = index;
 	item.iSubItem = 0;
@@ -703,7 +687,7 @@ void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameI
 	item.pszText = buffer;
 	// Game Type
 	item.iSubItem = 1;
-	i = -(hostedGameInfo->createGameInfo.startupFlags.missionType);
+	int i = -(hostedGameInfo->createGameInfo.startupFlags.missionType);
 	if ((i < 0) || (i > 8)) {
 		i = 0;
 	}
@@ -715,7 +699,7 @@ void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameI
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_SETITEM, 0, (LPARAM)&item);
 	// IP address
 	item.iSubItem = 3;
-	ip = hostedGameInfo->address.sin_addr;
+	in_addr ip = hostedGameInfo->address.sin_addr;
 	scr_snprintf(buffer, sizeof(buffer), "%i.%i.%i.%i", ip.S_un.S_un_b.s_b1, ip.S_un.S_un_b.s_b2, ip.S_un.S_un_b.s_b3, ip.S_un.S_un_b.s_b4);
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_SETITEM, 0, (LPARAM)&item);
 	// Port
@@ -731,12 +715,6 @@ void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameI
 
 void OPUNetGameSelectWnd::OnJoinAccepted()
 {
-	int errorCode;
-	int hostPlayerNetID;
-	char playerName[16];
-	MultiplayerPreGameSetupWnd multiplayerPreGameSetupWnd;
-
-
 	// Stop the update timer
 	KillTimer(this->hWnd, 0);
 	timer = 0;
@@ -746,7 +724,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 
 
 	// Initialize the Guaranteed Send Layer
-	errorCode = InitGurManager();
+	int errorCode = InitGurManager();
 	// Check for errors
 	if (errorCode == 0)
 	{
@@ -758,12 +736,14 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 
 
 	// Get the host player name
-	hostPlayerNetID = app.netTLayer->GetHostPlayerNetID();
-	// Get the Player Name
+	int hostPlayerNetID = app.netTLayer->GetHostPlayerNetID();
+	// Get the Player Name.
+	char playerName[16];
 	SendDlgItemMessage(this->hWnd, IDC_PlayerName, WM_GETTEXT, sizeof(playerName), (LPARAM)&playerName);
 
 
 	// Show Pre-Game Setup window
+	MultiplayerPreGameSetupWnd multiplayerPreGameSetupWnd;
 	errorCode = multiplayerPreGameSetupWnd.ShowJoinGame(playerName, hostPlayerNetID, 0);
 
 
@@ -787,9 +767,6 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 
 void OPUNetGameSelectWnd::OnClickSearch()
 {
-	int errorCode;
-	char serverAddress[MaxServerAddressLen];
-
 	// Clear the current games list
 	ClearGamesList();
 
@@ -797,9 +774,10 @@ void OPUNetGameSelectWnd::OnClickSearch()
 	SetStatusText("Searching for games...");
 
 	// Get the server address
+	char serverAddress[MaxServerAddressLen];
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, WM_GETTEXT, (WPARAM)sizeof(serverAddress), (LPARAM)serverAddress);
 	// Request games list from server
-	errorCode = opuNetTransportLayer->SearchForGames(serverAddress, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
+	const int errorCode = opuNetTransportLayer->SearchForGames(serverAddress, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
 
 	// Check if the request was successfully sent
 	if (errorCode != 0)
@@ -817,12 +795,10 @@ void OPUNetGameSelectWnd::OnClickSearch()
 
 void OPUNetGameSelectWnd::OnClickJoin()
 {
-	LVITEM item;
-
-
 	// Get the game to join
 	// --------------------
 	// Prepare a LVITEM struct
+	LVITEM item;
 	item.mask = LVIF_PARAM;
 	item.iSubItem = 0;
 	// Get the selected game to join
@@ -860,14 +836,7 @@ void OPUNetGameSelectWnd::OnClickJoin()
 
 void OPUNetGameSelectWnd::OnClickCreate()
 {
-	// Host
-	int errorCode;
-	MultiplayerPreGameSetupWnd multiplayerPreGameSetupWnd;
-	HostGameParameters hostGameParameters;
 	char password[16];
-	int maxPlayers;
-	int gameType;
-	int gameTypeIndex;
 
 
 	// Stop the update timer
@@ -881,18 +850,19 @@ void OPUNetGameSelectWnd::OnClickCreate()
 
 	// Get the game host values
 	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(password), (LPARAM)password);
-	maxPlayers = SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_GETCURSEL, 0, 0) + 2;
-	gameTypeIndex = SendDlgItemMessage(this->hWnd, IDC_GameType, CB_GETCURSEL, 0, 0);
-	gameType = SendDlgItemMessage(this->hWnd, IDC_GameType, CB_GETITEMDATA, (WPARAM)gameTypeIndex, 0);
+	const int maxPlayers = SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_GETCURSEL, 0, 0) + 2;
+	const int gameTypeIndex = SendDlgItemMessage(this->hWnd, IDC_GameType, CB_GETCURSEL, 0, 0);
+	const int gameType = SendDlgItemMessage(this->hWnd, IDC_GameType, CB_GETITEMDATA, (WPARAM)gameTypeIndex, 0);
 
 	// Setup HostGameParameters
+	HostGameParameters hostGameParameters;
 	SendDlgItemMessage(this->hWnd, IDC_PlayerName, WM_GETTEXT, sizeof(hostGameParameters.gameCreatorName), (LPARAM)&hostGameParameters.gameCreatorName);
 	hostGameParameters.startupFlags.maxPlayers = maxPlayers;
 	hostGameParameters.startupFlags.missionType = gameType;
 
 
 	// Try to Host
-	errorCode = opuNetTransportLayer->HostGame(config.GetInt(sectionName, "HostPort", DefaultClientPort), password, hostGameParameters.gameCreatorName, maxPlayers, gameType);
+	int errorCode = opuNetTransportLayer->HostGame(config.GetInt(sectionName, "HostPort", DefaultClientPort), password, hostGameParameters.gameCreatorName, maxPlayers, gameType);
 	// Check for errors
 	if (errorCode == false)
 	{
@@ -913,6 +883,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 
 	
 	// Show Pre-Game Setup window
+	MultiplayerPreGameSetupWnd multiplayerPreGameSetupWnd;
 	errorCode = multiplayerPreGameSetupWnd.ShowHostGame(hostGameParameters);
 
 
