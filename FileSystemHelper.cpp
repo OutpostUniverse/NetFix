@@ -1,5 +1,6 @@
 #include "FileSystemHelper.h"
 #include "op2ext.h"
+#include <algorithm>
 
 std::string GetOutpost2Directory()
 {
