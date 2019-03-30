@@ -1,12 +1,14 @@
 #include "Log.h"
 #include "OPUNetTransportLayer.h"
 #include "FileSystemHelper.h"
+namespace op2ext {
+#include "op2ext.h"
+}
 #include <winsock2.h>
 #include <objbase.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
 
 
 // Global Debug file
@@ -89,9 +91,9 @@ std::string FormatPacket(const OP2Internal::Packet& packet)
 }
 
 
-void Log(const char* string)
+void Log(const std::string& message)
 {
-	logFile << string << std::endl;
+	op2ext::Log(message.c_str());
 }
 
 void LogAddress(const sockaddr_in& address)
