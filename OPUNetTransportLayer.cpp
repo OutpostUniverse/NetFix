@@ -300,7 +300,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 // **DEBUG**
 Log("Sending join request: " + FormatAddress(game.address));
 Log("  Session ID: " + FormatGuid(packet.tlMessage.joinRequest.sessionIdentifier));
-//LogPacket(packet);
+//Log(FormatPacket(packet));
 
 	sockaddr_in gameServerAddr;
 	// Check if a Game Server is set

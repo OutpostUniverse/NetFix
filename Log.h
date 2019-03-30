@@ -26,4 +26,3 @@ std::string FormatPacket(const OP2Internal::Packet& packet);
 void Log(const std::string& message);
 
 void LogAddressList(const PeerInfo* peerInfo);
-void LogPacket(const OP2Internal::Packet& packet);
