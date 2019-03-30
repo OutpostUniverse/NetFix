@@ -258,12 +258,8 @@ bool OPUNetGameSelectWnd::InitGurManager()
 {
 	int errorCode;
 
-	// Check if the Guaranteed Send Layer already exists
-	if (app.gurManager != nullptr)
-	{
-		// Already exists. Delete the old one first
-		delete app.gurManager;
-	}
+	// Delete Guaranteed Send Layer if it already exists
+	delete app.gurManager;
 
 	// Create the Guaranteed Send Layer
 	app.gurManager = new GurManager();
@@ -330,9 +326,7 @@ void OPUNetGameSelectWnd::ClearGamesList()
 		{
 			// Retrieve the HostedGameInfo pointer
 			hostedGameInfo = (HostedGameInfo*)item.lParam;
-			// Make sure the parameter was set
-			if (hostedGameInfo != nullptr)
-				delete hostedGameInfo;	// Free the memory
+			delete hostedGameInfo;
 		}
 	}
 
