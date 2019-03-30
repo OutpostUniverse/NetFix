@@ -96,11 +96,6 @@ void Log(const std::string& message)
 	op2ext::Log(message.c_str());
 }
 
-void LogAddress(const sockaddr_in& address)
-{
-	logFile << FormatAddress(address); // Note: No std::endl
-}
-
 void LogAddressList(const PeerInfo* peerInfo)
 {
 	logFile << FormatPlayerList(peerInfo); // Note: std::endl already included

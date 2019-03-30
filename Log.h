@@ -25,7 +25,6 @@ std::string FormatPacket(const OP2Internal::Packet& packet);
 
 void Log(const std::string& message);
 
-void LogAddress(const sockaddr_in& addr);
 void LogAddressList(const PeerInfo* peerInfo);
 void LogGuid(const GUID& guid);
 void LogPacket(const OP2Internal::Packet& packet);
