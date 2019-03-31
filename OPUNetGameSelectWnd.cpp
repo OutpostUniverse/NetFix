@@ -5,7 +5,10 @@
 // Have listed games timeout eventually and remove from list
 //  (on receive of new hosted game?)  (the list is cleared if they click search)
 
-
+#include "OPUNetGameSelectWnd.h"
+#include "OPUNetTransportLayer.h"
+#include "Log.h"
+#include "resource.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <mmsystem.h>
@@ -14,11 +17,6 @@
 #include <stdio.h>
 #include <cstring>
 #include <string>
-
-#include "OPUNetGameSelectWnd.h"
-#include "OPUNetTransportLayer.h"
-#include "Log.h"
-#include "resource.h"
 
 
 extern char sectionName[];
