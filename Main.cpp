@@ -1,8 +1,7 @@
 #include "OPUNetGameProtocol.h"
 #include "Log.h"
-// Force Exports from Outpost2.exe
 #include <OP2Internal.h>
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <string>
 
@@ -25,7 +24,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 	case DLL_PROCESS_ATTACH:
 		// Don't need this, so don't waste the time
 		DisableThreadLibraryCalls((HMODULE)hModule);
-		// Store the module handle
+
 		hInstance = (HINSTANCE)hModule;
 
 		break;
