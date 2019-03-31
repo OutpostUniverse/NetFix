@@ -7,9 +7,7 @@
 using namespace OP2Internal;
 
 #include "OPUNetGameProtocol.h"
-#include <cstddef>
 #include <string>
-#include <algorithm>
 
 
 HINSTANCE hInstance;
