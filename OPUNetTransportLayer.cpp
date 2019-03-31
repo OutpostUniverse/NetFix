@@ -177,9 +177,7 @@ logFile << "Bound to server port: " << port << std::endl;
 	strncpy_s(this->password, password, sizeof(this->password));
 
 // **DEBUG**
-logFile << " Session ID: ";
-LogGuid(hostedGameInfo.sessionIdentifier);
-logFile << std::endl;
+Log(" Session ID: " + FormatGuid(hostedGameInfo.sessionIdentifier));
 
 	// Create a Host playerNetID
 	playerNetID = timeGetTime() & ~7;
@@ -301,10 +299,8 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 
 // **DEBUG**
 Log("Sending join request: " + FormatAddress(game.address));
-logFile << "  Session ID: ";
-LogGuid(packet.tlMessage.joinRequest.sessionIdentifier);
-logFile << std::endl;
-//LogPacket(packet);
+Log("  Session ID: " + FormatGuid(packet.tlMessage.joinRequest.sessionIdentifier));
+//Log(FormatPacket(packet));
 
 	sockaddr_in gameServerAddr;
 	// Check if a Game Server is set
@@ -340,8 +336,8 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	peerInfo[localPlayerNum].address.sin_addr.s_addr = INADDR_ANY;	// Clear the address
 	peerInfo[localPlayerNum].status = 2;
 
-logFile << "OnJoinAcecpted" << std::endl;
-LogAddressList(peerInfo);
+Log("OnJoinAcecpted");
+Log(FormatPlayerList(peerInfo));
 
 	// Update num players (for quit messages from cancelled games)
 	numPlayers = 1;
@@ -1234,8 +1230,8 @@ logFile << "GameStarting" << std::endl;
 				}
 
 // **DEBUG**
-logFile << "Replicated Players List:" << std::endl;
-LogAddressList(peerInfo);
+Log("Replicated Players List:");
+Log(FormatPlayerList(peerInfo));
 
 				// Form a new packet to return to the game
 				packet.header.sourcePlayerNetID = 0;

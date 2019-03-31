@@ -48,7 +48,7 @@ std::string FormatPlayerList(const PeerInfo* peerInfo)
 		ss << FormatAddress(peerInfo[i].address);
 		ss << ", ";
 		ss << FormatPlayerNetID(peerInfo[i].playerNetID);
-		ss << "}" << std::endl;
+		ss << "}";
 	}
 
 	return ss.str();
@@ -85,7 +85,7 @@ std::string FormatPacket(const OP2Internal::Packet& packet)
 	ss << " Size  : " << static_cast<unsigned int>(packet.header.sizeOfPayload) << std::endl;
 	ss << " type  : " << static_cast<unsigned int>(packet.header.type) << std::endl;
 	ss << " checksum : " << std::hex << packet.Checksum() << std::dec << std::endl;
-	ss << " commandType : " << packet.tlMessage.tlHeader.commandType << std::endl;
+	ss << " commandType : " << packet.tlMessage.tlHeader.commandType; //Final endl adding by Log function
 
 	return ss.str();
 }
@@ -94,19 +94,4 @@ std::string FormatPacket(const OP2Internal::Packet& packet)
 void Log(const std::string& message)
 {
 	op2ext::Log(message.c_str());
-}
-
-void LogAddressList(const PeerInfo* peerInfo)
-{
-	logFile << FormatPlayerList(peerInfo); // Note: std::endl already included
-}
-
-void LogGuid(const GUID& guid)
-{
-	logFile << FormatGuid(guid); // Note: No std::endl;
-}
-
-void LogPacket(const OP2Internal::Packet& packet)
-{
-	logFile << FormatPacket(packet); // Note: std::endl already included
 }

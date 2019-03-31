@@ -1,19 +1,11 @@
-#include "Log.h"
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-
-// Force Exports from Outpost2.exe
-#include <OP2Internal.h>
-using namespace OP2Internal;
-
 #include "OPUNetGameProtocol.h"
-#include <fstream>
-#include <cstddef>
+#include "Log.h"
+#include <OP2Internal.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <string>
-#include <algorithm>
 
-extern std::ofstream logFile;
-
+using namespace OP2Internal;
 
 HINSTANCE hInstance;
 OPUNetGameProtocol opuNetGameProtocol;
@@ -32,7 +24,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 	case DLL_PROCESS_ATTACH:
 		// Don't need this, so don't waste the time
 		DisableThreadLibraryCalls((HMODULE)hModule);
-		// Store the module handle
+
 		hInstance = (HINSTANCE)hModule;
 
 		break;
@@ -65,7 +57,7 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 
 	// Get multiplayer button index that NetFix will replace
 	int protocolIndex = config.GetInt(sectionName, "ProtocolIndex", DefaultProtocolIndex);
-	logFile << "[" << sectionName << "]" << " ProtocolIndex = " << protocolIndex << std::endl;
+	Log("ProtocolIndex set to " + std::to_string(protocolIndex));
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
 }
