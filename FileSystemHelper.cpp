@@ -2,6 +2,8 @@
 namespace op2ext { 
 #include "op2ext.h" 
 }
+#include <algorithm>
+
 
 std::string GetOutpost2Directory()
 {
