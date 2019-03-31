@@ -1,14 +1,12 @@
+#include "OPUNetGameProtocol.h"
 #include "Log.h"
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-
 // Force Exports from Outpost2.exe
 #include <OP2Internal.h>
-using namespace OP2Internal;
-
-#include "OPUNetGameProtocol.h"
+#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#include <windows.h>
 #include <string>
 
+using namespace OP2Internal;
 
 HINSTANCE hInstance;
 OPUNetGameProtocol opuNetGameProtocol;
