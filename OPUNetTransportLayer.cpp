@@ -1,12 +1,12 @@
 // **TODO** Only answer first join request (game host)
 // **TODO** Discard packets from bad net ids (non-zero values that don't match up to proper index, (with proper source IP?))
 
+#include "OPUNetTransportLayer.h"
+#include "Log.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <mmsystem.h>
 #include <objbase.h>
-#include "OPUNetTransportLayer.h"
-#include "Log.h"
 
 
 extern char sectionName[];
@@ -267,9 +267,7 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned shor
 	packet.tlMessage.searchQuery.password[0] = 0;
 
 // **DEBUG**
-logFile << "Search for games: ";
-LogAddress(hostAddress);
-logFile << std::endl;
+	Log("Search for games: " + FormatAddress(hostAddress));
 
 	// Send the HostGameSearchQuery
 	return SendTo(packet, hostAddress);
@@ -302,9 +300,8 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 	strncpy_s(packet.tlMessage.joinRequest.password, password, sizeof(packet.tlMessage.joinRequest.password));
 
 // **DEBUG**
-logFile << "Sending join request: ";
-LogAddress(game.address);
-logFile << std::endl << "  Session ID: ";
+Log("Sending join request: " + FormatAddress(game.address));
+logFile << "  Session ID: ";
 LogGuid(packet.tlMessage.joinRequest.sessionIdentifier);
 logFile << std::endl;
 //LogPacket(packet);
@@ -702,9 +699,8 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 			int expectedPlayerNetID = peerInfo[sourcePlayerNetID & 7].playerNetID;
 			if (expectedPlayerNetID != 0 && expectedPlayerNetID != sourcePlayerNetID)
 			{
-				logFile << "Received packet with bad sourcePlayerNetID: " << sourcePlayerNetID << " from ";
-				LogAddress(from);
-				logFile << std::endl;
+				Log("Received packet with bad sourcePlayerNetID: " + std::to_string(sourcePlayerNetID) + 
+					" from " + FormatAddress(from));
 				logFile << " Packet.type = " << (int)packet.header.type << std::endl;
 				logFile << " Packet.commandType = " << packet.tlMessage.tlHeader.commandType << std::endl;
 			}
@@ -1009,9 +1005,7 @@ bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
 	else
 	{
 		// **DEBUG**
-		logFile << "SendTo error: ";
-		LogAddress(to);
-		logFile << std::endl;
+		Log("SendTo error: " + FormatAddress(to));
 		logFile << WSAGetLastError() << std::endl;
 	}
 
@@ -1128,9 +1122,8 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			{
 				tlMessage.tlHeader.commandType = tlcJoinGranted;
 				// **DEBUG**
-				logFile << "Client join accepted: ";
-				LogAddress(from);
-				logFile << " (" << tlMessage.joinReply.newPlayerNetID << ")" << std::endl;
+				Log("Client join accepted: " + FormatAddress(from) + 
+					" (" + std::to_string(tlMessage.joinReply.newPlayerNetID) + ")");
 
 				// Check if a forced return port has been set
 				if (returnPortNum != 0)
@@ -1144,9 +1137,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			{
 				tlMessage.tlHeader.commandType = tlcJoinRefused;
 				// **DEBUG**
-				logFile << "Client join refused: ";
-				LogAddress(from);
-				logFile << std::endl;
+				Log("Client join refused: " + FormatAddress(from));
 			}
 
 			// Send the reply
@@ -1159,9 +1150,8 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 				return true;		// Packet handled (discard)
 			}
 // **DEBUG**
-logFile << "Game Search Query: ";
-LogAddress(from);
-logFile << std::endl;
+			Log("Game Search Query: " + FormatAddress(from));
+
 			// Verify Game Identifier
 			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
 				return true;		// Packet handled (discard)
@@ -1182,7 +1172,7 @@ logFile << std::endl;
 			SendTo(packet, from);
 
 			return true;			// Packet handled
-		case tlcJoinHelpRequest:
+		case tlcJoinHelpRequest: {
 			// Verify packet size
 			if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest)) {
 				return true;		// Packet handled (discard)
@@ -1193,9 +1183,10 @@ logFile << std::endl;
 			}
 
 			// Log JoinHelpRequest parameters
-			logFile << "JoinHelpRequest: Client: ";
-			LogAddress(tlMessage.joinHelpRequest.clientAddr);
-			logFile << "  Return Port: " << tlMessage.joinHelpRequest.returnPortNum << std::endl;
+			const std::string addressStr = FormatAddress(tlMessage.joinHelpRequest.clientAddr);
+			const std::string returnPortStr = std::to_string(tlMessage.joinHelpRequest.returnPortNum);
+			Log("JoinHelpRequest: Client: " + addressStr + "  Return Port: " + returnPortStr);
+
 			// Send something to create router mappings
 			tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
 			if (tlMessage.joinHelpRequest.returnPortNum != 0) {
@@ -1204,6 +1195,7 @@ logFile << std::endl;
 			sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
 
 			break;
+		}
 		default:  // Silence warnings about unused enumeration value in switch
 			break;
 		}
@@ -1298,9 +1290,8 @@ LogAddressList(peerInfo);
 
 		case tlcHostedGameSearchReply:		// [Custom format]
 // **DEBUG**
-logFile << "Hosted Game Search Reply: ";
-LogAddress(from);
-logFile << std::endl;
+			Log("Hosted Game Search Reply: " + FormatAddress(from));
+
 			// Verify packet size
 			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
 				return true;		// Packet handled (discard)
@@ -1413,9 +1404,11 @@ void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 		if ((expectedPort != sourcePort) && (expectedPort != 0))
 		{
 			// Port mismatch. Issue warning
-			logFile << "Packet from player " << sourcePlayerIndex << " (";
-			LogAddress(from);
-			logFile << ") received on unexpected port (" << ntohs(sourcePort) << " instead of " << ntohs(expectedPort) << ")  [PlayerNetId: " << sourcePlayerNetId << "]" << std::endl;
+			Log("Packet from player " + std::to_string(sourcePlayerIndex) + 
+				" (" + FormatAddress(from) + ") received on unexpected port (" + 
+				std::to_string(ntohs(sourcePort)) + " instead of " + 
+				std::to_string(ntohs(expectedPort)) + ")  [PlayerNetId: " + 
+				std::to_string(sourcePlayerNetId) + "]");
 		}
 		// Update the source port
 		sourcePlayerPeerInfo.address.sin_port = sourcePort;
