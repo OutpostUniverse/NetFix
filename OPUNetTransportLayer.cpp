@@ -94,24 +94,20 @@ bool OPUNetTransportLayer::CreateSocket()
 
 bool OPUNetTransportLayer::HostGame(USHORT port, const char* password, const char* creatorName, int maxPlayers, int gameType)
 {
-	int i;
-	int errorCode;
-	sockaddr_in localAddress;
-
 // **DEBUG**
 logFile.close();
 logFile.open("logHost.txt");
 
 	// Clear internal players state
 	numPlayers = 0;
-	for (i = 0; i < MaxRemotePlayers; i++)
+	for (int i = 0; i < MaxRemotePlayers; ++i)
 	{
 		peerInfo[i].status = 0;
 		peerInfo[i].playerNetID = 0;
 		peerInfo[i].address.sin_addr.s_addr = INADDR_ANY;
 	}
 
-
+	sockaddr_in localAddress;
 	// Check if we want to bind to the host port
 	if (port != 0)
 	{
@@ -132,7 +128,7 @@ logFile.open("logHost.txt");
 			return false;
 		}
 		// Bind the socket to listen on
-		errorCode = bind(hostSocket, (sockaddr*)&localAddress, sizeof(localAddress));
+		int errorCode = bind(hostSocket, (sockaddr*)&localAddress, sizeof(localAddress));
 		// Check for errors
 		if (errorCode == SOCKET_ERROR)
 		{
@@ -194,7 +190,7 @@ logFile << " Host playerNetID: " << playerNetID << std::endl;
 
 
 	// Poke the game server (and let it know a new game is hosted)
-	errorCode = PokeGameServer(pscGameHosted);
+	int errorCode = PokeGameServer(pscGameHosted);
 	// Check for errors
 	if (errorCode == 0)
 	{
