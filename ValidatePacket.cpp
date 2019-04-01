@@ -1,12 +1,11 @@
+#include <OP2Internal.h>
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 
-
-#include <OP2Internal.h>
 using namespace OP2Internal;
 
 
-bool ValidatePacket(Packet& packet, sockaddr_in& from)
+bool ValidatePacket(Packet& packet, sockaddr_in& fromAddress)
 {
 	// Validate source player net id against from address **TODO**
 

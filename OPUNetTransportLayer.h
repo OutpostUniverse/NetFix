@@ -83,9 +83,9 @@ private:
 	bool SendTo(Packet& packet, sockaddr_in& to);
 	bool SendStatusUpdate();
 	bool SendUntilStatusUpdate(Packet& packet, int untilStatus, int maxTries, int repeatDelay);
-	bool DoImmediateProcessing(Packet& packet, sockaddr_in& from);
+	bool DoImmediateProcessing(Packet& packet, sockaddr_in& fromAddress);
 	bool PokeGameServer(PokeStatusCode status);
-	bool GetGameServerAddress(sockaddr_in &gameServerAddr);
+	bool GetGameServerAddress(sockaddr_in &gameServerAddress);
 	void CheckSourcePort(Packet& packet, sockaddr_in& from);
 
 private:
