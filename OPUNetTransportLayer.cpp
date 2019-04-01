@@ -488,11 +488,10 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 // or -1 if the output buffer is too small, (after having been filled)
 int OPUNetTransportLayer::GetOpponentNetIDList(int netIDList[], int maxNumID)
 {
-	int i;
-	int j;
+	int j = 0;
 
 	// Copy all non local playerNetIDs
-	for (i = 0, j = 0; i < MaxRemotePlayers; i++)
+	for (int i = 0; i < MaxRemotePlayers; ++i)
 	{
 		// Make sure the ID is valid
 		if (peerInfo[i].playerNetID != 0)
