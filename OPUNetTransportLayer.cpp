@@ -1384,7 +1384,6 @@ void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressStr
 void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 {
 	int sourcePlayerNetId = packet.header.sourcePlayerNetID;
-	int sourcePlayerIndex = sourcePlayerNetId & 7;
 
 	if (sourcePlayerNetId == 0) {
 		return;		// Don't try to update if they don't explicitly say who it's from
@@ -1392,6 +1391,7 @@ void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 
 	if (bGameStarted)
 	{
+		const int sourcePlayerIndex = sourcePlayerNetId & 7;
 		PeerInfo &sourcePlayerPeerInfo = peerInfo[sourcePlayerIndex];
 		unsigned short expectedPort = sourcePlayerPeerInfo.address.sin_port;
 		unsigned short sourcePort = from.sin_port;
