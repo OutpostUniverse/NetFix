@@ -1352,19 +1352,19 @@ bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 }
 
 
-bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddr)
+bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddress)
 {
 	// Get the address string
-	char addrString[256];
-	GetGameServerAddressString(addrString, sizeof(addrString));
+	char addressString[256];
+	GetGameServerAddressString(addressString, sizeof(addressString));
 
 	// Set default address values
-	gameServerAddr.sin_family = AF_INET;
-	gameServerAddr.sin_port = htons(DefaultGameServerPort);
-	memset(gameServerAddr.sin_zero, 0, sizeof(gameServerAddr.sin_zero));
+	gameServerAddress.sin_family = AF_INET;
+	gameServerAddress.sin_port = htons(DefaultGameServerPort);
+	memset(gameServerAddress.sin_zero, 0, sizeof(gameServerAddress.sin_zero));
 
 	// Convert the address string to a sockaddr_in struct
-	int errorCode = GetHostAddress(addrString, gameServerAddr);
+	int errorCode = GetHostAddress(addressString, gameServerAddress);
 	if (errorCode == -1) {
 		return true;		// Success
 	}
