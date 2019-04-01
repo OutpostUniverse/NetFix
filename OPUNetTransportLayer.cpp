@@ -1318,8 +1318,8 @@ Log(FormatPlayerList(peerInfo));
 bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 {
 	// Find the game server address
-	sockaddr_in gameServerAddr;
-	int errorCode = GetGameServerAddress(gameServerAddr);
+	sockaddr_in gameServerAddress;
+	int errorCode = GetGameServerAddress(gameServerAddress);
 	// Check for errors
 	if (errorCode == 0) {
 		return false;
@@ -1343,7 +1343,7 @@ bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 	//  Or maybe even Game Started or Game Cancelled
 
 	// Send the packet
-	return SendTo(packet, gameServerAddr);
+	return SendTo(packet, gameServerAddress);
 }
 
 
