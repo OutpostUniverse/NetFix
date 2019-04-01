@@ -1076,7 +1076,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus
 // -------------------------------------------
 
 // Returns true if the packet was processed, and false otherwise
-bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &from)
+bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fromAddress)
 {
 	// Make sure it's an immediately processed TransportLayer message
 	if (packet.header.type != 1) {
@@ -1108,13 +1108,13 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			// Create a reply
 			packet.header.sourcePlayerNetID = playerNetID;		// Client will need the Host's ID
 			packet.header.sizeOfPayload = sizeof(JoinReply);
-			tlMessage.joinReply.newPlayerNetID = AddPlayer(from);
+			tlMessage.joinReply.newPlayerNetID = AddPlayer(fromAddress);
 			// Determine if join was successful
 			if (tlMessage.joinReply.newPlayerNetID != 0)
 			{
 				tlMessage.tlHeader.commandType = tlcJoinGranted;
 				// **DEBUG**
-				Log("Client join accepted: " + FormatAddress(from) + 
+				Log("Client join accepted: " + FormatAddress(fromAddress) + 
 					" (" + std::to_string(tlMessage.joinReply.newPlayerNetID) + ")");
 
 				// Check if a forced return port has been set
@@ -1129,11 +1129,11 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			{
 				tlMessage.tlHeader.commandType = tlcJoinRefused;
 				// **DEBUG**
-				Log("Client join refused: " + FormatAddress(from));
+				Log("Client join refused: " + FormatAddress(fromAddress));
 			}
 
 			// Send the reply
-			SendTo(packet, from);
+			SendTo(packet, fromAddress);
 
 			return true;			// Packet handled
 		case tlcHostedGameSearchQuery:		// 7: HostedGameSearchQuery  [Custom format]
@@ -1142,7 +1142,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 				return true;		// Packet handled (discard)
 			}
 // **DEBUG**
-			Log("Game Search Query: " + FormatAddress(from));
+			Log("Game Search Query: " + FormatAddress(fromAddress));
 
 			// Verify Game Identifier
 			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
@@ -1161,7 +1161,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			tlMessage.searchReply.hostAddress.sin_addr.s_addr = 0;		// Clear return address  (NAT will obscure it, let a game server or client fix it when the packet is received)
 
 			// Send the reply
-			SendTo(packet, from);
+			SendTo(packet, fromAddress);
 
 			return true;			// Packet handled
 		case tlcJoinHelpRequest: {
@@ -1282,7 +1282,7 @@ Log(FormatPlayerList(peerInfo));
 
 		case tlcHostedGameSearchReply:		// [Custom format]
 // **DEBUG**
-			Log("Hosted Game Search Reply: " + FormatAddress(from));
+			Log("Hosted Game Search Reply: " + FormatAddress(fromAddress));
 
 			// Verify packet size
 			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
@@ -1298,12 +1298,12 @@ Log(FormatPlayerList(peerInfo));
 			if (packet.tlMessage.searchReply.hostAddress.sin_addr.s_addr == 0)
 			{
 				// Update the from address to that of the sender  (NAT will hide the real return address from the sender)
-				packet.tlMessage.searchReply.hostAddress = from;
+				packet.tlMessage.searchReply.hostAddress = fromAddress;
 			}
 			else
 			{
 				// Just make sure the address family is correct
-				packet.tlMessage.searchReply.hostAddress.sin_family = from.sin_family;
+				packet.tlMessage.searchReply.hostAddress.sin_family = fromAddress.sin_family;
 			}
 
 			return false;			// Return Packet for processing
