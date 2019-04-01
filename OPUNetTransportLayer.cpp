@@ -271,7 +271,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 {
 	// Clear internal players state
 	numPlayers = 0;
-	for (int i = 0; i < MaxRemotePlayers; i++)
+	for (int i = 0; i < MaxRemotePlayers; ++i)
 	{
 		peerInfo[i].status = 0;
 		peerInfo[i].playerNetID = 0;
@@ -1037,7 +1037,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus
 	int numPlayers = GetOpponentNetIDList(playerNetIDList, MaxRemotePlayers);
 
 	// Repeat sending packet
-	for (int numTries = 0; numTries < maxTries; numTries++)
+	for (int numTries = 0; numTries < maxTries; ++numTries)
 	{
 		// Haven't yet sent any packets
 		bool bStillWaiting = false;
