@@ -654,13 +654,13 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 
 
 		// Try to read from the net socket
-		sockaddr_in from;
-		unsigned long numBytes = ReadSocket(netSocket, packet, from);
+		sockaddr_in fromAddress;
+		unsigned long numBytes = ReadSocket(netSocket, packet, fromAddress);
 		// Check for errors
 		if (numBytes == -1)
 		{
 			// Try to read from the host socket
-			numBytes = ReadSocket(hostSocket, packet, from);
+			numBytes = ReadSocket(hostSocket, packet, fromAddress);
 			// Check for errors
 			if (numBytes == -1) {
 				return false;
@@ -696,7 +696,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 			if (expectedPlayerNetID != 0 && expectedPlayerNetID != sourcePlayerNetID)
 			{
 				Log("Received packet with bad sourcePlayerNetID: " + std::to_string(sourcePlayerNetID) + 
-					" from " + FormatAddress(from));
+					" from " + FormatAddress(fromAddress));
 				logFile << " Packet.type = " << (int)packet.header.type << std::endl;
 				logFile << " Packet.commandType = " << packet.tlMessage.tlHeader.commandType << std::endl;
 			}
@@ -707,10 +707,10 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		trafficCounters.numBytesReceived += packet.header.sizeOfPayload + sizeof(packet.header);
 
 		// Check for unexpected source ports
-		CheckSourcePort(packet, from);
+		CheckSourcePort(packet, fromAddress);
 
 		// Determine if immediate processing is required
-		bool bRetVal = DoImmediateProcessing(packet, from);
+		bool bRetVal = DoImmediateProcessing(packet, fromAddress);
 
 
 		// Check destination
@@ -722,7 +722,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		if (bRetVal == false)
 		{
 			// Validate packet makes sense (discard if it doesn't)
-			if (ValidatePacket(packet, from))
+			if (ValidatePacket(packet, fromAddress))
 			{
 				// Non immediate processed packet received. Return packet
 				return true;
