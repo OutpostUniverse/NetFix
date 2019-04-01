@@ -12,7 +12,7 @@
 extern char sectionName[];
 
 
-bool ValidatePacket(Packet& packet, sockaddr_in& from);
+bool ValidatePacket(Packet& packet, sockaddr_in& fromAddress);
 
 
 // Public member functions

@@ -5,7 +5,7 @@
 using namespace OP2Internal;
 
 
-bool ValidatePacket(Packet& packet, sockaddr_in& from)
+bool ValidatePacket(Packet& packet, sockaddr_in& fromAddress)
 {
 	// Validate source player net id against from address **TODO**
 
