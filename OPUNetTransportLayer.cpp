@@ -366,25 +366,25 @@ int OPUNetTransportLayer::GetNumPlayers()
 
 int OPUNetTransportLayer::GetPort()
 {
-	sockaddr_in addr;
-	int len = sizeof(addr);
+	sockaddr_in address;
+	int addressLength = sizeof(address);
 
 	// Get the local socket address
-	int errorCode = getsockname(netSocket, (sockaddr*)&addr, &len);
+	int errorCode = getsockname(netSocket, (sockaddr*)&address, &addressLength);
 	if (errorCode == SOCKET_ERROR) {
 		return 0;		// Error
 	}
 
 	// Return the port number
-	return ntohs(addr.sin_port);
+	return ntohs(address.sin_port);
 }
 
 bool OPUNetTransportLayer::GetAddress(sockaddr_in& addr)
 {
-	int len = sizeof(addr);
+	int addressLength = sizeof(addr);
 
 	// Get the local socket address
-	int errorCode = getsockname(netSocket, (sockaddr*)&addr, &len);
+	int errorCode = getsockname(netSocket, (sockaddr*)&addr, &addressLength);
 
 	// Return true if failed
 	return (errorCode == SOCKET_ERROR);
