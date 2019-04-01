@@ -137,8 +137,8 @@ logFile.open("logHost.txt");
 		if (errorCode == SOCKET_ERROR)
 		{
 			// Could not bind to the socket. Get client socket port info
-			i = sizeof(localAddress);
-			errorCode = getsockname(netSocket, (sockaddr*)&localAddress, &i);
+			int sizeofAddress = sizeof(localAddress);
+			errorCode = getsockname(netSocket, (sockaddr*)&localAddress, &sizeofAddress);
 			if (errorCode == SOCKET_ERROR) {
 				return false;
 			}
