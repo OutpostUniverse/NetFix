@@ -26,7 +26,7 @@ SRCS := $(shell find $(SRCDIR) -maxdepth 1 -name '*.cpp')
 OBJS := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 FOLDERS := $(sort $(dir $(SRCS)))
 
-.PHONY:default, all, op2internal
+.PHONY: default all op2internal
 # default: all
 # Project does not link correctly on Linux due to name mangling differences
 # For now, default build rules stop before the link step
@@ -45,7 +45,7 @@ $(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp $(DEPDIR)/%.d | build-folder
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
 	$(POSTCOMPILE)
 
-.PHONY:build-folder
+.PHONY: build-folder
 build-folder:
 	@mkdir -p $(patsubst $(SRCDIR)/%,$(OBJDIR)/%, $(FOLDERS))
 	@mkdir -p $(patsubst $(SRCDIR)/%,$(DEPDIR)/%, $(FOLDERS))
@@ -55,7 +55,7 @@ $(DEPDIR)/%.d: ;
 
 include $(wildcard $(patsubst $(SRCDIR)/%.cpp,$(DEPDIR)/%.d,$(SRCS)))
 
-.PHONY:clean, clean-deps, clean-all
+.PHONY: clean clean-deps clean-all
 clean:
 	-rm -fr $(OBJDIR)
 	-rm -fr $(DEPDIR)
