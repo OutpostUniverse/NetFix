@@ -1119,7 +1119,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 				// Check if a forced return port has been set
 				if (returnPortNum != 0)
 				{
-					logFile << "Return Port forced to " << returnPortNum << std::endl;
+					Log("Return Port forced to " + std::to_string(returnPortNum));
 					// Set the new return port number
 					peerInfo[tlMessage.joinReply.newPlayerNetID & 7].address.sin_port = returnPortNum;
 				}
