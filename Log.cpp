@@ -7,12 +7,7 @@ namespace op2ext {
 #include <winsock2.h>
 #include <objbase.h>
 #include <iostream>
-#include <fstream>
 #include <sstream>
-
-
-// Global Debug file
-std::ofstream logFile(GetOutpost2Directory() + "log.txt");
 
 
 std::string FormatAddress(const sockaddr_in& address)

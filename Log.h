@@ -1,4 +1,3 @@
-#include <fstream>
 #include <string>
 
 struct sockaddr_in;
@@ -9,10 +8,6 @@ struct PeerInfo;
 namespace OP2Internal {
 	struct Packet;
 };
-
-
-// Global Debug file
-extern std::ofstream logFile;
 
 
 std::string FormatAddress(const sockaddr_in& address);
