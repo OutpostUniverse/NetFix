@@ -341,10 +341,8 @@ Log(FormatPlayerList(peerInfo));
 
 	// Send updated status to host
 	bool bSuccess = SendStatusUpdate();
-	// Check for errors replying
-	if (bSuccess == false)
-	{
-		// Error. Inform User
+
+	if (!bSuccess) {
 		MsgBox(nullptr, "Error sending updated status to host", "Error", 0);
 	}
 
