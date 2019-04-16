@@ -200,7 +200,7 @@ logFile << "Error informing game server" << std::endl;
 
 
 	// Return success status
-	return true;				// Success
+	return true;
 }
 
 bool OPUNetTransportLayer::GetExternalAddress()
@@ -595,7 +595,7 @@ int OPUNetTransportLayer::Send(Packet& packet)
 		}
 	}
 
-	return true;		// Success
+	return true;
 }
 
 int OPUNetTransportLayer::Receive(Packet& packet)
@@ -750,7 +750,7 @@ int OPUNetTransportLayer::GetAddressString(int playerNetID, char* addressString,
 	sockaddr_in* address = &peerInfo[playerIndex].address;
 	scr_snprintf(addressString, bufferSize, "%i.%i.%i.%i", address->sin_addr.S_un.S_un_b.s_b1, address->sin_addr.S_un.S_un_b.s_b2, address->sin_addr.S_un.S_un_b.s_b3, address->sin_addr.S_un.S_un_b.s_b4);
 
-	return true;		// Success
+	return true;
 }
 
 int OPUNetTransportLayer::ResetTrafficCounters()
@@ -759,7 +759,7 @@ int OPUNetTransportLayer::ResetTrafficCounters()
 	memset(&trafficCounters, 0, sizeof(trafficCounters));
 	trafficCounters.timeOfLastReset = timeGetTime();
 
-	return true;		// Success
+	return true;
 }
 
 int OPUNetTransportLayer::GetTrafficCounts(TrafficCounters& trafficCounters)
@@ -767,7 +767,7 @@ int OPUNetTransportLayer::GetTrafficCounts(TrafficCounters& trafficCounters)
 	// Copy the TrafficCounter to the supplied buffer
 	trafficCounters = this->trafficCounters;
 
-	return true;		// Success
+	return true;
 }
 
 
@@ -944,7 +944,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 {
 	// Check if the host socket is in use
 	if (sourceSocket == INVALID_SOCKET) {
-		return -1;		// Abort
+		return -1;
 	}
 
 	// Check the server port for data
@@ -952,10 +952,10 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 	int errorCode = ioctlsocket(sourceSocket, FIONREAD, &numBytes);
 	// Check for success
 	if (errorCode == SOCKET_ERROR) {
-		return -1;		// Abort
+		return -1;
 	}
 	if (numBytes == 0) {
-		return -1;		// Abort
+		return -1;
 	}
 
 	// Read the data
@@ -964,7 +964,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 	// Check for errors
 	if (numBytes == SOCKET_ERROR) {
-		return -1;		// Abort
+		return -1;
 	}
 
 	// Return number of bytes read
@@ -1361,10 +1361,10 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddress)
 	// Convert the address string to a sockaddr_in struct
 	int errorCode = GetHostAddress(addressString, gameServerAddress);
 	if (errorCode == -1) {
-		return true;		// Success
+		return true;
 	}
 	
-	return false;		// Error
+	return false;
 }
 
 void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressString, int maxLength)
