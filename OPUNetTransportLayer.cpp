@@ -322,7 +322,7 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	// Store the Host info
 	peerInfo[0].playerNetID = packet.header.sourcePlayerNetID;	// Store Host playerNetID
 	peerInfo[0].address = joiningGameInfo->address;				// Store Host address
-	peerInfo[0].status = 2;										// **
+	peerInfo[0].status = 2;
 	// Get the assigned playerNetID
 	playerNetID = packet.tlMessage.joinReply.newPlayerNetID;	// Store playerNetID
 	int localPlayerNum = playerNetID & 7;   // Cache (frequently used)
@@ -478,7 +478,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 
 
 	// Success
-	peerInfo[0].status = 3;			// **
+	peerInfo[0].status = 3;
 	return 1;
 }
 
@@ -921,7 +921,7 @@ int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
 			// -----------------------------
 			// Store the source address
 			peerInfo[newPlayerIndex].address = from;
-			peerInfo[newPlayerIndex].status = 1;			// **
+			peerInfo[newPlayerIndex].status = 1;
 			peerInfo[newPlayerIndex].playerNetID = newPlayerIndex | (timeGetTime() & ~7);
 			// Increase connected player count
 			numPlayers++;
@@ -1244,8 +1244,8 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 
 			return true;			// Packet handled
 		case tlcSetPlayersListFailed:
-			peerInfo[0].status = 4;						// **
-			peerInfo[playerNetID & 7].status = 4;		// **
+			peerInfo[0].status = 4;
+			peerInfo[playerNetID & 7].status = 4;
 
 			// Form a new packet to return to the game
 			packet.header.sizeOfPayload = 4;
