@@ -243,7 +243,7 @@ void OPUNetGameSelectWnd::InitNetLayer()
 	{
 		// Error creating the transport layer
 		EndDialog(this->hWnd, true);		// bCancel = true
-		return;								// Abort
+		return;
 	}
 
 	// Set the global NetTransportLayer object pointer
@@ -263,7 +263,7 @@ bool OPUNetGameSelectWnd::InitGurManager()
 	{
 		// Failed to create the Guaranteed Send Layer. Inform User
 		SetStatusText("Out of memory.  Could not create Guaranteed Send Layer.");
-		return false;			// Abort
+		return false;
 	}
 	// Initialize the Guaranteed Send Layer
 	const int errorCode = app.gurManager->Initialize(opuNetTransportLayer);
@@ -272,10 +272,10 @@ bool OPUNetGameSelectWnd::InitGurManager()
 	{
 		// Failed to initialize. Inform user
 		SetStatusText("Failed to Initialize the Guaranteed Send Layer");
-		return false;			// Abort
+		return false;
 	}
 
-	return true;		// Success
+	return true;
 }
 
 
@@ -539,7 +539,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		{
 			// Out of memory. Inform user
 			SetStatusText("Out of memory");
-			return;						// Abort
+			return;
 		}
 
 		// Copy the packet info
@@ -717,9 +717,8 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 	// Initialize the Guaranteed Send Layer
 	int errorCode = InitGurManager();
 	// Check for errors
-	if (errorCode == 0)
-	{
-		return;		// Abort
+	if (errorCode == 0) {
+		return;
 	}
 
 
@@ -807,7 +806,7 @@ void OPUNetGameSelectWnd::OnClickJoin()
 	{
 		// No game selected  (or selected item is not a game)
 		SetStatusText("Please select a game to join");
-		return;				// Abort
+		return;
 	}
 
 
@@ -867,9 +866,8 @@ void OPUNetGameSelectWnd::OnClickCreate()
 	// Initialize the Guaranteed Send Layer
 	errorCode = InitGurManager();
 	// Check for errors
-	if (errorCode == 0)
-	{
-		return;		// Abort
+	if (errorCode == 0) {
+		return;
 	}
 
 	
