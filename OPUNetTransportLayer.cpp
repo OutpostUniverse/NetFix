@@ -1113,7 +1113,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			{
 				tlMessage.tlHeader.commandType = tlcJoinGranted;
 				// **DEBUG**
-				Log("Client join accepted: " + FormatAddress(fromAddress) + 
+				Log("Client join accepted: " + FormatAddress(fromAddress) + ". New Player Net ID: " +
 					FormatPlayerNetID(tlMessage.joinReply.newPlayerNetID));
 
 				// Check if a forced return port has been set
