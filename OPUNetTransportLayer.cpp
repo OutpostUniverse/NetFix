@@ -1111,13 +1111,13 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			{
 				tlMessage.tlHeader.commandType = tlcJoinGranted;
 				// **DEBUG**
-				Log("Client join accepted: " + FormatAddress(fromAddress) + 
-					" (" + std::to_string(tlMessage.joinReply.newPlayerNetID) + ")");
+				Log("Client join accepted: " + FormatAddress(fromAddress) + ". New Player Net ID: " +
+					FormatPlayerNetID(tlMessage.joinReply.newPlayerNetID));
 
 				// Check if a forced return port has been set
 				if (returnPortNum != 0)
 				{
-					logFile << "Return Port forced to " << returnPortNum << std::endl;
+					Log("Return Port forced to " + std::to_string(returnPortNum));
 					// Set the new return port number
 					peerInfo[tlMessage.joinReply.newPlayerNetID & 7].address.sin_port = returnPortNum;
 				}
@@ -1396,8 +1396,8 @@ void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 			Log("Packet from player " + std::to_string(sourcePlayerIndex) + 
 				" (" + FormatAddress(from) + ") received on unexpected port (" + 
 				std::to_string(ntohs(sourcePort)) + " instead of " + 
-				std::to_string(ntohs(expectedPort)) + ")  [PlayerNetId: " + 
-				std::to_string(sourcePlayerNetId) + "]");
+				std::to_string(ntohs(expectedPort)) + 
+				") PlayerNetId: " + FormatPlayerNetID(sourcePlayerNetId));
 		}
 		// Update the source port
 		sourcePlayerPeerInfo.address.sin_port = sourcePort;
