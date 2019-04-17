@@ -663,7 +663,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 
 
 		// **DEBUG**
-		//Log("ReadSocket: type = " + std::to_string(static_cast<int>(packet.header.type))
+		//Log("ReadSocket: type = " + std::to_string(packet.header.type)
 		//		+ "  commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType)
 		//		+ "  sourcePlayerNetID = " + std::to_string(packet.header.sourcePlayerNetID));
 
@@ -691,7 +691,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 			{
 				Log("Received packet with bad sourcePlayerNetID: " + std::to_string(sourcePlayerNetID) + 
 					" from " + FormatAddress(fromAddress));
-				Log(" Packet.type = " + std::to_string(static_cast<int>(packet.header.type)));
+				Log(" Packet.type = " + std::to_string(packet.header.type));
 				Log(" Packet.commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType));
 			}
 		}
