@@ -647,7 +647,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 
 		// Try to read from the net socket
 		sockaddr_in fromAddress;
-		unsigned long numBytes = ReadSocket(netSocket, packet, fromAddress);
+		auto numBytes = ReadSocket(netSocket, packet, fromAddress);
 		// Check for errors
 		if (numBytes == -1)
 		{
@@ -669,7 +669,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		if (numBytes < sizeof(PacketHeader)) {
 			continue;		// Discard packet
 		}
-		if (numBytes < sizeof(PacketHeader) + packet.header.sizeOfPayload) {
+		if (static_cast<std::size_t>(numBytes) < sizeof(PacketHeader) + packet.header.sizeOfPayload) {
 			continue;		// Discard packet
 		}
 		if (packet.header.checksum != packet.Checksum()) {
