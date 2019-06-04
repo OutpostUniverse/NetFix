@@ -958,7 +958,8 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 	// Read the data
 	int fromLen = sizeof(from);
-	auto receivedByteCount = recvfrom(sourceSocket, (char*)&packet, sizeof(packet), 0, (sockaddr*)&from, &fromLen);
+	auto receivedByteCount = recvfrom(sourceSocket, reinterpret_cast<char*>(&packet), 
+		sizeof(packet), 0, reinterpret_cast<sockaddr*>(&from), &fromLen);
 
 	if (receivedByteCount == SOCKET_ERROR) {
 		return -1;
