@@ -945,14 +945,14 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 	}
 
 	// Check the server port for data
-	unsigned long byteCountUnsigned; //ioctlsocket sets argp to number of bytes read when passed FIONREAD
-	int errorCode = ioctlsocket(sourceSocket, FIONREAD, &byteCountUnsigned);
+	unsigned long byteCount; // ioctlsocket sets argp to number of bytes read when passed FIONREAD
+	int errorCode = ioctlsocket(sourceSocket, FIONREAD, &byteCount);
 
 	if (errorCode == SOCKET_ERROR) {
 		return -1;
 	}
 
-	if (byteCountUnsigned == 0) {
+	if (byteCount == 0) {
 		return -1;
 	}
 
