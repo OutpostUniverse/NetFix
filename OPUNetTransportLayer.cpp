@@ -666,7 +666,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		//		+ "  sourcePlayerNetID = " + std::to_string(packet.header.sourcePlayerNetID));
 
 		// Error check the packet
-		if (numBytes < sizeof(PacketHeader)) {
+		if (static_cast<std::size_t>(numBytes) < sizeof(PacketHeader)) {
 			continue;		// Discard packet
 		}
 		if (static_cast<std::size_t>(numBytes) < sizeof(PacketHeader) + packet.header.sizeOfPayload) {
