@@ -647,7 +647,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 
 		// Try to read from the net socket
 		sockaddr_in fromAddress;
-		unsigned long numBytes = ReadSocket(netSocket, packet, fromAddress);
+		auto numBytes = ReadSocket(netSocket, packet, fromAddress);
 		// Check for errors
 		if (numBytes == -1)
 		{
@@ -666,10 +666,10 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		//		+ "  sourcePlayerNetID = " + std::to_string(packet.header.sourcePlayerNetID));
 
 		// Error check the packet
-		if (numBytes < sizeof(PacketHeader)) {
+		if (static_cast<std::size_t>(numBytes) < sizeof(PacketHeader)) {
 			continue;		// Discard packet
 		}
-		if (numBytes < sizeof(PacketHeader) + packet.header.sizeOfPayload) {
+		if (static_cast<std::size_t>(numBytes) < sizeof(PacketHeader) + packet.header.sizeOfPayload) {
 			continue;		// Discard packet
 		}
 		if (packet.header.checksum != packet.Checksum()) {
@@ -945,27 +945,28 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 	}
 
 	// Check the server port for data
-	unsigned long numBytes;
-	int errorCode = ioctlsocket(sourceSocket, FIONREAD, &numBytes);
-	// Check for success
+	unsigned long byteCount; // ioctlsocket sets argp to number of bytes read when passed FIONREAD
+	int errorCode = ioctlsocket(sourceSocket, FIONREAD, &byteCount);
+
 	if (errorCode == SOCKET_ERROR) {
 		return -1;
 	}
-	if (numBytes == 0) {
+
+	if (byteCount == 0) {
 		return -1;
 	}
 
 	// Read the data
 	int fromLen = sizeof(from);
-	numBytes = recvfrom(sourceSocket, (char*)&packet, sizeof(packet), 0, (sockaddr*)&from, &fromLen);
+	auto receivedByteCount = recvfrom(sourceSocket, reinterpret_cast<char*>(&packet), 
+		sizeof(packet), 0, reinterpret_cast<sockaddr*>(&from), &fromLen);
 
-	// Check for errors
-	if (numBytes == SOCKET_ERROR) {
+	if (receivedByteCount == SOCKET_ERROR) {
 		return -1;
 	}
 
 	// Return number of bytes read
-	return numBytes;
+	return receivedByteCount;
 }
 
 
