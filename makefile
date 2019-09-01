@@ -17,9 +17,6 @@ CXXFLAGS := -std=c++17 -g -Wall -Wno-unknown-pragmas -Wzero-as-null-pointer-cons
 LDFLAGS := -shared -LOP2Internal/
 LDLIBS := -lOP2Internal -lws2_32
 
-# $(info $(call DefineCppProject,netFixClient,NetFix.dll,./*.cpp))
-# $(info $(call DefineCppProjectVariables,netFixClient,NetFix.dll,./*.cpp))
-
 .PHONY: all op2internal op2ext
 
 # By default only compile intermediate files, do not link
