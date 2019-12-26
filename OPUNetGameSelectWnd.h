@@ -50,7 +50,7 @@ private:
 private:
 	// Member variables
 	OPUNetTransportLayer* opuNetTransportLayer;
-	UINT timer;
+	UINT_PTR timer;
 	UINT searchTickCount;
 	HostedGameInfo* joiningGame;
 	char password[16];
