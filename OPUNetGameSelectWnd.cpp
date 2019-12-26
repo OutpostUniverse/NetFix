@@ -42,7 +42,7 @@ const char* GameTypeName[] =
 OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 {
 	opuNetTransportLayer = nullptr;
-	timer = 0;
+	timer = NULL;
 	searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 	joiningGame = nullptr;
 	joinAttempt = 0;
@@ -227,7 +227,7 @@ void OPUNetGameSelectWnd::OnInit()
 
 	// Create a timer
 	// --------------
-	timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
+	timer = SetTimer(this->hWnd, NULL, timerInterval, nullptr);
 }
 
 
@@ -353,7 +353,7 @@ void OPUNetGameSelectWnd::SetStatusText(const char* text)
 void OPUNetGameSelectWnd::OnDestroy()
 {
 	// Kill the timer
-	if (timer != 0) {
+	if (timer != NULL) {
 		KillTimer(this->hWnd, timer);
 	}
 
@@ -707,8 +707,8 @@ void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameI
 void OPUNetGameSelectWnd::OnJoinAccepted()
 {
 	// Stop the update timer
-	KillTimer(this->hWnd, 0);
-	timer = 0;
+	KillTimer(this->hWnd, NULL);
+	timer = NULL;
 
 
 	SetStatusText("Join accepted");
@@ -746,7 +746,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 	else
 	{
 		// Game cancelled. Restart the update timer
-		timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
+		timer = SetTimer(this->hWnd, NULL, timerInterval, nullptr);
 		searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 
 		// Send the player Quit message
@@ -830,8 +830,8 @@ void OPUNetGameSelectWnd::OnClickCreate()
 
 
 	// Stop the update timer
-	KillTimer(this->hWnd, 0);
-	timer = 0;
+	KillTimer(this->hWnd, NULL);
+	timer = NULL;
 
 
 	// Clear the status text
@@ -894,7 +894,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 		SetStatusText("Game Cancelled");
 
 		// Restart the update timer
-		timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
+		timer = SetTimer(this->hWnd, NULL, timerInterval, nullptr);
 		searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 	}
 }
