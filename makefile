@@ -30,4 +30,4 @@ op2ext:
 
 NetFix.dll: | op2internal op2ext
 
-$(eval $(call DefineCppProject,netFixClient,NetFix.dll,./*.cpp))
+$(eval $(call DefineCppProject,netFixClient,NetFix.dll,client/))
