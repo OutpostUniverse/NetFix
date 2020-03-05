@@ -8,14 +8,18 @@
 include op2ext/makefile-generic.mk
 
 
-# Set compiler to mingw (can still override from command line)
-config := mingw
+# Set default compiler toolchain (gcc, clang, mingw, default)
+config := default
+# Client project is Windows only, and so needs a compiler that targets Windows
+netFixClient: config := mingw
+intermediate-netFixClient: config := mingw
 
 
-CPPFLAGS := -I OP2Internal/src/ -I op2ext/srcDLL/
 CXXFLAGS := -std=c++17 -g -Wall -Wno-unknown-pragmas -Wzero-as-null-pointer-constant
-LDFLAGS := -shared -LOP2Internal/
-LDLIBS := -lOP2Internal -lws2_32
+
+netFixClient_CPPFLAGS := -I OP2Internal/src/ -I op2ext/srcDLL/
+netFixClient_LDFLAGS := -shared -LOP2Internal/
+netFixClient_LDLIBS := -lOP2Internal -lws2_32
 
 .PHONY: all op2internal op2ext
 
