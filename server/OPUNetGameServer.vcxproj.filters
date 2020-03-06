@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{79f3579c-0981-4342-872e-392a96b4ca22}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ErrorLog.cpp" />
+    <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Packet.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ErrorLog.h" />
+    <ClInclude Include="GameServer.h" />
+    <ClInclude Include="Packet.h" />
+  </ItemGroup>
+</Project>

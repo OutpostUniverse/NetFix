@@ -1,0 +1,13 @@
+
+language: cpp
+sudo: false
+os:
+  - osx
+compiler:
+  - gcc
+  - clang
+script:
+  - make --keep-going netFixServer
+notifications:
+  email: false
+
