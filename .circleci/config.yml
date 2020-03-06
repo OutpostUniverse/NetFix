@@ -6,13 +6,15 @@ jobs:
       - image: outpostuniverse/netfix:1.0
     steps:
       - checkout
-      - run: make --keep-going
+      - run: git submodule update --init
+      - run: make --keep-going netFixServer
   build-linux-clang:
     docker:
       - image: outpostuniverse/netfix:1.0
     steps:
       - checkout
-      - run: make --keep-going CXX=clang++
+      - run: git submodule update --init
+      - run: make --keep-going netFixServer CXX=clang++
 
 workflows:
   build:
