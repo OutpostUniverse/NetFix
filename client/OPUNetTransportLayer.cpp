@@ -167,7 +167,7 @@ bool OPUNetTransportLayer::HostGame(USHORT port, const char* password, const cha
 	hostedGameInfo.createGameInfo.startupFlags.b1 = 0;
 	hostedGameInfo.createGameInfo.startupFlags.missionType = gameType;
 	hostedGameInfo.createGameInfo.startupFlags.numInitialVehicles = 0;
-	// Copy the game creator name and password
+	// Copy the game creator name and joinRequestPassword
 	strncpy_s(hostedGameInfo.createGameInfo.gameCreatorName, creatorName, sizeof(hostedGameInfo.createGameInfo.gameCreatorName));
 	strncpy_s(this->password, password, sizeof(this->password));
 
@@ -1146,7 +1146,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
 				return true;		// Packet handled (discard)
 			}
-			// Verify password
+			// Verify joinRequestPassword
 			if (strncmp(tlMessage.searchQuery.password, password, sizeof(password)) != 0) {
 				return true;		// Packet handled (discard)
 			}

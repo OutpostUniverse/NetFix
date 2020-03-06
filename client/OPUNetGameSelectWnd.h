@@ -53,7 +53,7 @@ private:
 	UINT_PTR timer;
 	UINT searchTickCount;
 	HostedGameInfo* joiningGame;
-	char password[16];
+	char joinRequestPassword[16];
 	UINT joinAttempt;
 	UINT joinAttemptTickCount;
 	USHORT internalPort;
