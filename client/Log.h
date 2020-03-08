@@ -31,3 +31,4 @@ std::string FormatHexadecimal(std::uintptr_t value);
 
 void Log(const std::string& message);
 void LogError(const std::string& message);
+void LogDebug(const std::string& message);

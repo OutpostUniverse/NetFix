@@ -112,3 +112,8 @@ void LogError(const std::string& message)
 {
 	op2ext::LogError(message.c_str());
 }
+
+void LogDebug(const std::string& message)
+{
+	op2ext::LogDebug(message.c_str());
+}
