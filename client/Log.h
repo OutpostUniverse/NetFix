@@ -1,4 +1,7 @@
+#pragma once
+
 #include <string>
+#include <cstdint>
 
 struct sockaddr_in;
 struct _GUID;
@@ -16,6 +19,10 @@ std::string FormatPlayerList(const PeerInfo* peerInfo);
 std::string FormatPlayerNetID(int playerNetID);
 std::string FormatGuid(const GUID& guid);
 std::string FormatPacket(const OP2Internal::Packet& packet);
+std::string FormatAddress(void* value);
+std::string FormatAddress(std::uintptr_t value);
 
 
 void Log(const std::string& message);
+void LogError(const std::string& message);
+void LogDebug(const std::string& message);

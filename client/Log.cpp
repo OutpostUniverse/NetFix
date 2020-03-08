@@ -8,6 +8,7 @@ namespace op2ext {
 #include <objbase.h>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 
 std::string FormatAddress(const sockaddr_in& address)
@@ -85,8 +86,30 @@ std::string FormatPacket(const OP2Internal::Packet& packet)
 	return ss.str();
 }
 
+std::string FormatAddress(void* value)
+{
+	return FormatAddress(reinterpret_cast<std::uintptr_t>(value));
+}
+
+std::string FormatAddress(std::uintptr_t value)
+{
+	std::stringstream ss;
+	ss << "0x" << std::hex << std::setfill('0') << std::setw(8) << value;
+	return ss.str();
+}
+
 
 void Log(const std::string& message)
 {
 	op2ext::Log(message.c_str());
+}
+
+void LogError(const std::string& message)
+{
+	op2ext::LogError(message.c_str());
+}
+
+void LogDebug(const std::string& message)
+{
+	op2ext::LogDebug(message.c_str());
 }
