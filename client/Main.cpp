@@ -57,7 +57,7 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 
 	// Get multiplayer button index that NetFix will replace
 	int protocolIndex = config.GetInt(sectionName, "ProtocolIndex", DefaultProtocolIndex);
-	Log("ProtocolIndex set to " + std::to_string(protocolIndex));
+	LogDebug("ProtocolIndex set to " + std::to_string(protocolIndex));
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
 }
