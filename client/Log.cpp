@@ -86,6 +86,14 @@ std::string FormatPacket(const OP2Internal::Packet& packet)
 }
 
 
+std::string FormatHexadecimal(std::uintptr_t value)
+{
+	std::stringstream ss;
+	ss << "0x" << std::hex << value;
+	return ss.str();
+}
+
+
 void Log(const std::string& message)
 {
 	op2ext::Log(message.c_str());
