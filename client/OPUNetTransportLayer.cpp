@@ -92,7 +92,7 @@ bool OPUNetTransportLayer::CreateSocket()
 	return (netSocket != INVALID_SOCKET);
 }
 
-bool OPUNetTransportLayer::HostGame(USHORT port, const char* password, const char* creatorName, int maxPlayers, int gameType)
+bool OPUNetTransportLayer::HostGame(USHORT port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
 {
 	// **DEBUG**
 	Log("Hosting Game");
@@ -167,9 +167,9 @@ bool OPUNetTransportLayer::HostGame(USHORT port, const char* password, const cha
 	hostedGameInfo.createGameInfo.startupFlags.b1 = 0;
 	hostedGameInfo.createGameInfo.startupFlags.missionType = gameType;
 	hostedGameInfo.createGameInfo.startupFlags.numInitialVehicles = 0;
-	// Copy the game creator name and joinRequestPassword
+	// Copy the game creator name and hostPassword
 	strncpy_s(hostedGameInfo.createGameInfo.gameCreatorName, creatorName, sizeof(hostedGameInfo.createGameInfo.gameCreatorName));
-	strncpy_s(this->password, password, sizeof(this->password));
+	strncpy_s(this->hostPassword, hostPassword, sizeof(this->hostPassword));
 
 	// **DEBUG**
 	Log(" Session ID: " + FormatGuid(hostedGameInfo.sessionIdentifier));
@@ -266,7 +266,7 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned shor
 	return SendTo(packet, hostAddress);
 }
 
-bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
+bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* joinRequestPassword)
 {
 	// Clear internal players state
 	numPlayers = 0;
@@ -290,7 +290,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* password)
 	packet.tlMessage.joinRequest.commandType = tlcJoinRequest;
 	packet.tlMessage.joinRequest.sessionIdentifier = game.sessionIdentifier;
 	packet.tlMessage.joinRequest.returnPortNum = forcedPort;
-	strncpy_s(packet.tlMessage.joinRequest.password, password, sizeof(packet.tlMessage.joinRequest.password));
+	strncpy_s(packet.tlMessage.joinRequest.password, joinRequestPassword, sizeof(packet.tlMessage.joinRequest.password));
 
 	// **DEBUG**
 	Log("Sending join request: " + FormatAddress(game.address));
@@ -1146,8 +1146,8 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
 				return true;		// Packet handled (discard)
 			}
-			// Verify joinRequestPassword
-			if (strncmp(tlMessage.searchQuery.password, password, sizeof(password)) != 0) {
+			// Verify password
+			if (strncmp(tlMessage.searchQuery.password, hostPassword, sizeof(hostPassword)) != 0) {
 				return true;		// Packet handled (discard)
 			}
 
