@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 struct sockaddr_in;
