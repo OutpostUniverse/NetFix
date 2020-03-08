@@ -1,0 +1,9 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: outpostuniverse/netfix-mingw:1.0
+    steps:
+      - checkout
+      - run: git submodule update --init || true
+      - run: make --keep-going --jobs=2 intermediate-netFixClient
