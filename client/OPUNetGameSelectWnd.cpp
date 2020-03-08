@@ -437,7 +437,7 @@ void OPUNetGameSelectWnd::OnTimer()
 			{
 				joinAttempt++;
 				// Resend the Join request
-				opuNetTransportLayer->JoinGame(*joiningGame, password);
+				opuNetTransportLayer->JoinGame(*joiningGame, joinRequestPassword);
 			}
 		}
 	}
@@ -810,8 +810,8 @@ void OPUNetGameSelectWnd::OnClickJoin()
 	}
 
 
-	// Get the join password
-	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(password), (LPARAM)password);
+	// Get the join joinRequestPassword
+	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(joinRequestPassword), (LPARAM)joinRequestPassword);
 
 
 	// Set the status text
@@ -820,13 +820,13 @@ void OPUNetGameSelectWnd::OnClickJoin()
 
 	joinAttempt = 1;
 	// Send the Join request
-	opuNetTransportLayer->JoinGame(*joiningGame, password);
+	opuNetTransportLayer->JoinGame(*joiningGame, joinRequestPassword);
 }
 
 
 void OPUNetGameSelectWnd::OnClickCreate()
 {
-	char password[16];
+	char hostPassword[16];
 
 
 	// Stop the update timer
@@ -839,7 +839,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 
 
 	// Get the game host values
-	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(password), (LPARAM)password);
+	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(hostPassword), (LPARAM)hostPassword);
 	const int maxPlayers = SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_GETCURSEL, 0, 0) + 2;
 	const int gameTypeIndex = SendDlgItemMessage(this->hWnd, IDC_GameType, CB_GETCURSEL, 0, 0);
 	const int gameType = SendDlgItemMessage(this->hWnd, IDC_GameType, CB_GETITEMDATA, (WPARAM)gameTypeIndex, 0);
@@ -852,7 +852,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 
 
 	// Try to Host
-	int errorCode = opuNetTransportLayer->HostGame(config.GetInt(sectionName, "HostPort", DefaultClientPort), password, hostGameParameters.gameCreatorName, maxPlayers, gameType);
+	int errorCode = opuNetTransportLayer->HostGame(config.GetInt(sectionName, "HostPort", DefaultClientPort), hostPassword, hostGameParameters.gameCreatorName, maxPlayers, gameType);
 	// Check for errors
 	if (errorCode == false)
 	{
