@@ -13,9 +13,6 @@ char sectionName[64] = "";				// Ini file section name, for loading additional p
 const int DefaultProtocolIndex = 4;		// "SIGS"
 const int ExpectedOutpost2Addr = 0x00400000;
 
-// Provide error in modal dialog box for user and then log message
-void LogWithModalDialog(const std::string& message);
-
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -41,14 +38,14 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	// Check the NetFixClient DLL load address
 	if (hInstance != desiredLoadAddress)
 	{
-		LogWithModalDialog("NetFixClient DLL loaded to incorrect address");
+		LogError("NetFixClient DLL loaded to incorrect address");
 		return;
 	}
 	// Check the Outpost2.exe load address
 	void* op2ModuleBase = GetModuleHandle("Outpost2.exe");
 	if (ExpectedOutpost2Addr != (int)op2ModuleBase)
 	{
-		LogWithModalDialog("Outpost2.exe module not loaded at usual address");
+		LogError("Outpost2.exe module not loaded at usual address");
 		return;
 	}
 
@@ -60,11 +57,4 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	Log("ProtocolIndex set to " + std::to_string(protocolIndex));
 	// Set a new multiplayer protocol type
 	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
-}
-
-
-void LogWithModalDialog(const std::string& message)
-{
-	Log(message);
-	MessageBox(nullptr, message.c_str(), "NetFixClient Error", 0);
 }

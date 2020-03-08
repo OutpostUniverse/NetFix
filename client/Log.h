@@ -19,3 +19,4 @@ std::string FormatPacket(const OP2Internal::Packet& packet);
 
 
 void Log(const std::string& message);
+void LogError(const std::string& message);

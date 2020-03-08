@@ -90,3 +90,8 @@ void Log(const std::string& message)
 {
 	op2ext::Log(message.c_str());
 }
+
+void LogError(const std::string& message)
+{
+	op2ext::LogError(message.c_str());
+}
