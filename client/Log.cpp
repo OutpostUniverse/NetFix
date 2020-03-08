@@ -85,6 +85,15 @@ std::string FormatPacket(const OP2Internal::Packet& packet)
 	return ss.str();
 }
 
+std::string FormatLoadAddress(void* value)
+{
+	return FormatHexadecimal(reinterpret_cast<std::uintptr_t>(value));
+}
+
+std::string FormatLoadAddress(HINSTANCE value)
+{
+	return FormatHexadecimal(reinterpret_cast<std::uintptr_t>(value));
+}
 
 std::string FormatHexadecimal(std::uintptr_t value)
 {
