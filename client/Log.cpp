@@ -8,6 +8,7 @@ namespace op2ext {
 #include <objbase.h>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 
 std::string FormatAddress(const sockaddr_in& address)
@@ -93,7 +94,7 @@ std::string FormatAddress(void* value)
 std::string FormatAddress(std::uintptr_t value)
 {
 	std::stringstream ss;
-	ss << "0x" << std::hex << value;
+	ss << "0x" << std::hex << std::setfill('0') << std::setw(8) << value;
 	return ss.str();
 }
 
