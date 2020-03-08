@@ -39,16 +39,16 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	// Check the NetFixClient DLL load address
 	if (hInstance != desiredLoadAddress)
 	{
-		LogError("NetFixClient DLL loaded to incorrect address " + FormatLoadAddress(hInstance) + 
-			". Expected address was " + FormatLoadAddress(desiredLoadAddress));
+		LogError("NetFixClient DLL loaded to incorrect address " + FormatAddress(hInstance) + 
+			". Expected address was " + FormatAddress(desiredLoadAddress));
 		return;
 	}
 	// Check the Outpost2.exe load address
 	void* op2ModuleBase = GetModuleHandle("Outpost2.exe");
 	if (ExpectedOutpost2Addr != reinterpret_cast<std::uintptr_t>(op2ModuleBase))
 	{
-		LogError("Outpost2.exe module loaded at incorrect address " + FormatHexadecimal(ExpectedOutpost2Addr) + 
-			". Expected address was " + FormatLoadAddress(op2ModuleBase));
+		LogError("Outpost2.exe module loaded at incorrect address " + FormatAddress(ExpectedOutpost2Addr) + 
+			". Expected address was " + FormatAddress(op2ModuleBase));
 		return;
 	}
 
