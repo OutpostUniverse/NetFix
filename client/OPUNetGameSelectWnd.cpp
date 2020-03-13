@@ -37,8 +37,6 @@ const char* GameTypeName[] =
 };
 
 
-
-// Constructor
 OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 {
 	opuNetTransportLayer = nullptr;
@@ -56,14 +54,12 @@ OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 	echoTick = EchoTickInterval - 1;	// Check external address right away
 }
 
-// Destructor
 OPUNetGameSelectWnd::~OPUNetGameSelectWnd()
 {
 	ClearGamesList();
 }
 
 
-// DialogProc
 int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	int controlId;
@@ -134,8 +130,6 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void OPUNetGameSelectWnd::OnInit()
 {
-	// Initialize the data fields
-	// --------------------------
 	char buffer[MaxServerAddressLen];
 
 	// Set the default player name
@@ -352,7 +346,6 @@ void OPUNetGameSelectWnd::SetStatusText(const char* text)
 
 void OPUNetGameSelectWnd::OnDestroy()
 {
-	// Kill the timer
 	if (timer != 0) {
 		KillTimer(this->hWnd, timer);
 	}
@@ -384,14 +377,12 @@ void OPUNetGameSelectWnd::OnDestroy()
 		}
 	}
 
-	// Clear the games list
 	ClearGamesList();
 }
 
 
 void OPUNetGameSelectWnd::OnTimer()
 {
-	// Make sure a network object exists
 	if (opuNetTransportLayer == nullptr) {
 		return;
 	}
@@ -400,7 +391,6 @@ void OPUNetGameSelectWnd::OnTimer()
 	searchTickCount++;
 	if (searchTickCount >= SearchTickInterval)
 	{
-		// Reset the tick count
 		searchTickCount = 0;
 
 		// First check a game server for games (if info is setup)
@@ -423,7 +413,6 @@ void OPUNetGameSelectWnd::OnTimer()
 		joinAttemptTickCount++;
 		if (joinAttemptTickCount >= JoinAttemptInterval)
 		{
-			// Reset the tick count
 			joinAttemptTickCount = 0;
 
 			if (joinAttempt > MaxJoinAttempt)
@@ -452,7 +441,6 @@ void OPUNetGameSelectWnd::OnTimer()
 				internalPort = opuNetTransportLayer->GetPort();
 			}
 
-			// Reset the tick count
 			echoTick = 0;
 			numEchoRequestsSent++;
 
@@ -757,10 +745,8 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 
 void OPUNetGameSelectWnd::OnClickSearch()
 {
-	// Clear the current games list
 	ClearGamesList();
 
-	// Set the status text
 	SetStatusText("Searching for games...");
 
 	// Get the server address
@@ -809,14 +795,10 @@ void OPUNetGameSelectWnd::OnClickJoin()
 		return;
 	}
 
-
 	// Get the join joinRequestPassword
 	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(joinRequestPassword), (LPARAM)joinRequestPassword);
 
-
-	// Set the status text
 	SetStatusText("Sending Join request...");
-
 
 	joinAttempt = 1;
 	// Send the Join request
@@ -828,15 +810,11 @@ void OPUNetGameSelectWnd::OnClickCreate()
 {
 	char hostPassword[16];
 
-
 	// Stop the update timer
 	KillTimer(this->hWnd, 0);
 	timer = 0;
 
-
-	// Clear the status text
 	SetStatusText("");
-
 
 	// Get the game host values
 	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(hostPassword), (LPARAM)hostPassword);
@@ -850,7 +828,6 @@ void OPUNetGameSelectWnd::OnClickCreate()
 	hostGameParameters.startupFlags.maxPlayers = maxPlayers;
 	hostGameParameters.startupFlags.missionType = gameType;
 
-
 	// Try to Host
 	int errorCode = opuNetTransportLayer->HostGame(config.GetInt(sectionName, "HostPort", DefaultClientPort), hostPassword, hostGameParameters.gameCreatorName, maxPlayers, gameType);
 	// Check for errors
@@ -862,7 +839,6 @@ void OPUNetGameSelectWnd::OnClickCreate()
 		return;
 	}
 
-
 	// Initialize the Guaranteed Send Layer
 	errorCode = InitGurManager();
 	// Check for errors
@@ -870,11 +846,9 @@ void OPUNetGameSelectWnd::OnClickCreate()
 		return;
 	}
 
-	
 	// Show Pre-Game Setup window
 	MultiplayerPreGameSetupWnd multiplayerPreGameSetupWnd;
 	errorCode = multiplayerPreGameSetupWnd.ShowHostGame(hostGameParameters);
-
 
 	// Check if a game is starting
 	if (errorCode != 0)
