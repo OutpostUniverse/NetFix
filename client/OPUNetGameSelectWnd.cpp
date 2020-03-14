@@ -479,7 +479,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		ReceiveEchoExternalAddress(packet);
 		return;
 	default:  // Silence warnings about unused enumeration value in switch
-		break;
+		return;
 	}
 }
 
