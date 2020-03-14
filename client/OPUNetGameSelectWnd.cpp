@@ -470,18 +470,18 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 	{
 	case tlcHostedGameSearchReply: 
 		ReceiveHostedGameSearchReply(packet);
-		return;
+		break;
 	case tlcJoinGranted:
 		ReceiveJoinGranted(packet);
-		return;
+		break;
 	case tlcJoinRefused:
 		ReceiveJoinRefused(packet);
-		return;
+		break;
 	case tlcEchoExternalAddress:
 		ReceiveEchoExternalAddress(packet);
-		return;
+		break;
 	default:  // Silence warnings about unused enumeration value in switch
-		return;
+		break;
 	}
 }
 
