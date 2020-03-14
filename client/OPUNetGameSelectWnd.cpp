@@ -511,10 +511,10 @@ void OPUNetGameSelectWnd::ReceiveHostedGameSearchReply(Packet& packet)
 		// Specify exact item to retrieve
 		item.iItem = i;
 		// Get the item data
-		if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&item))
+		if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, reinterpret_cast<LPARAM>(&item)))
 		{
 			// Retrieve the HostedGameListItem pointer
-			hostedGameInfo = (HostedGameInfo*)item.lParam;
+			hostedGameInfo = reinterpret_cast<HostedGameInfo*>(item.lParam);
 			// Make sure we have a valid pointer
 			if (hostedGameInfo != nullptr)
 			{
@@ -643,7 +643,7 @@ void OPUNetGameSelectWnd::ReceiveEchoExternalAddress(Packet& packet)
 		text += "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.";
 	}
 	// Update net info text
-	SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)text.c_str());
+	SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(text.c_str()));
 }
 
 void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameInfo)
