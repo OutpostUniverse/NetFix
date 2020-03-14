@@ -542,7 +542,7 @@ void OPUNetGameSelectWnd::OnReceiveHostedGameSearchReply(Packet& packet)
 	// Check for allocation errors
 	if (hostedGameInfo == nullptr)
 	{
-		SetStatusText("Out of memory");
+		LogDebug("Out of memory");
 		return;
 	}
 
@@ -589,13 +589,13 @@ bool OPUNetGameSelectWnd::OnReceiveJoin(Packet& packet)
 	// Make sure we've requested to join a game
 	if (joiningGame == nullptr)
 	{
-		SetStatusText("Unexpected Join reply received");
+		LogDebug("Join reply received with wrong Session ID");
 		return false; // Discard packet
 	}
 	// Check the session identifier
 	if (packet.tlMessage.joinReply.sessionIdentifier != joiningGame->sessionIdentifier)
 	{
-		SetStatusText("Join reply received with wrong Session ID");
+		LogDebug("Join reply received with wrong Session ID");
 		return false; // Discard packet
 	}
 
