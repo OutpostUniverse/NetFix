@@ -34,12 +34,12 @@ struct PeerInfo
 };
 
 
-class OPUNetTransportLayer : public NetTransportLayer
+class TransportLayer : public NetTransportLayer
 {
 public:
 	// Public member functions
 	// -----------------------
-	static OPUNetTransportLayer* Create();		// Public static constructor [returns NULL on failure]
+	static TransportLayer* Create();		// Public static constructor [returns NULL on failure]
 
 	// Following functions: Return true on success, false on failure
 	bool CreateSocket();
@@ -57,7 +57,7 @@ public:
 
 	// Virtual member functions
 	// ------------------------
-	virtual ~OPUNetTransportLayer() override;
+	virtual ~TransportLayer() override;
 	virtual int GetHostPlayerNetID() override;
 	virtual void ShutDownInvite() override;
 	virtual int ReplicatePlayersList() override;
@@ -75,7 +75,7 @@ public:
 private:
 	// Private member functions
 	// ------------------------
-	OPUNetTransportLayer();			// Private Constructor  [Prevent object creation]
+	TransportLayer();			// Private Constructor  [Prevent object creation]
 	bool InitializeWinsock();
 	int GetHostAddress(char* addrString, sockaddr_in &hostAddress);
 	int AddPlayer(sockaddr_in& from);

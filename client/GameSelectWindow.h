@@ -1,7 +1,7 @@
 #include <OP2Internal.h>
 using namespace OP2Internal;
 
-class OPUNetTransportLayer;
+class TransportLayer;
 struct HostedGameInfo;
 
 const int MaxServerAddressLen = 128;
@@ -13,15 +13,15 @@ const int EchoTickInterval = 20;
 const int MaxEchoAttempt = 3;
 
 
-class OPUNetGameSelectWnd : public IDlgWnd
+class GameSelectWindow : public IDlgWnd
 {
 public:
 	// Virtual functions
-	virtual ~OPUNetGameSelectWnd() override;
+	virtual ~GameSelectWindow() override;
 	virtual int DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
 	// Constructor
-	OPUNetGameSelectWnd();
+	GameSelectWindow();
 
 private:
 	// Member functions
@@ -49,7 +49,7 @@ private:
 
 private:
 	// Member variables
-	OPUNetTransportLayer* opuNetTransportLayer;
+	TransportLayer* transportLayer;
 	UINT_PTR timer;
 	UINT searchTickCount;
 	HostedGameInfo* joiningGame;

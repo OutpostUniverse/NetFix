@@ -19,35 +19,35 @@ bool ValidatePacket(Packet& packet, sockaddr_in& fromAddress);
 // -----------------------
 
 // Returns NULL on failure
-OPUNetTransportLayer* OPUNetTransportLayer::Create()		// Public static constructor
+TransportLayer* TransportLayer::Create()		// Public static constructor
 {
 	// Create a new object
-	OPUNetTransportLayer* opuNetTransportLayer = new OPUNetTransportLayer();
+	TransportLayer* transportLayer = new TransportLayer();
 
 	// Make sure it initializes properly
-	if (!opuNetTransportLayer->InitializeWinsock())
+	if (!transportLayer->InitializeWinsock())
 	{
 		// Error
-		delete opuNetTransportLayer;
+		delete transportLayer;
 		return nullptr;
 	}
 
 	// Create a socket for join/host
-	if (!opuNetTransportLayer->CreateSocket())
+	if (!transportLayer->CreateSocket())
 	{
 		// Error
-		delete opuNetTransportLayer;
+		delete transportLayer;
 		return nullptr;
 	}
 
 	// Return the newly constructed object
-	return opuNetTransportLayer;
+	return transportLayer;
 }
 
 // Returns true on success, false on failure
 // Will recreate the socket if it exists
 // Allows the socket to be unbound after cancelling hosting
-bool OPUNetTransportLayer::CreateSocket()
+bool TransportLayer::CreateSocket()
 {
 	// Check if a socket has already been created
 	if (netSocket != INVALID_SOCKET)
@@ -92,7 +92,7 @@ bool OPUNetTransportLayer::CreateSocket()
 	return (netSocket != INVALID_SOCKET);
 }
 
-bool OPUNetTransportLayer::HostGame(USHORT port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
+bool TransportLayer::HostGame(USHORT port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
 {
 	// Clear internal players state
 	numPlayers = 0;
@@ -195,7 +195,7 @@ bool OPUNetTransportLayer::HostGame(USHORT port, const char* hostPassword, const
 	return true;
 }
 
-bool OPUNetTransportLayer::GetExternalAddress()
+bool TransportLayer::GetExternalAddress()
 {
 	// Build the request packet
 	Packet packet;
@@ -227,7 +227,7 @@ bool OPUNetTransportLayer::GetExternalAddress()
 	return errorCode;
 }
 
-bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned short defaultHostPort)
+bool TransportLayer::SearchForGames(char* hostAddressString, unsigned short defaultHostPort)
 {
 	// Create the default host address
 	sockaddr_in hostAddress;
@@ -258,7 +258,7 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned shor
 	return SendTo(packet, hostAddress);
 }
 
-bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* joinRequestPassword)
+bool TransportLayer::JoinGame(HostedGameInfo &game, const char* joinRequestPassword)
 {
 	// Clear internal players state
 	numPlayers = 0;
@@ -301,7 +301,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* joinReques
 }
 
 
-void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
+void TransportLayer::OnJoinAccepted(Packet &packet)
 {
 	// Make sure a join was requested
 	if (joiningGameInfo == nullptr) {
@@ -340,13 +340,13 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 }
 
 
-int OPUNetTransportLayer::GetNumPlayers()
+int TransportLayer::GetNumPlayers()
 {
 	return numPlayers;
 }
 
 
-int OPUNetTransportLayer::GetPort()
+int TransportLayer::GetPort()
 {
 	sockaddr_in address;
 	int addressLength = sizeof(address);
@@ -361,7 +361,7 @@ int OPUNetTransportLayer::GetPort()
 	return ntohs(address.sin_port);
 }
 
-bool OPUNetTransportLayer::GetAddress(sockaddr_in& addr)
+bool TransportLayer::GetAddress(sockaddr_in& addr)
 {
 	int addressLength = sizeof(addr);
 
@@ -382,7 +382,7 @@ bool OPUNetTransportLayer::GetAddress(sockaddr_in& addr)
 // Virtual member functions
 // ------------------------
 
-OPUNetTransportLayer::~OPUNetTransportLayer()
+TransportLayer::~TransportLayer()
 {
 	// Check if a game was cancelled
 	if (bInvite == true)
@@ -407,13 +407,13 @@ OPUNetTransportLayer::~OPUNetTransportLayer()
 	}
 }
 
-int OPUNetTransportLayer::GetHostPlayerNetID()
+int TransportLayer::GetHostPlayerNetID()
 {
 	return peerInfo[0].playerNetID;
 }
 
 // Called when the game is starting (but not when cancelled)
-void OPUNetTransportLayer::ShutDownInvite()
+void TransportLayer::ShutDownInvite()
 {
 	// Disable game host query replies
 	bInvite = false;
@@ -423,7 +423,7 @@ void OPUNetTransportLayer::ShutDownInvite()
 	PokeGameServer(pscGameStarted);
 }
 
-int OPUNetTransportLayer::ReplicatePlayersList()
+int TransportLayer::ReplicatePlayersList()
 {
 	// Fill in the packet header
 	Packet packet;
@@ -472,7 +472,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 // Fills the netIDList with opponent (non-local) playerNetIDs
 // Returns the number of entries copied into the supplied array
 // or -1 if the output buffer is too small, (after having been filled)
-int OPUNetTransportLayer::GetOpponentNetIDList(int netIDList[], int maxNumID)
+int TransportLayer::GetOpponentNetIDList(int netIDList[], int maxNumID)
 {
 	int j = 0;
 
@@ -500,7 +500,7 @@ int OPUNetTransportLayer::GetOpponentNetIDList(int netIDList[], int maxNumID)
 	return j;		// Success
 }
 
-void OPUNetTransportLayer::RemovePlayer(int playerNetID)
+void TransportLayer::RemovePlayer(int playerNetID)
 {
 	// Detemine which player to remove
 	unsigned int playerIndex = playerNetID & 7;
@@ -517,7 +517,7 @@ void OPUNetTransportLayer::RemovePlayer(int playerNetID)
 	}
 }
 
-int OPUNetTransportLayer::Send(Packet& packet)
+int TransportLayer::Send(Packet& packet)
 {
 	// Set the source player net ID
 	packet.header.sourcePlayerNetID = playerNetID;
@@ -584,7 +584,7 @@ int OPUNetTransportLayer::Send(Packet& packet)
 	return true;
 }
 
-int OPUNetTransportLayer::Receive(Packet& packet)
+int TransportLayer::Receive(Packet& packet)
 {
 	for (;;)
 	{
@@ -710,22 +710,22 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 	}
 }
 
-int OPUNetTransportLayer::IsHost()				// IsCurrentGameHost?
+int TransportLayer::IsHost()				// IsCurrentGameHost?
 {
 	return (bInvite && (playerNetID == peerInfo[0].playerNetID));
 }
 
-int OPUNetTransportLayer::IsValidPlayer()		// IsHostWaitingToStart?
+int TransportLayer::IsValidPlayer()		// IsHostWaitingToStart?
 {
 	return bInvite;
 }
 
-int OPUNetTransportLayer::F1()
+int TransportLayer::F1()
 {
 	return 1;
 }
 
-int OPUNetTransportLayer::GetAddressString(int playerNetID, char* addressString, int bufferSize)
+int TransportLayer::GetAddressString(int playerNetID, char* addressString, int bufferSize)
 {
 	// Determine the playerIndex
 	int playerIndex = (playerNetID & 7);
@@ -737,7 +737,7 @@ int OPUNetTransportLayer::GetAddressString(int playerNetID, char* addressString,
 	return true;
 }
 
-int OPUNetTransportLayer::ResetTrafficCounters()
+int TransportLayer::ResetTrafficCounters()
 {
 	// Clear the TrafficCounters
 	memset(&trafficCounters, 0, sizeof(trafficCounters));
@@ -746,7 +746,7 @@ int OPUNetTransportLayer::ResetTrafficCounters()
 	return true;
 }
 
-int OPUNetTransportLayer::GetTrafficCounts(TrafficCounters& trafficCounters)
+int TransportLayer::GetTrafficCounts(TrafficCounters& trafficCounters)
 {
 	// Copy the TrafficCounter to the supplied buffer
 	trafficCounters = this->trafficCounters;
@@ -766,7 +766,7 @@ int OPUNetTransportLayer::GetTrafficCounts(TrafficCounters& trafficCounters)
 
 // -------------------------------------------
 
-OPUNetTransportLayer::OPUNetTransportLayer()	// Private Constructor  [Prevent object creation]
+TransportLayer::TransportLayer()	// Private Constructor  [Prevent object creation]
 {
 	playerNetID = 0;
 	numPlayers = 0;
@@ -788,7 +788,7 @@ OPUNetTransportLayer::OPUNetTransportLayer()	// Private Constructor  [Prevent ob
 
 // -------------------------------------------
 
-bool OPUNetTransportLayer::InitializeWinsock()
+bool TransportLayer::InitializeWinsock()
 {
 	if (!bInitialized)
 	{
@@ -821,7 +821,7 @@ bool OPUNetTransportLayer::InitializeWinsock()
 // -------------------------------------------
 
 // Returns: -1 = Success, 0 = Failed (bad addr), 1 = Failed (no addr specified)
-int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &hostAddress)
+int TransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &hostAddress)
 {
 	// Check if a specific host address was indicated
 	if (hostAddressString == nullptr) {
@@ -889,7 +889,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 // -------------------------------------------
 
 // Returns a new playerNetID
-int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
+int TransportLayer::AddPlayer(sockaddr_in& from)
 {
 	// Make sure there is room for a new player
 	if (numPlayers >= hostedGameInfo.createGameInfo.startupFlags.maxPlayers) {
@@ -924,7 +924,7 @@ int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
 
 // -------------------------------------------
 
-int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from)
+int TransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from)
 {
 	// Check if the host socket is in use
 	if (sourceSocket == INVALID_SOCKET) {
@@ -959,7 +959,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 // -------------------------------------------
 
-bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
+bool TransportLayer::SendTo(Packet& packet, sockaddr_in& to)
 {
 	LogDebug("SendTo: Packet.commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType));
 
@@ -990,7 +990,7 @@ bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
 
 // -------------------------------------------
 
-bool OPUNetTransportLayer::SendStatusUpdate()
+bool TransportLayer::SendStatusUpdate()
 {
 	// Fill in a Status Update packet
 	Packet packet;
@@ -1008,7 +1008,7 @@ bool OPUNetTransportLayer::SendStatusUpdate()
 
 // -------------------------------------------
 
-bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus, int maxTries, int repeatDelay)
+bool TransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus, int maxTries, int repeatDelay)
 {
 	// Checksum the packet
 	packet.header.checksum = packet.Checksum();
@@ -1057,7 +1057,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus
 // -------------------------------------------
 
 // Returns true if the packet was processed, and false otherwise
-bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fromAddress)
+bool TransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fromAddress)
 {
 	// Make sure it's an immediately processed TransportLayer message
 	if (packet.header.type != 1) {
@@ -1291,7 +1291,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 }
 
 
-bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
+bool TransportLayer::PokeGameServer(PokeStatusCode status)
 {
 	// Find the game server address
 	sockaddr_in gameServerAddress;
@@ -1323,7 +1323,7 @@ bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 }
 
 
-bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddress)
+bool TransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddress)
 {
 	// Get the address string
 	char addressString[256];
@@ -1343,7 +1343,7 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddress)
 	return false;
 }
 
-void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressString, int maxLength)
+void TransportLayer::GetGameServerAddressString(char* gameServerAddressString, int maxLength)
 {
 	// Get the address string
 	config.GetString(sectionName, "GameServerAddr", gameServerAddressString, maxLength, "");
@@ -1352,7 +1352,7 @@ void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressStr
 }
 
 
-void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
+void TransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 {
 	int sourcePlayerNetId = packet.header.sourcePlayerNetID;
 

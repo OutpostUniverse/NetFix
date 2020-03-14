@@ -9,7 +9,7 @@
 using namespace OP2Internal;
 
 HINSTANCE hInstance;
-OPUNetGameProtocol opuNetGameProtocol;
+GameProtocol gameProtocol;
 char sectionName[64] = "";				// Ini file section name, for loading additional parameters
 const int DefaultProtocolIndex = 4;		// "SIGS"
 const std::uintptr_t ExpectedOutpost2Addr = 0x00400000;
@@ -59,5 +59,5 @@ extern "C" __declspec(dllexport) void InitMod(char* iniSectionName)
 	int protocolIndex = config.GetInt(sectionName, "ProtocolIndex", DefaultProtocolIndex);
 	LogDebug("ProtocolIndex set to " + std::to_string(protocolIndex));
 	// Set a new multiplayer protocol type
-	protocolList[protocolIndex].netGameProtocol = &opuNetGameProtocol;
+	protocolList[protocolIndex].netGameProtocol = &gameProtocol;
 }

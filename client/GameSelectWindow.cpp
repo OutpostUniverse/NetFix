@@ -37,9 +37,9 @@ const char* GameTypeName[] =
 };
 
 
-OPUNetGameSelectWnd::OPUNetGameSelectWnd()
+GameSelectWindow::GameSelectWindow()
 {
-	opuNetTransportLayer = nullptr;
+	transportLayer = nullptr;
 	timer = 0;
 	searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 	joiningGame = nullptr;
@@ -54,13 +54,13 @@ OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 	echoTick = EchoTickInterval - 1;	// Check external address right away
 }
 
-OPUNetGameSelectWnd::~OPUNetGameSelectWnd()
+GameSelectWindow::~GameSelectWindow()
 {
 	ClearGamesList();
 }
 
 
-int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+int GameSelectWindow::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	int controlId;
 	UINT notifyCode;
@@ -128,7 +128,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 };
 
 
-void OPUNetGameSelectWnd::OnInit()
+void GameSelectWindow::OnInit()
 {
 	char buffer[MaxServerAddressLen];
 
@@ -225,15 +225,15 @@ void OPUNetGameSelectWnd::OnInit()
 }
 
 
-void OPUNetGameSelectWnd::InitNetLayer()
+void GameSelectWindow::InitNetLayer()
 {
 	// Initialize Network objects
 	// --------------------------
 
 	// Create NetTransportLayer
-	opuNetTransportLayer = OPUNetTransportLayer::Create();
+	transportLayer = TransportLayer::Create();
 	// Check for errors
-	if (opuNetTransportLayer == nullptr)
+	if (transportLayer == nullptr)
 	{
 		// Error creating the transport layer
 		EndDialog(this->hWnd, true);		// bCancel = true
@@ -241,11 +241,11 @@ void OPUNetGameSelectWnd::InitNetLayer()
 	}
 
 	// Set the global NetTransportLayer object pointer
-	app.netTLayer = opuNetTransportLayer;
+	app.netTLayer = transportLayer;
 }
 
 
-bool OPUNetGameSelectWnd::InitGurManager()
+bool GameSelectWindow::InitGurManager()
 {
 	// Delete Guaranteed Send Layer if it already exists
 	delete app.gurManager;
@@ -260,7 +260,7 @@ bool OPUNetGameSelectWnd::InitGurManager()
 		return false;
 	}
 	// Initialize the Guaranteed Send Layer
-	const int errorCode = app.gurManager->Initialize(opuNetTransportLayer);
+	const int errorCode = app.gurManager->Initialize(transportLayer);
 	// Check for errors
 	if (errorCode == 0)
 	{
@@ -273,9 +273,9 @@ bool OPUNetGameSelectWnd::InitGurManager()
 }
 
 
-void OPUNetGameSelectWnd::CleanupGurManager()
+void GameSelectWindow::CleanupGurManager()
 {
-	if (opuNetTransportLayer->GetNumPlayers() > 0)
+	if (transportLayer->GetNumPlayers() > 0)
 	{
 		// Send a Quit message
 		app.NetShutdown(true);
@@ -292,7 +292,7 @@ void OPUNetGameSelectWnd::CleanupGurManager()
 }
 
 
-void OPUNetGameSelectWnd::ClearGamesList()
+void GameSelectWindow::ClearGamesList()
 {
 	// Prepare a LVITEM struct
 	LVITEM item;
@@ -320,7 +320,7 @@ void OPUNetGameSelectWnd::ClearGamesList()
 }
 
 
-void OPUNetGameSelectWnd::AddServerAddress(const char* address)
+void GameSelectWindow::AddServerAddress(const char* address)
 {
 	// Check if the address already exists in the combo box
 	const int index = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_FINDSTRINGEXACT, 1, (LPARAM)address);
@@ -338,13 +338,13 @@ void OPUNetGameSelectWnd::AddServerAddress(const char* address)
 }
 
 
-void OPUNetGameSelectWnd::SetStatusText(const char* text)
+void GameSelectWindow::SetStatusText(const char* text)
 {
 	SendDlgItemMessage(this->hWnd, IDC_StatusBar, WM_SETTEXT, 0, (LPARAM)text);
 }
 
 
-void OPUNetGameSelectWnd::OnDestroy()
+void GameSelectWindow::OnDestroy()
 {
 	if (timer != 0) {
 		KillTimer(this->hWnd, timer);
@@ -381,9 +381,9 @@ void OPUNetGameSelectWnd::OnDestroy()
 }
 
 
-void OPUNetGameSelectWnd::OnTimer()
+void GameSelectWindow::OnTimer()
 {
-	if (opuNetTransportLayer == nullptr) {
+	if (transportLayer == nullptr) {
 		return;
 	}
 
@@ -395,16 +395,16 @@ void OPUNetGameSelectWnd::OnTimer()
 
 		// First check a game server for games (if info is setup)
 		char addrString[128];
-		opuNetTransportLayer->GetGameServerAddressString(addrString, sizeof(addrString));
+		transportLayer->GetGameServerAddressString(addrString, sizeof(addrString));
 		if (addrString[0] != 0)
 		{
 			// Check the game server for a list of games
-			opuNetTransportLayer->SearchForGames(addrString, DefaultGameServerPort);
+			transportLayer->SearchForGames(addrString, DefaultGameServerPort);
 		}
 		else
 		{
 			// Game server not available. Broadcast a search query  (Broadcast to LAN)
-			opuNetTransportLayer->SearchForGames(nullptr, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
+			transportLayer->SearchForGames(nullptr, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
 		}
 	}
 
@@ -426,7 +426,7 @@ void OPUNetGameSelectWnd::OnTimer()
 			{
 				joinAttempt++;
 				// Resend the Join request
-				opuNetTransportLayer->JoinGame(*joiningGame, joinRequestPassword);
+				transportLayer->JoinGame(*joiningGame, joinRequestPassword);
 			}
 		}
 	}
@@ -438,20 +438,20 @@ void OPUNetGameSelectWnd::OnTimer()
 		{
 			if (numEchoRequestsSent == 0)
 			{
-				internalPort = opuNetTransportLayer->GetPort();
+				internalPort = transportLayer->GetPort();
 			}
 
 			echoTick = 0;
 			numEchoRequestsSent++;
 
 			// Request external address
-			opuNetTransportLayer->GetExternalAddress();
+			transportLayer->GetExternalAddress();
 		}
 	}
 
 	// Check for network replies
 	Packet packet;
-	while (opuNetTransportLayer->Receive(packet))
+	while (transportLayer->Receive(packet))
 	{
 		// Process the packet
 		OnReceive(packet);
@@ -459,7 +459,7 @@ void OPUNetGameSelectWnd::OnTimer()
 }
 
 
-void OPUNetGameSelectWnd::OnReceive(Packet &packet)
+void GameSelectWindow::OnReceive(Packet &packet)
 {
 	// Make sure the packet is of the correct format
 	if (packet.header.type != 1) {
@@ -568,7 +568,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 			// Join Accepted
 			// -------------
 			// Inform Transport Layer
-			opuNetTransportLayer->OnJoinAccepted(packet);
+			transportLayer->OnJoinAccepted(packet);
 
 			// Raise the event
 			OnJoinAccepted();
@@ -634,7 +634,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 }
 
 
-void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameInfo)
+void GameSelectWindow::SetGameListItem(int index, HostedGameInfo* hostedGameInfo)
 {
 	char buffer[32];
 
@@ -692,7 +692,7 @@ void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameI
 }
 
 
-void OPUNetGameSelectWnd::OnJoinAccepted()
+void GameSelectWindow::OnJoinAccepted()
 {
 	// Stop the update timer
 	KillTimer(this->hWnd, 0);
@@ -743,7 +743,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 }
 
 
-void OPUNetGameSelectWnd::OnClickSearch()
+void GameSelectWindow::OnClickSearch()
 {
 	ClearGamesList();
 
@@ -753,7 +753,7 @@ void OPUNetGameSelectWnd::OnClickSearch()
 	char serverAddress[MaxServerAddressLen];
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, WM_GETTEXT, (WPARAM)sizeof(serverAddress), (LPARAM)serverAddress);
 	// Request games list from server
-	const int errorCode = opuNetTransportLayer->SearchForGames(serverAddress, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
+	const int errorCode = transportLayer->SearchForGames(serverAddress, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
 
 	// Check if the request was successfully sent
 	if (errorCode != 0)
@@ -769,7 +769,7 @@ void OPUNetGameSelectWnd::OnClickSearch()
 }
 
 
-void OPUNetGameSelectWnd::OnClickJoin()
+void GameSelectWindow::OnClickJoin()
 {
 	// Get the game to join
 	// --------------------
@@ -802,11 +802,11 @@ void OPUNetGameSelectWnd::OnClickJoin()
 
 	joinAttempt = 1;
 	// Send the Join request
-	opuNetTransportLayer->JoinGame(*joiningGame, joinRequestPassword);
+	transportLayer->JoinGame(*joiningGame, joinRequestPassword);
 }
 
 
-void OPUNetGameSelectWnd::OnClickCreate()
+void GameSelectWindow::OnClickCreate()
 {
 	char hostPassword[16];
 
@@ -829,7 +829,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 	hostGameParameters.startupFlags.missionType = gameType;
 
 	// Try to Host
-	int errorCode = opuNetTransportLayer->HostGame(config.GetInt(sectionName, "HostPort", DefaultClientPort), hostPassword, hostGameParameters.gameCreatorName, maxPlayers, gameType);
+	int errorCode = transportLayer->HostGame(config.GetInt(sectionName, "HostPort", DefaultClientPort), hostPassword, hostGameParameters.gameCreatorName, maxPlayers, gameType);
 	// Check for errors
 	if (errorCode == false)
 	{
@@ -874,7 +874,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 }
 
 
-void OPUNetGameSelectWnd::OnClickCancel()
+void GameSelectWindow::OnClickCancel()
 {
 	// Just quit without sending a Quit message
 	app.NetShutdown(false);

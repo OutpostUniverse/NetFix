@@ -9,7 +9,7 @@ extern HINSTANCE hInstance;
 
 
 
-class OPUNetGameProtocol : public NetGameProtocol
+class GameProtocol : public NetGameProtocol
 {
 public:
 	// Virtual member functions
@@ -20,9 +20,9 @@ public:
 
 	virtual bool DoStart() override {
 		// Construct game select window
-		OPUNetGameSelectWnd opuNetGameSelectWnd;
+		GameSelectWindow gameSelectWindow;
 		// Use a base class reference to force indirect calls through the virtual function table
-		IDlgWnd& protocolMainScreen = opuNetGameSelectWnd;
+		IDlgWnd& protocolMainScreen = gameSelectWindow;
 
 		// Enable Skinning
 		app.mainWnd->PreCreateDlg();
