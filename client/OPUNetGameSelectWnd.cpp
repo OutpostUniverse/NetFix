@@ -469,23 +469,23 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 	switch(packet.tlMessage.tlHeader.commandType)
 	{
 	case tlcHostedGameSearchReply: 
-		ReceiveHostedGameSearchReply(packet);
+		OnReceiveHostedGameSearchReply(packet);
 		break;
 	case tlcJoinGranted:
-		ReceiveJoinGranted(packet);
+		OnReceiveJoinGranted(packet);
 		break;
 	case tlcJoinRefused:
-		ReceiveJoinRefused(packet);
+		OnReceiveJoinRefused(packet);
 		break;
 	case tlcEchoExternalAddress:
-		ReceiveEchoExternalAddress(packet);
+		OnReceiveEchoExternalAddress(packet);
 		break;
 	default:  // Silence warnings about unused enumeration value in switch
 		break;
 	}
 }
 
-void OPUNetGameSelectWnd::ReceiveHostedGameSearchReply(Packet& packet)
+void OPUNetGameSelectWnd::OnReceiveHostedGameSearchReply(Packet& packet)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
@@ -556,9 +556,9 @@ void OPUNetGameSelectWnd::ReceiveHostedGameSearchReply(Packet& packet)
 	SetGameListItem(-1, hostedGameInfo);
 }
 
-void OPUNetGameSelectWnd::ReceiveJoinGranted(Packet& packet)
+void OPUNetGameSelectWnd::OnReceiveJoinGranted(Packet& packet)
 {
-	if (!ReceiveJoin(packet)) {
+	if (!OnReceiveJoin(packet)) {
 		return; // Discard packet
 	}
 
@@ -569,9 +569,9 @@ void OPUNetGameSelectWnd::ReceiveJoinGranted(Packet& packet)
 	joiningGame = nullptr;
 }
 
-void OPUNetGameSelectWnd::ReceiveJoinRefused(Packet& packet)
+void OPUNetGameSelectWnd::OnReceiveJoinRefused(Packet& packet)
 {
-	if (!ReceiveJoin(packet)) {
+	if (!OnReceiveJoin(packet)) {
 		return; // Discard packet
 	}
 
@@ -580,7 +580,7 @@ void OPUNetGameSelectWnd::ReceiveJoinRefused(Packet& packet)
 	joiningGame = nullptr;
 }
 
-bool OPUNetGameSelectWnd::ReceiveJoin(Packet& packet)
+bool OPUNetGameSelectWnd::OnReceiveJoin(Packet& packet)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(JoinReply)) {
@@ -602,7 +602,7 @@ bool OPUNetGameSelectWnd::ReceiveJoin(Packet& packet)
 	return true; // Do not discard packet
 }
 
-void OPUNetGameSelectWnd::ReceiveEchoExternalAddress(Packet& packet)
+void OPUNetGameSelectWnd::OnReceiveEchoExternalAddress(Packet& packet)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(EchoExternalAddress)) {
