@@ -79,7 +79,7 @@ bool OPUNetTransportLayer::CreateSocket()
 		// Check for success
 		if (retVal == 0)
 		{
-			Log("ForcedPort = " + std::to_string(forcedPort));
+			LogDebug("ForcedPort = " + std::to_string(forcedPort));
 		}
 		else
 		{
@@ -94,9 +94,6 @@ bool OPUNetTransportLayer::CreateSocket()
 
 bool OPUNetTransportLayer::HostGame(USHORT port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
 {
-	// **DEBUG**
-	Log("Hosting Game");
-
 	// Clear internal players state
 	numPlayers = 0;
 	for (int i = 0; i < MaxRemotePlayers; ++i)
@@ -146,8 +143,7 @@ bool OPUNetTransportLayer::HostGame(USHORT port, const char* hostPassword, const
 			hostSocket = netSocket;
 		}
 
-	// **DEBUG**
-	Log("Bound to server port: " + std::to_string(port));
+	LogDebug("Bound to server port: " + std::to_string(port));
 	}
 
 
@@ -171,12 +167,11 @@ bool OPUNetTransportLayer::HostGame(USHORT port, const char* hostPassword, const
 	strncpy_s(hostedGameInfo.createGameInfo.gameCreatorName, creatorName, sizeof(hostedGameInfo.createGameInfo.gameCreatorName));
 	strncpy_s(this->hostPassword, hostPassword, sizeof(this->hostPassword));
 
-	// **DEBUG**
-	Log(" Session ID: " + FormatGuid(hostedGameInfo.sessionIdentifier));
+	LogDebug(" Session ID: " + FormatGuid(hostedGameInfo.sessionIdentifier));
 
 	// Create a Host playerNetID
 	playerNetID = timeGetTime() & ~7;
-Log(" Host playerNetID: " + FormatPlayerNetID(playerNetID));
+	LogDebug(" Host playerNetID: " + FormatPlayerNetID(playerNetID));
 	// Set the host fields
 	peerInfo[0].playerNetID = playerNetID;
 	peerInfo[0].address = localAddress;			// Clear the local address
@@ -193,10 +188,8 @@ Log(" Host playerNetID: " + FormatPlayerNetID(playerNetID));
 	// Check for errors
 	if (errorCode == 0)
 	{
-	// **DEBUG**
-	Log("Error informing game server");
+		Log("Error informing game server");
 	}
-
 
 	// Return success status
 	return true;
@@ -259,8 +252,7 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned shor
 	packet.tlMessage.searchQuery.timeStamp = timeGetTime();
 	packet.tlMessage.searchQuery.password[0] = 0;
 
-	// **DEBUG**
-	Log("Search for games: " + FormatAddress(hostAddress));
+	LogDebug("Search for games: " + FormatAddress(hostAddress));
 
 	// Send the HostGameSearchQuery
 	return SendTo(packet, hostAddress);
@@ -292,10 +284,9 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* joinReques
 	packet.tlMessage.joinRequest.returnPortNum = forcedPort;
 	strncpy_s(packet.tlMessage.joinRequest.password, joinRequestPassword, sizeof(packet.tlMessage.joinRequest.password));
 
-	// **DEBUG**
-	Log("Sending join request: " + FormatAddress(game.address));
-	Log("  Session ID: " + FormatGuid(packet.tlMessage.joinRequest.sessionIdentifier));
-	//Log(FormatPacket(packet));
+	LogDebug("Sending join request: " + FormatAddress(game.address));
+	LogDebug("  Session ID: " + FormatGuid(packet.tlMessage.joinRequest.sessionIdentifier));
+	LogDebug(FormatPacket(packet));
 
 	sockaddr_in gameServerAddr;
 	// Check if a Game Server is set
@@ -331,20 +322,18 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	peerInfo[localPlayerNum].address.sin_addr.s_addr = INADDR_ANY;	// Clear the address
 	peerInfo[localPlayerNum].status = 2;
 
-	Log("OnJoinAcecpted");
-	Log(FormatPlayerList(peerInfo));
+	LogDebug("OnJoinAccepted");
+	LogDebug(FormatPlayerList(peerInfo));
 
 	// Update num players (for quit messages from cancelled games)
 	numPlayers = 1;
-
 
 	// Send updated status to host
 	bool bSuccess = SendStatusUpdate();
 
 	if (!bSuccess) {
-		MsgBox(nullptr, "Error sending updated status to host", "Error", 0);
+		LogError("Error sending updated status to host");
 	}
-
 
 	// Reset network traffic counters
 	ResetTrafficCounters();
@@ -659,11 +648,9 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 			}
 		}
 
-
-		// **DEBUG**
-		//Log("ReadSocket: type = " + std::to_string(packet.header.type)
-		//		+ "  commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType)
-		//		+ "  sourcePlayerNetID = " + std::to_string(packet.header.sourcePlayerNetID));
+		LogDebug("ReadSocket: type = " + std::to_string(packet.header.type)
+			+ "  commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType)
+			+ "  sourcePlayerNetID = " + std::to_string(packet.header.sourcePlayerNetID));
 
 		// Error check the packet
 		if (static_cast<std::size_t>(numBytes) < sizeof(PacketHeader)) {
@@ -974,7 +961,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
 {
-	//Log("SendTo: Packet.commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType));
+	LogDebug("SendTo: Packet.commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType));
 
 	// Calculate Packet size
 	int packetSize = packet.header.sizeOfPayload + sizeof(packet.header);
@@ -993,7 +980,6 @@ bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
 	}
 	else
 	{
-		// **DEBUG**
 		Log("SendTo error: " + FormatAddress(to));
 		Log(std::to_string(WSAGetLastError()));
 	}
@@ -1014,8 +1000,6 @@ bool OPUNetTransportLayer::SendStatusUpdate()
 	packet.header.type = 1;
 	packet.tlMessage.tlHeader.commandType = tlcUpdateStatus;
 	packet.tlMessage.statusUpdate.newStatus = peerInfo[playerNetID & 7].status;		// Copy local status
-
-	//Log("SendStatusUpdate()");
 
 	// Send the new status to the host
 	return SendTo(packet, peerInfo[0].address);
@@ -1110,14 +1094,13 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			if (tlMessage.joinReply.newPlayerNetID != 0)
 			{
 				tlMessage.tlHeader.commandType = tlcJoinGranted;
-				// **DEBUG**
-				Log("Client join accepted: " + FormatAddress(fromAddress) + ". New Player Net ID: " +
+				LogDebug("Client join accepted: " + FormatAddress(fromAddress) + ". New Player Net ID: " +
 					FormatPlayerNetID(tlMessage.joinReply.newPlayerNetID));
 
 				// Check if a forced return port has been set
 				if (returnPortNum != 0)
 				{
-					Log("Return Port forced to " + std::to_string(returnPortNum));
+					LogDebug("Return Port forced to " + std::to_string(returnPortNum));
 					// Set the new return port number
 					peerInfo[tlMessage.joinReply.newPlayerNetID & 7].address.sin_port = returnPortNum;
 				}
@@ -1125,7 +1108,6 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			else
 			{
 				tlMessage.tlHeader.commandType = tlcJoinRefused;
-				// **DEBUG**
 				Log("Client join refused: " + FormatAddress(fromAddress));
 			}
 
@@ -1139,8 +1121,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 				return true;		// Packet handled (discard)
 			}
 
-			// **DEBUG**
-			Log("Game Search Query: " + FormatAddress(fromAddress));
+			LogDebug("Game Search Query: " + FormatAddress(fromAddress));
 
 			// Verify Game Identifier
 			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
@@ -1175,7 +1156,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			// Log JoinHelpRequest parameters
 			const std::string addressStr = FormatAddress(tlMessage.joinHelpRequest.clientAddr);
 			const std::string returnPortStr = std::to_string(tlMessage.joinHelpRequest.returnPortNum);
-			Log("JoinHelpRequest: Client: " + addressStr + "  Return Port: " + returnPortStr);
+			LogDebug("JoinHelpRequest: Client: " + addressStr + "  Return Port: " + returnPortStr);
 
 			// Send something to create router mappings
 			tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
@@ -1197,8 +1178,6 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 		switch (tlMessage.tlHeader.commandType)
 		{
 		case tlcStartGame:
-			// **DEBUG**
-			Log("GameStarting");
 			break;
 		case tlcSetPlayersList:
 			// Verify packet size
@@ -1223,9 +1202,8 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 					peerInfo[i].playerNetID = tlMessage.playersList.netPeerInfo[i].playerNetID;
 				}
 
-				// **DEBUG**
-				Log("Replicated Players List:");
-				Log(FormatPlayerList(peerInfo));
+				LogDebug("Replicated Players List:");
+				LogDebug(FormatPlayerList(peerInfo));
 
 				// Form a new packet to return to the game
 				packet.header.sourcePlayerNetID = 0;
@@ -1279,8 +1257,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			return true;			// Packet handled
 
 		case tlcHostedGameSearchReply:		// [Custom format]
-			// **DEBUG**
-			Log("Hosted Game Search Reply: " + FormatAddress(fromAddress));
+			LogDebug("Hosted Game Search Reply: " + FormatAddress(fromAddress));
 
 			// Verify packet size
 			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
@@ -1371,7 +1348,7 @@ void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressStr
 	// Get the address string
 	config.GetString(sectionName, "GameServerAddr", gameServerAddressString, maxLength, "");
 
-	Log("GameServerAddr = " + std::string(gameServerAddressString));
+	LogDebug("GameServerAddr = " + std::string(gameServerAddressString));
 }
 
 
