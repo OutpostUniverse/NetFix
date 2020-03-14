@@ -1,4 +1,4 @@
-#include "OPUNetGameProtocol.h"
+#include "GameProtocol.h"
 #include "Log.h"
 #include <OP2Internal.h>
 #define WIN32_LEAN_AND_MEAN

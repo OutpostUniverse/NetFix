@@ -1,7 +1,7 @@
 #include <OP2Internal.h>
 using namespace OP2Internal;
 
-#include "OPUNetGameSelectWnd.h"
+#include "GameSelectWindow.h"
 #include "resource.h"
 
 
