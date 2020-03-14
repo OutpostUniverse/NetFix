@@ -562,13 +562,10 @@ void OPUNetGameSelectWnd::ReceiveJoinGranted(Packet& packet)
 		return; // Discard packet
 	}
 
-	// Inform Transport Layer
 	opuNetTransportLayer->OnJoinAccepted(packet);
 
-	// Raise the event
 	OnJoinAccepted();
 
-	// Reset joining game status
 	joiningGame = nullptr;
 }
 
@@ -580,7 +577,6 @@ void OPUNetGameSelectWnd::ReceiveJoinRefused(Packet& packet)
 
 	SetStatusText("Join Failed:  The requested game is full");
 
-	// Reset joining game status
 	joiningGame = nullptr;
 }
 
@@ -588,19 +584,19 @@ bool OPUNetGameSelectWnd::ReceiveJoin(Packet& packet)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(JoinReply)) {
-		return false;						// Discard packet
+		return false; // Discard packet
 	}
 	// Make sure we've requested to join a game
 	if (joiningGame == nullptr)
 	{
 		SetStatusText("Unexpected Join reply received");
-		return false;						// Discard packet
+		return false; // Discard packet
 	}
 	// Check the session identifier
 	if (packet.tlMessage.joinReply.sessionIdentifier != joiningGame->sessionIdentifier)
 	{
 		SetStatusText("Join reply received with wrong Session ID");
-		return false;						// Discard packet
+		return false; // Discard packet
 	}
 
 	return true; // Do not discard packet
