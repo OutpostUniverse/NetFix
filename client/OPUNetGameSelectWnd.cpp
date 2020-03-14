@@ -521,7 +521,7 @@ void OPUNetGameSelectWnd::ReceiveHostedGameSearchReply(Packet& packet)
 				// Check if it's the same game
 				//if (hostedGameInfo->sessionIdentifier == packet.tlMessage.searchReply.sessionIdentifier)
 				// Check if it's the same host
-				if (memcmp(&hostedGameInfo->address, &packet.tlMessage.searchReply.hostAddress, sizeof(sockaddr_in)) == 0)
+				if (std::memcmp(&hostedGameInfo->address, &packet.tlMessage.searchReply.hostAddress, sizeof(sockaddr_in)) == 0)
 				{
 					// Matching game found. Update game info
 					hostedGameInfo->createGameInfo = packet.tlMessage.searchReply.createGameInfo;
