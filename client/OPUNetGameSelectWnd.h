@@ -38,7 +38,9 @@ private:
 	void OnTimer();
 	void OnReceive(Packet &packet);
 	void ReceiveHostedGameSearchReply(Packet& packet);
-	void ReceiveJoinRefusedOrGranted(Packet& packet);
+	void ReceiveJoinGranted(Packet& packet);
+	void ReceiveJoinRefused(Packet& packet);
+	bool ReceiveJoin(Packet& packet);
 	void ReceiveEchoExternalAddress(Packet& packet);
 	void OnJoinAccepted();
 	// Member functions

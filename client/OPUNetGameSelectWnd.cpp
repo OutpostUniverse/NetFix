@@ -472,8 +472,10 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 		ReceiveHostedGameSearchReply(packet);
 		return;
 	case tlcJoinGranted:
+		ReceiveJoinGranted(packet);
+		return;
 	case tlcJoinRefused:
-		ReceiveJoinRefusedOrGranted(packet);
+		ReceiveJoinRefused(packet);
 		return;
 	case tlcEchoExternalAddress:
 		ReceiveEchoExternalAddress(packet);
@@ -554,43 +556,54 @@ void OPUNetGameSelectWnd::ReceiveHostedGameSearchReply(Packet& packet)
 	SetGameListItem(-1, hostedGameInfo);
 }
 
-void OPUNetGameSelectWnd::ReceiveJoinRefusedOrGranted(Packet& packet)
+void OPUNetGameSelectWnd::ReceiveJoinGranted(Packet& packet)
+{
+	if (!ReceiveJoin(packet)) {
+		return; // Discard packet
+	}
+
+	// Inform Transport Layer
+	opuNetTransportLayer->OnJoinAccepted(packet);
+
+	// Raise the event
+	OnJoinAccepted();
+
+	// Reset joining game status
+	joiningGame = nullptr;
+}
+
+void OPUNetGameSelectWnd::ReceiveJoinRefused(Packet& packet)
+{
+	if (!ReceiveJoin(packet)) {
+		return; // Discard packet
+	}
+
+	SetStatusText("Join Failed:  The requested game is full");
+
+	// Reset joining game status
+	joiningGame = nullptr;
+}
+
+bool OPUNetGameSelectWnd::ReceiveJoin(Packet& packet)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(JoinReply)) {
-		return;						// Discard packet
+		return false;						// Discard packet
 	}
 	// Make sure we've requested to join a game
 	if (joiningGame == nullptr)
 	{
 		SetStatusText("Unexpected Join reply received");
-		return;						// Discard packet
+		return false;						// Discard packet
 	}
 	// Check the session identifier
 	if (packet.tlMessage.joinReply.sessionIdentifier != joiningGame->sessionIdentifier)
 	{
 		SetStatusText("Join reply received with wrong Session ID");
-		return;						// Discard packet
+		return false;						// Discard packet
 	}
 
-	// Check for JoinGranted
-	if (packet.tlMessage.tlHeader.commandType == tlcJoinGranted)
-	{
-		// Join Accepted
-		// -------------
-		// Inform Transport Layer
-		opuNetTransportLayer->OnJoinAccepted(packet);
-
-		// Raise the event
-		OnJoinAccepted();
-	}
-	else
-	{
-		SetStatusText("Join Failed:  The requested game is full");
-	}
-
-	// Reset joining game status
-	joiningGame = nullptr;
+	return true; // Do not discard packet
 }
 
 void OPUNetGameSelectWnd::ReceiveEchoExternalAddress(Packet& packet)
