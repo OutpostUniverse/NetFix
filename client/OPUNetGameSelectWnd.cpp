@@ -471,7 +471,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 	case tlcHostedGameSearchReply: 
 		ReceiveHostedGameSearchReply(packet);
 		return;
-	case tlcJoinGranted:		// [Fall through]
+	case tlcJoinGranted:
 	case tlcJoinRefused:
 		ReceiveJoinRefusedOrGranted(packet);
 		return;
@@ -485,7 +485,6 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 
 void OPUNetGameSelectWnd::ReceiveHostedGameSearchReply(Packet& packet)
 {
-	// [Custom format]
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
 		return;						// Discard packet
@@ -541,7 +540,6 @@ void OPUNetGameSelectWnd::ReceiveHostedGameSearchReply(Packet& packet)
 	// Check for allocation errors
 	if (hostedGameInfo == nullptr)
 	{
-		// Out of memory. Inform user
 		SetStatusText("Out of memory");
 		return;
 	}
@@ -565,14 +563,12 @@ void OPUNetGameSelectWnd::ReceiveJoinRefusedOrGranted(Packet& packet)
 	// Make sure we've requested to join a game
 	if (joiningGame == nullptr)
 	{
-		// **DEBUG**
 		SetStatusText("Unexpected Join reply received");
 		return;						// Discard packet
 	}
 	// Check the session identifier
 	if (packet.tlMessage.joinReply.sessionIdentifier != joiningGame->sessionIdentifier)
 	{
-		// **DEBUG**
 		SetStatusText("Join reply received with wrong Session ID");
 		return;						// Discard packet
 	}
@@ -590,7 +586,6 @@ void OPUNetGameSelectWnd::ReceiveJoinRefusedOrGranted(Packet& packet)
 	}
 	else
 	{
-		// Session full. Inform User
 		SetStatusText("Join Failed:  The requested game is full");
 	}
 
@@ -626,23 +621,20 @@ void OPUNetGameSelectWnd::ReceiveEchoExternalAddress(Packet& packet)
 		externalPort = ntohs(packet.tlMessage.echoExternalAddress.addr.sin_port);
 	}
 
-	// Confine scope of `std::string text` to within a single switch case
+	// Build new net info text string
+	std::string text = "External IP: " + FormatIP4Address(externalIp.s_addr) + ":" + std::to_string(externalPort);
+	// Check if internal address received
+	if (bReceivedInternal)
 	{
-		// Build new net info text string
-		std::string text = "External IP: " + FormatIP4Address(externalIp.s_addr) + ":" + std::to_string(externalPort);
-		// Check if internal address received
-		if (bReceivedInternal)
-		{
-			// Not quite true, since internal port might be random (no hosting, but possibly still open)
-			//text += " (Direct Host Capable)";
-		}
-		if (bTwoExternal)
-		{
-			text += "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.";
-		}
-		// Update net info text
-		SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)text.c_str());
+		// Not quite true, since internal port might be random (no hosting, but possibly still open)
+		//text += " (Direct Host Capable)";
 	}
+	if (bTwoExternal)
+	{
+		text += "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.";
+	}
+	// Update net info text
+	SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)text.c_str());
 }
 
 void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameInfo)
