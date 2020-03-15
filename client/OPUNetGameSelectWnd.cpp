@@ -458,7 +458,6 @@ void OPUNetGameSelectWnd::OnTimer()
 	}
 }
 
-
 void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 {
 	// Make sure the packet is of the correct format
@@ -469,170 +468,185 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 	// Determine which message type was received
 	switch(packet.tlMessage.tlHeader.commandType)
 	{
-	case tlcHostedGameSearchReply: {		// [Custom format]
-		// Verify packet size
-		if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
-			return;						// Discard packet
-		}
-		// Check the game identifier
-		if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier) {
-			return;						// Discard Packet
-		}
-
-		// Check if we already know about this game
-		// ----------------------------------------
-		// Prepare a LVITEM struct
-		LVITEM item;
-		item.mask = LVIF_PARAM;
-		item.iSubItem = 0;
-
-		// Search the list of games
-		HostedGameInfo* hostedGameInfo;
-		const int gameCount = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
-		for (int i = 0; i < gameCount; ++i)
-		{
-			// Specify exact item to retrieve
-			item.iItem = i;
-			// Get the item data
-			if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&item))
-			{
-				// Retrieve the HostedGameListItem pointer
-				hostedGameInfo = (HostedGameInfo*)item.lParam;
-				// Make sure we have a valid pointer
-				if (hostedGameInfo != nullptr)
-				{
-					// Check if it's the same game
-					//if (hostedGameInfo->sessionIdentifier == packet.tlMessage.searchReply.sessionIdentifier)
-					// Check if it's the same host
-					if (memcmp(&hostedGameInfo->address, &packet.tlMessage.searchReply.hostAddress, sizeof(sockaddr_in)) == 0)
-					{
-						// Matching game found. Update game info
-						hostedGameInfo->createGameInfo = packet.tlMessage.searchReply.createGameInfo;
-						hostedGameInfo->sessionIdentifier = packet.tlMessage.searchReply.sessionIdentifier;
-						hostedGameInfo->ping = timeGetTime() - packet.tlMessage.searchReply.timeStamp;
-						// Update the display
-						SetGameListItem(i, hostedGameInfo);
-						return;					// Packet handled
-					}
-				}
-			}
-		}
-
-		// New hosted game found
-		// ---------------------
-		// Allocate space to store info
-		hostedGameInfo = new HostedGameInfo;
-		// Check for allocation errors
-		if (hostedGameInfo == nullptr)
-		{
-			// Out of memory. Inform user
-			SetStatusText("Out of memory");
-			return;
-		}
-
-		// Copy the packet info
-		hostedGameInfo->createGameInfo = packet.tlMessage.searchReply.createGameInfo;
-		hostedGameInfo->ping = timeGetTime() - packet.tlMessage.searchReply.timeStamp;
-		hostedGameInfo->sessionIdentifier = packet.tlMessage.searchReply.sessionIdentifier;
-		hostedGameInfo->address = packet.tlMessage.searchReply.hostAddress;
-
-		// Add a new List Item to the List View control (Games List)
-		SetGameListItem(-1, hostedGameInfo);
-
-		return;							// Packet handled
-	}
-	case tlcJoinGranted:		// [Fall through]
+	case tlcHostedGameSearchReply: 
+		OnReceiveHostedGameSearchReply(packet);
+		break;
+	case tlcJoinGranted:
+		OnReceiveJoinGranted(packet);
+		break;
 	case tlcJoinRefused:
-		// Verify packet size
-		if (packet.header.sizeOfPayload != sizeof(JoinReply)) {
-			return;						// Discard packet
-		}
-		// Make sure we've requested to join a game
-		if (joiningGame == nullptr)
-		{
-			// **DEBUG**
-			SetStatusText("Unexpected Join reply received");
-			return;						// Discard packet
-		}
-		// Check the session identifier
-		if (packet.tlMessage.joinReply.sessionIdentifier != joiningGame->sessionIdentifier)
-		{
-			// **DEBUG**
-			SetStatusText("Join reply received with wrong Session ID");
-			return;						// Discard packet
-		}
-
-		// Check for JoinGranted
-		if (packet.tlMessage.tlHeader.commandType == tlcJoinGranted)
-		{
-			// Join Accepted
-			// -------------
-			// Inform Transport Layer
-			opuNetTransportLayer->OnJoinAccepted(packet);
-
-			// Raise the event
-			OnJoinAccepted();
-		}
-		else
-		{
-			// Session full. Inform User
-			SetStatusText("Join Failed:  The requested game is full");
-		}
-
-		// Reset joining game status
-		joiningGame = nullptr;
-		return;							// Packet handled
+		OnReceiveJoinRefused(packet);
+		break;
 	case tlcEchoExternalAddress:
-		// Verify packet size
-		if (packet.header.sizeOfPayload != sizeof(EchoExternalAddress)) {
-			return;						// Discard packet
-		}
-		// Verify packet came from game server **TODO**
-
-		// Check where the information came from
-		if (packet.tlMessage.echoExternalAddress.replyPort == internalPort)
-		{
-			bReceivedInternal = true;
-		}
-		// Check if we've received a different external port than previous
-		if (ntohs(packet.tlMessage.echoExternalAddress.addr.sin_port) != externalPort)
-		{
-			if (externalPort != 0)
-			{
-				bTwoExternal = true;	// Received two distinct external ports
-			}
-		}
-		// Record external information
-		externalIp = packet.tlMessage.echoExternalAddress.addr.sin_addr;
-		if ((externalPort == 0) || (externalPort == internalPort))
-		{
-			externalPort = ntohs(packet.tlMessage.echoExternalAddress.addr.sin_port);
-		}
-
-		// Confine scope of `std::string text` to within a single switch case
-		{
-			// Build new net info text string
-			std::string text = "External IP: " + FormatIP4Address(externalIp.s_addr) + ":" + std::to_string(externalPort);
-			// Check if internal address received
-			if (bReceivedInternal)
-			{
-				// Not quite true, since internal port might be random (no hosting, but possibly still open)
-				//text += " (Direct Host Capable)";
-			}
-			if (bTwoExternal)
-			{
-				text += "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.";
-			}
-			// Update net info text
-			SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, (long)text.c_str());
-		}
-
-		return;							// Packet handled
+		OnReceiveEchoExternalAddress(packet);
+		break;
 	default:  // Silence warnings about unused enumeration value in switch
 		break;
 	}
 }
 
+void OPUNetGameSelectWnd::OnReceiveHostedGameSearchReply(Packet& packet)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
+		return;						// Discard packet
+	}
+	// Check the game identifier
+	if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier) {
+		return;						// Discard Packet
+	}
+
+	// Check if we already know about this game
+	// ----------------------------------------
+	// Prepare a LVITEM struct
+	LVITEM item;
+	item.mask = LVIF_PARAM;
+	item.iSubItem = 0;
+
+	// Search the list of games
+	HostedGameInfo* hostedGameInfo;
+	const int gameCount = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEMCOUNT, 0, 0);
+	for (int i = 0; i < gameCount; ++i)
+	{
+		// Specify exact item to retrieve
+		item.iItem = i;
+		// Get the item data
+		if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, reinterpret_cast<LPARAM>(&item)))
+		{
+			// Retrieve the HostedGameListItem pointer
+			hostedGameInfo = reinterpret_cast<HostedGameInfo*>(item.lParam);
+			// Make sure we have a valid pointer
+			if (hostedGameInfo != nullptr)
+			{
+				// Check if it's the same game
+				//if (hostedGameInfo->sessionIdentifier == packet.tlMessage.searchReply.sessionIdentifier)
+				// Check if it's the same host
+				if (std::memcmp(&hostedGameInfo->address, &packet.tlMessage.searchReply.hostAddress, sizeof(sockaddr_in)) == 0)
+				{
+					// Matching game found. Update game info
+					hostedGameInfo->createGameInfo = packet.tlMessage.searchReply.createGameInfo;
+					hostedGameInfo->sessionIdentifier = packet.tlMessage.searchReply.sessionIdentifier;
+					hostedGameInfo->ping = timeGetTime() - packet.tlMessage.searchReply.timeStamp;
+					// Update the display
+					SetGameListItem(i, hostedGameInfo);
+					return;					// Packet handled
+				}
+			}
+		}
+	}
+
+	// New hosted game found 
+	// ---------------------
+	// Allocate space to store info
+	hostedGameInfo = new HostedGameInfo;
+	// Check for allocation errors
+	if (hostedGameInfo == nullptr)
+	{
+		const std::string memoryMessage("Unable to allocate memory for a new hosted game");
+		Log(memoryMessage);
+		SetStatusText(memoryMessage.c_str());
+		return;
+	}
+
+	// Copy the packet info
+	hostedGameInfo->createGameInfo = packet.tlMessage.searchReply.createGameInfo;
+	hostedGameInfo->ping = timeGetTime() - packet.tlMessage.searchReply.timeStamp;
+	hostedGameInfo->sessionIdentifier = packet.tlMessage.searchReply.sessionIdentifier;
+	hostedGameInfo->address = packet.tlMessage.searchReply.hostAddress;
+
+	// Add a new List Item to the List View control (Games List)
+	SetGameListItem(-1, hostedGameInfo);
+}
+
+void OPUNetGameSelectWnd::OnReceiveJoinGranted(Packet& packet)
+{
+	if (!OnReceiveJoin(packet)) {
+		return; // Discard packet
+	}
+
+	opuNetTransportLayer->OnJoinAccepted(packet);
+
+	OnJoinAccepted();
+
+	joiningGame = nullptr;
+}
+
+void OPUNetGameSelectWnd::OnReceiveJoinRefused(Packet& packet)
+{
+	if (!OnReceiveJoin(packet)) {
+		return; // Discard packet
+	}
+
+	SetStatusText("Join Failed:  The requested game is full");
+
+	joiningGame = nullptr;
+}
+
+bool OPUNetGameSelectWnd::OnReceiveJoin(Packet& packet)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(JoinReply)) {
+		return false; // Discard packet
+	}
+	// Make sure we've requested to join a game
+	if (joiningGame == nullptr)
+	{
+		LogDebug("Unexpected Join reply received");
+		return false; // Discard packet
+	}
+	// Check the session identifier
+	if (packet.tlMessage.joinReply.sessionIdentifier != joiningGame->sessionIdentifier)
+	{
+		LogDebug("Join reply received with wrong Session ID");
+		return false; // Discard packet
+	}
+
+	return true; // Do not discard packet
+}
+
+void OPUNetGameSelectWnd::OnReceiveEchoExternalAddress(Packet& packet)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(EchoExternalAddress)) {
+		return;						// Discard packet
+	}
+	// Verify packet came from game server **TODO**
+
+	// Check where the information came from
+	if (packet.tlMessage.echoExternalAddress.replyPort == internalPort)
+	{
+		bReceivedInternal = true;
+	}
+	// Check if we've received a different external port than previous
+	if (ntohs(packet.tlMessage.echoExternalAddress.addr.sin_port) != externalPort)
+	{
+		if (externalPort != 0)
+		{
+			bTwoExternal = true;	// Received two distinct external ports
+		}
+	}
+	// Record external information
+	externalIp = packet.tlMessage.echoExternalAddress.addr.sin_addr;
+	if ((externalPort == 0) || (externalPort == internalPort))
+	{
+		externalPort = ntohs(packet.tlMessage.echoExternalAddress.addr.sin_port);
+	}
+
+	// Build new net info text string
+	std::string text = "External IP: " + FormatIP4Address(externalIp.s_addr) + ":" + std::to_string(externalPort);
+	// Check if internal address received
+	if (bReceivedInternal)
+	{
+		// Not quite true, since internal port might be random (no hosting, but possibly still open)
+		//text += " (Direct Host Capable)";
+	}
+	if (bTwoExternal)
+	{
+		text += "\nWarning: Address and Port-Dependent Mapping detected\nYou may have difficulty joining games.";
+	}
+	// Update net info text
+	SendDlgItemMessage(this->hWnd, IDC_NetInfo, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(text.c_str()));
+}
 
 void OPUNetGameSelectWnd::SetGameListItem(int index, HostedGameInfo* hostedGameInfo)
 {

@@ -37,6 +37,11 @@ private:
 	void OnDestroy();
 	void OnTimer();
 	void OnReceive(Packet &packet);
+	void OnReceiveHostedGameSearchReply(Packet& packet);
+	void OnReceiveJoinGranted(Packet& packet);
+	void OnReceiveJoinRefused(Packet& packet);
+	bool OnReceiveJoin(Packet& packet);
+	void OnReceiveEchoExternalAddress(Packet& packet);
 	void OnJoinAccepted();
 	// Member functions
 	void InitNetLayer();
