@@ -542,7 +542,9 @@ void OPUNetGameSelectWnd::OnReceiveHostedGameSearchReply(Packet& packet)
 	// Check for allocation errors
 	if (hostedGameInfo == nullptr)
 	{
-		LogDebug("Out of memory");
+		const std::string memoryMessage("Unable to allocate memory for a new hosted game");
+		Log(memoryMessage);
+		SetStatusText(memoryMessage.c_str());
 		return;
 	}
 
@@ -589,7 +591,7 @@ bool OPUNetGameSelectWnd::OnReceiveJoin(Packet& packet)
 	// Make sure we've requested to join a game
 	if (joiningGame == nullptr)
 	{
-		LogDebug("Join reply received with wrong Session ID");
+		LogDebug("Unexpected Join reply received");
 		return false; // Discard packet
 	}
 	// Check the session identifier
