@@ -22,7 +22,7 @@
 extern char sectionName[];
 
 
-const char* GameTypeName[] = 
+const char* GameTypeName[] =
 {
 	"",
 	"Colony",
@@ -209,7 +209,7 @@ void OPUNetGameSelectWnd::OnInit()
 	lvColumn.cx = 40;
 	lvColumn.pszText = const_cast<char*>("Ping");
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 5, (LPARAM)&lvColumn);
-	
+
 	// Turn on full row select in the list view
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
@@ -518,7 +518,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 			}
 		}
 
-		// New hosted game found 
+		// New hosted game found
 		// ---------------------
 		// Allocate space to store info
 		hostedGameInfo = new HostedGameInfo;

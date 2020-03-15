@@ -26,9 +26,9 @@ std::string FormatIP4Address(unsigned long ip)
 {
 	std::stringstream ss;
 
-	ss << (ip & 255) << "." 
-		<< ((ip >> 8) & 255) << "." 
-		<< ((ip >> 16) & 255) << "." 
+	ss << (ip & 255) << "."
+		<< ((ip >> 8) & 255) << "."
+		<< ((ip >> 16) & 255) << "."
 		<< ((ip >> 24) & 255);
 
 	return ss.str();

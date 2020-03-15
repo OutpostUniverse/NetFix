@@ -1,6 +1,6 @@
 #include "FileSystemHelper.h"
-namespace op2ext { 
-#include "op2ext.h" 
+namespace op2ext {
+#include "op2ext.h"
 }
 #include <algorithm>
 
