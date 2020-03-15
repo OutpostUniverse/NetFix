@@ -16,22 +16,18 @@ const int MaxEchoAttempt = 3;
 class OPUNetGameSelectWnd : public IDlgWnd
 {
 public:
-	// Virtual functions
 	virtual ~OPUNetGameSelectWnd() override;
 	virtual int DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
-	// Constructor
 	OPUNetGameSelectWnd();
 
 private:
-	// Member functions
-	// ----------------
-
 	// Button click handlers
 	void OnClickSearch();
 	void OnClickJoin();
 	void OnClickCreate();
 	void OnClickCancel();
+
 	// Other event handlers
 	void OnInit();
 	void OnDestroy();
@@ -43,6 +39,7 @@ private:
 	bool OnReceiveJoin(Packet& packet);
 	void OnReceiveEchoExternalAddress(Packet& packet);
 	void OnJoinAccepted();
+
 	// Member functions
 	void InitNetLayer();
 	bool InitGurManager();
@@ -53,7 +50,6 @@ private:
 	void SetStatusText(const char* text);
 
 private:
-	// Member variables
 	OPUNetTransportLayer* opuNetTransportLayer;
 	UINT_PTR timer;
 	UINT searchTickCount;
@@ -69,5 +65,3 @@ private:
 	UCHAR numEchoRequestsSent;
 	UCHAR echoTick;
 };
-
-

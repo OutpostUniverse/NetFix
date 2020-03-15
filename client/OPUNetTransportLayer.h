@@ -37,8 +37,6 @@ struct PeerInfo
 class OPUNetTransportLayer : public NetTransportLayer
 {
 public:
-	// Public member functions
-	// -----------------------
 	static OPUNetTransportLayer* Create();		// Public static constructor [returns NULL on failure]
 
 	// Following functions: Return true on success, false on failure
@@ -55,8 +53,6 @@ public:
 	bool GetAddress(sockaddr_in& addr);
 	bool GetExternalAddress();
 
-	// Virtual member functions
-	// ------------------------
 	virtual ~OPUNetTransportLayer() override;
 	virtual int GetHostPlayerNetID() override;
 	virtual void ShutDownInvite() override;
@@ -73,8 +69,6 @@ public:
 	virtual int GetTrafficCounts(TrafficCounters& trafficCounters) override;
 
 private:
-	// Private member functions
-	// ------------------------
 	OPUNetTransportLayer();			// Private Constructor  [Prevent object creation]
 	bool InitializeWinsock();
 	int GetHostAddress(char* addrString, sockaddr_in &hostAddress);
@@ -89,8 +83,6 @@ private:
 	void CheckSourcePort(Packet& packet, sockaddr_in& from);
 
 private:
-	// Member variables
-	// ----------------
 	// Gameplay variables
 	unsigned int numPlayers;
 	bool bInitialized;
@@ -116,4 +108,3 @@ private:
 
 
 const unsigned int RandValueXor = 0xC37A4219;
-
