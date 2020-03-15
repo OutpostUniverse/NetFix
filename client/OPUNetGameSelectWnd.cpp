@@ -209,7 +209,7 @@ void OPUNetGameSelectWnd::OnInit()
 	lvColumn.cx = 40;
 	lvColumn.pszText = const_cast<char*>("Ping");
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 5, (LPARAM)&lvColumn);
-	
+
 	// Turn on full row select in the list view
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 

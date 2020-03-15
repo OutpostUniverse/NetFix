@@ -1263,12 +1263,12 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
 				return true;		// Packet handled (discard)
 			}
-			
+
 			// Check the game identifier
 			if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier) {
 				return true;		// Packet handled (discard)
 			}
-			
+
 			// Update the internal address if needed
 			if (packet.tlMessage.searchReply.hostAddress.sin_addr.s_addr == 0)
 			{
@@ -1339,7 +1339,7 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddress)
 	if (errorCode == -1) {
 		return true;
 	}
-	
+
 	return false;
 }
 
