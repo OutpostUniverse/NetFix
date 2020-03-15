@@ -22,7 +22,7 @@
 extern char sectionName[];
 
 
-const char* GameTypeName[] = 
+const char* GameTypeName[] =
 {
 	"",
 	"Colony",
@@ -518,7 +518,7 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 			}
 		}
 
-		// New hosted game found 
+		// New hosted game found
 		// ---------------------
 		// Allocate space to store info
 		hostedGameInfo = new HostedGameInfo;

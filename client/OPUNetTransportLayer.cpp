@@ -674,7 +674,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 			int expectedPlayerNetID = peerInfo[sourcePlayerNetID & 7].playerNetID;
 			if (expectedPlayerNetID != 0 && expectedPlayerNetID != sourcePlayerNetID)
 			{
-				Log("Received packet with bad sourcePlayerNetID: " + std::to_string(sourcePlayerNetID) + 
+				Log("Received packet with bad sourcePlayerNetID: " + std::to_string(sourcePlayerNetID) +
 					" from " + FormatAddress(fromAddress));
 				Log(" Packet.type = " + std::to_string(packet.header.type));
 				Log(" Packet.commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType));
@@ -945,7 +945,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 	// Read the data
 	int fromLen = sizeof(from);
-	auto receivedByteCount = recvfrom(sourceSocket, reinterpret_cast<char*>(&packet), 
+	auto receivedByteCount = recvfrom(sourceSocket, reinterpret_cast<char*>(&packet),
 		sizeof(packet), 0, reinterpret_cast<sockaddr*>(&from), &fromLen);
 
 	if (receivedByteCount == SOCKET_ERROR) {
@@ -1371,10 +1371,10 @@ void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 		if ((expectedPort != sourcePort) && (expectedPort != 0))
 		{
 			// Port mismatch. Issue warning
-			Log("Packet from player " + std::to_string(sourcePlayerIndex) + 
-				" (" + FormatAddress(from) + ") received on unexpected port (" + 
-				std::to_string(ntohs(sourcePort)) + " instead of " + 
-				std::to_string(ntohs(expectedPort)) + 
+			Log("Packet from player " + std::to_string(sourcePlayerIndex) +
+				" (" + FormatAddress(from) + ") received on unexpected port (" +
+				std::to_string(ntohs(sourcePort)) + " instead of " +
+				std::to_string(ntohs(expectedPort)) +
 				") PlayerNetId: " + FormatPlayerNetID(sourcePlayerNetId));
 		}
 		// Update the source port
