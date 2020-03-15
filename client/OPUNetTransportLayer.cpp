@@ -143,7 +143,7 @@ bool OPUNetTransportLayer::HostGame(USHORT port, const char* hostPassword, const
 			hostSocket = netSocket;
 		}
 
-	LogDebug("Bound to server port: " + std::to_string(port));
+		LogDebug("Bound to server port: " + std::to_string(port));
 	}
 
 
