@@ -1,19 +1,15 @@
-#include <OP2Internal.h>
-using namespace OP2Internal;
-
 #include "OPUNetGameSelectWnd.h"
 #include "resource.h"
+#include <OP2Internal.h>
 
+using namespace OP2Internal;
 
 extern HINSTANCE hInstance;
-
 
 
 class OPUNetGameProtocol : public NetGameProtocol
 {
 public:
-	// Virtual member functions
-
 	virtual bool IsEnabled() override {
 		return 1;
 	};
@@ -43,4 +39,3 @@ public:
 		return "OPU.Net";
 	};
 };
-
