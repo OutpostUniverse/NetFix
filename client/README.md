@@ -24,7 +24,7 @@ When creating a game, the server at `GameServerAddr` configured in `outpost2.ini
  - **Server Address:** The address to find a specific host, or an alternate game server (NetFixServer). Default is to leave blank and NetFixClient will search the `GameServerAddr` address listed in the `outpost2.ini` file.
  - **Games:** A list of games present on the NetFixServer, or a single game on a specific host.
 
-#### Bottom Buttons  
+#### Bottom Buttons
  - **Search:** Sends a single request to `Server Address` (if specified), or the default configured NetFixServer for a list of games.
  - **Join:** Join the selected game.
  - **Create:** Create a new game using the Common Info and Game Create Info
