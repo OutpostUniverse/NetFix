@@ -1,9 +1,9 @@
 #pragma once
 
+#include <OP2Internal.h>
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 
-#include <OP2Internal.h>
 using namespace OP2Internal;
 
 
