@@ -42,7 +42,7 @@ public:
 	// Following functions: Return true on success, false on failure
 	bool CreateSocket();
 	bool HostGame(USHORT port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType);
-	bool SearchForGames(char* hostAddress, USHORT defaultHostPort);
+	bool SearchForGames(char* hostAddressString, unsigned short defaultHostPort);
 	bool JoinGame(HostedGameInfo &game, const char* joinRequestPassword);
 	// Externally triggered events
 	void OnJoinAccepted(Packet &packet);
