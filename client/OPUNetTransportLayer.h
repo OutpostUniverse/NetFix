@@ -4,6 +4,13 @@
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 
+// Type alias to handle different type names used by winsock and POSIX socket implementations
+#ifdef WIN32
+using port = u_short;
+#else
+using port = in_port_t;
+#endif
+
 using namespace OP2Internal;
 
 
@@ -41,8 +48,8 @@ public:
 
 	// Following functions: Return true on success, false on failure
 	bool CreateSocket();
-	bool HostGame(USHORT port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType);
-	bool SearchForGames(char* hostAddressString, unsigned short defaultHostPort);
+	bool HostGame(port port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType);
+	bool SearchForGames(char* hostAddressString, port defaultHostPort);
 	bool JoinGame(HostedGameInfo &game, const char* joinRequestPassword);
 	// Externally triggered events
 	void OnJoinAccepted(Packet &packet);

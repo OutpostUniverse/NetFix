@@ -1,8 +1,7 @@
+#include "OPUNetTransportLayer.h"
 #include <OP2Internal.h>
-using namespace OP2Internal;
 
-class OPUNetTransportLayer;
-struct HostedGameInfo;
+using namespace OP2Internal;
 
 const int MaxServerAddressLen = 128;
 const int timerInterval = 50;
@@ -57,8 +56,8 @@ private:
 	char joinRequestPassword[16];
 	UINT joinAttempt;
 	UINT joinAttemptTickCount;
-	USHORT internalPort;
-	USHORT externalPort;
+	port internalPort;
+	port externalPort;
 	in_addr externalIp;
 	bool bReceivedInternal;
 	bool bTwoExternal;

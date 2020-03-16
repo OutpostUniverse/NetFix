@@ -92,7 +92,7 @@ bool OPUNetTransportLayer::CreateSocket()
 	return (netSocket != INVALID_SOCKET);
 }
 
-bool OPUNetTransportLayer::HostGame(USHORT port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
+bool OPUNetTransportLayer::HostGame(port port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
 {
 	// Clear internal players state
 	numPlayers = 0;
@@ -227,7 +227,7 @@ bool OPUNetTransportLayer::GetExternalAddress()
 	return errorCode;
 }
 
-bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, unsigned short defaultHostPort)
+bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, port defaultHostPort)
 {
 	// Create the default host address
 	sockaddr_in hostAddress;
