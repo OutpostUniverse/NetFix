@@ -56,8 +56,8 @@ private:
 	char joinRequestPassword[16];
 	UINT joinAttempt;
 	UINT joinAttemptTickCount;
-	port internalPort;
-	port externalPort;
+	Port internalPort;
+	Port externalPort;
 	in_addr externalIp;
 	bool bReceivedInternal;
 	bool bTwoExternal;
