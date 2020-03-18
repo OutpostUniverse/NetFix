@@ -6,7 +6,6 @@
 //  (on receive of new hosted game?)  (the list is cleared if they click search)
 
 #include "OPUNetGameSelectWnd.h"
-#include "OPUNetTransportLayer.h"
 #include "Log.h"
 #include "resource.h"
 #define WIN32_LEAN_AND_MEAN
