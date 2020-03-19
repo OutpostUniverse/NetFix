@@ -108,7 +108,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		controlId = wParam;
 		notifyCode = ((NMHDR*)lParam)->code;
 
-		if ((controlId == IDC_GamesList) && (notifyCode == NM_DBLCLK))
+		if ((controlId == IDC_GamesList) && (notifyCode == static_cast<UINT>(NM_DBLCLK)))
 		{
 			OnClickJoin();
 			return true;			// Message processed
