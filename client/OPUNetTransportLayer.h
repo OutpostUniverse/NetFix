@@ -90,6 +90,7 @@ private:
 	void CheckSourcePort(Packet& packet, sockaddr_in& from);
 
 	void SendBroadcast(Packet& packet, int packetSize);
+	void SendSinglecast(Packet& packet, int packetSize);
 
 private:
 	// Gameplay variables

@@ -537,26 +537,7 @@ int OPUNetTransportLayer::Send(Packet& packet)
 	{
 		// Singlecast
 
-		// Get the PeerInfo index
-		int i = (packet.header.destPlayerNetID & 7);
-		// Make sure the player record is valid
-		if (peerInfo[i].status != 0)
-		{
-			// Don't send to self
-			if (peerInfo[i].playerNetID != playerNetID)
-			{
-				sockaddr_in* address = &peerInfo[i].address;
-				int errorCode = sendto(netSocket, reinterpret_cast<char*>(&packet), packetSize, 0, (sockaddr*)address, sizeof(*address));
-
-				// Check for success
-				if (errorCode != SOCKET_ERROR)
-				{
-					// Success. Increment the traffic counters
-					trafficCounters.numPacketsSent++;
-					trafficCounters.numBytesSent += packetSize;
-				}
-			}
-		}
+		SendSinglecast(packet, packetSize);
 	}
 
 	return true;
@@ -584,6 +565,30 @@ void OPUNetTransportLayer::SendBroadcast(Packet& packet, int packetSize)
 					trafficCounters.numPacketsSent++;
 					trafficCounters.numBytesSent += packetSize;
 				}
+			}
+		}
+	}
+}
+
+void OPUNetTransportLayer::SendSinglecast(Packet& packet, int packetSize)
+{
+	// Get the PeerInfo index
+	int i = (packet.header.destPlayerNetID & 7);
+	// Make sure the player record is valid
+	if (peerInfo[i].status != 0)
+	{
+		// Don't send to self
+		if (peerInfo[i].playerNetID != playerNetID)
+		{
+			sockaddr_in* address = &peerInfo[i].address;
+			int errorCode = sendto(netSocket, reinterpret_cast<char*>(&packet), packetSize, 0, (sockaddr*)address, sizeof(*address));
+
+			// Check for success
+			if (errorCode != SOCKET_ERROR)
+			{
+				// Success. Increment the traffic counters
+				trafficCounters.numPacketsSent++;
+				trafficCounters.numBytesSent += packetSize;
 			}
 		}
 	}
