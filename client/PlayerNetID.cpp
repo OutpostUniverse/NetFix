@@ -18,4 +18,9 @@ namespace PlayerNetID
 	{
 		return playerNetID & ~7;
 	}
+
+	int SetTimeStamp(int playerNetID, int newTimeStamp)
+	{
+		return GetPlayerIndex(playerNetID) | GetTimeStamp(newTimeStamp);
+	}
 }
