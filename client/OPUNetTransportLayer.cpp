@@ -565,7 +565,7 @@ int OPUNetTransportLayer::Send(Packet& packet)
 void OPUNetTransportLayer::SendBroadcast(Packet& packet, int packetSize)
 {
 	// Send packet to all players
-	for (unsigned int i = 0; i < MaxRemotePlayers; i++)
+	for (unsigned int i = 0; i < MaxRemotePlayers; ++i)
 	{
 		// Make sure the player record is valid
 		if (peerInfo[i].status != 0)
