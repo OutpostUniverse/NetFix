@@ -668,10 +668,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		if (sourcePlayerNetID != 0)
 		{
 			auto playerIndex = PlayerNetID::GetPlayerIndex(sourcePlayerNetID);
-			// Make sure index is valid
-			if (playerIndex >= MaxRemotePlayers) {
-				continue;	// Discard packet
-			}
+
 			int expectedPlayerNetID = peerInfo[playerIndex].playerNetID;
 			if (expectedPlayerNetID != 0 && expectedPlayerNetID != sourcePlayerNetID)
 			{
