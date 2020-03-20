@@ -565,15 +565,15 @@ void OPUNetTransportLayer::SendBroadcast(Packet& packet, int packetSize)
 
 void OPUNetTransportLayer::SendSinglecast(Packet& packet, int packetSize)
 {
-	// Get the PeerInfo index
-	int i = (packet.header.destPlayerNetID & 7);
+	PeerInfo& peerInfo = peerInfos[packet.header.destPlayerNetID & 7];
+
 	// Make sure the player record is valid
-	if (peerInfos[i].status != 0)
+	if (peerInfo.status != 0)
 	{
 		// Don't send to self
-		if (peerInfos[i].playerNetID != playerNetID)
+		if (peerInfo.playerNetID != playerNetID)
 		{
-			sockaddr_in* address = &peerInfos[i].address;
+			sockaddr_in* address = &peerInfo.address;
 			int errorCode = sendto(netSocket, reinterpret_cast<char*>(&packet), packetSize, 0, (sockaddr*)address, sizeof(*address));
 
 			// Check for success
