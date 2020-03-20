@@ -323,7 +323,7 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	peerInfos[localPlayerNum].status = 2;
 
 	LogDebug("OnJoinAccepted");
-	LogDebug(FormatPlayerList(peerInfos.data()));
+	LogDebug(FormatPlayerList(peerInfos));
 
 	// Update num players (for quit messages from cancelled games)
 	numPlayers = 1;
@@ -1202,7 +1202,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 				}
 
 				LogDebug("Replicated Players List:");
-				LogDebug(FormatPlayerList(peerInfos.data()));
+				LogDebug(FormatPlayerList(peerInfos));
 
 				// Form a new packet to return to the game
 				packet.header.sourcePlayerNetID = 0;

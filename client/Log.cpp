@@ -34,11 +34,11 @@ std::string FormatIP4Address(unsigned long ip)
 	return ss.str();
 }
 
-std::string FormatPlayerList(const PeerInfo* peerInfos)
+std::string FormatPlayerList(const std::array<PeerInfo, 6> peerInfos)
 {
 	std::stringstream ss;
 
-	for (int i = 0; i < MaxRemotePlayers; ++i)
+	for (int i = 0; i < peerInfos.size(); ++i)
 	{
 		ss << " " << i << ") {" << peerInfos[i].status << ", ";
 		ss << FormatAddress(peerInfos[i].address);
