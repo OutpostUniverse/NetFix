@@ -1,4 +1,5 @@
 #include "PlayerNetID.h"
+#include <windows.h>
 #include <stdexcept>
 
 namespace PlayerNetID
@@ -22,5 +23,10 @@ namespace PlayerNetID
 	int SetTimeStamp(int playerNetID, int newTimeStamp)
 	{
 		return GetPlayerIndex(playerNetID) | GetTimeStamp(newTimeStamp);
+	}
+
+	int SetCurrentTime(int playerNetID)
+	{
+		return SetTimeStamp(playerNetID, timeGetTime());
 	}
 }

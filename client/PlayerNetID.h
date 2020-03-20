@@ -9,4 +9,5 @@ namespace PlayerNetID
 	int GetTimeStamp(int playerNetID);
 
 	int SetTimeStamp(int playerNetID, int newTimeStamp);
+	int SetCurrentTime(int playerNetID);
 }
