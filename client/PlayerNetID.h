@@ -6,4 +6,5 @@
 namespace PlayerNetID
 {
 	int GetPlayerIndex(int playerNetID);
+	int GetTimeStamp(int playerNetID);
 }
