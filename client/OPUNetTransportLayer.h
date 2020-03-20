@@ -14,7 +14,7 @@ using Port = in_port_t;
 
 using namespace OP2Internal;
 
-// Max number of remote players
+
 const int MaxRemotePlayers = 6;
 const int JoinTimeOut = 3000;		// 3 seconds
 
@@ -44,7 +44,7 @@ struct PeerInfo
 class OPUNetTransportLayer : public NetTransportLayer
 {
 public:
-	static OPUNetTransportLayer* Create();		// Public static constructor [returns NULL on failure]
+	static OPUNetTransportLayer* Create();		// returns NULL on failure
 
 	// Following functions: Return true on success, false on failure
 	bool CreateSocket();
