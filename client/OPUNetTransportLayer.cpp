@@ -618,7 +618,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 					if (peerInfo[i].status == 1)
 					{
 						// Check if timed out
-						if ((timeGetTime() - (peerInfo[i].playerNetID & ~7)) > JoinTimeOut)
+						if (timeGetTime() - PlayerNetID::GetTimeStamp(peerInfo[i].playerNetID) > JoinTimeOut)
 						{
 							// Cancel the join, and reclaim the player record
 							numPlayers--;
