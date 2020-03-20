@@ -551,10 +551,8 @@ void OPUNetTransportLayer::SendBroadcast(Packet& packet, int packetSize)
 				sockaddr_in* address = &peerInfo.address;
 				int errorCode = sendto(netSocket, reinterpret_cast<char*>(&packet), packetSize, 0, (sockaddr*)address, sizeof(*address));
 
-				// Check for success
 				if (errorCode != SOCKET_ERROR)
 				{
-					// Success. Increment the traffic counters
 					trafficCounters.numPacketsSent++;
 					trafficCounters.numBytesSent += packetSize;
 				}
@@ -576,10 +574,8 @@ void OPUNetTransportLayer::SendSinglecast(Packet& packet, int packetSize)
 			sockaddr_in* address = &peerInfo.address;
 			int errorCode = sendto(netSocket, reinterpret_cast<char*>(&packet), packetSize, 0, (sockaddr*)address, sizeof(*address));
 
-			// Check for success
 			if (errorCode != SOCKET_ERROR)
 			{
-				// Success. Increment the traffic counters
 				trafficCounters.numPacketsSent++;
 				trafficCounters.numBytesSent += packetSize;
 			}
