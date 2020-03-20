@@ -14,7 +14,7 @@ using Port = in_port_t;
 
 using namespace OP2Internal;
 
-
+const int HostPlayerIndex = 0;
 const int MaxRemotePlayers = 6;
 const int JoinTimeOut = 3000;		// 3 seconds
 

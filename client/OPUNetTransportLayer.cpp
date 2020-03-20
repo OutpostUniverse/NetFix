@@ -170,12 +170,12 @@ bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const c
 	LogDebug(" Session ID: " + FormatGuid(hostedGameInfo.sessionIdentifier));
 
 	// Create a Host playerNetID
-	playerNetID = PlayerNetID::SetCurrentTime(0);
+	playerNetID = PlayerNetID::SetCurrentTime(HostPlayerIndex);
 	LogDebug(" Host playerNetID: " + FormatPlayerNetID(playerNetID));
 	// Set the host fields
-	peerInfo[0].playerNetID = playerNetID;
-	peerInfo[0].address = localAddress;			// Clear the local address
-	peerInfo[0].status = 2;
+	peerInfo[HostPlayerIndex].playerNetID = playerNetID;
+	peerInfo[HostPlayerIndex].address = localAddress;			// Clear the local address
+	peerInfo[HostPlayerIndex].status = 2;
 	// Update number of players
 	numPlayers = 1;
 
@@ -311,9 +311,9 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	// Join successful
 	// ---------------
 	// Store the Host info
-	peerInfo[0].playerNetID = packet.header.sourcePlayerNetID;	// Store Host playerNetID
-	peerInfo[0].address = joiningGameInfo->address;				// Store Host address
-	peerInfo[0].status = 2;
+	peerInfo[HostPlayerIndex].playerNetID = packet.header.sourcePlayerNetID;	// Store Host playerNetID
+	peerInfo[HostPlayerIndex].address = joiningGameInfo->address;				// Store Host address
+	peerInfo[HostPlayerIndex].status = 2;
 	// Get the assigned playerNetID
 	playerNetID = packet.tlMessage.joinReply.newPlayerNetID;	// Store playerNetID
 	int localPlayerNum = PlayerNetID::GetPlayerIndex(playerNetID);   // Cache (frequently used)
@@ -409,7 +409,7 @@ OPUNetTransportLayer::~OPUNetTransportLayer()
 
 int OPUNetTransportLayer::GetHostPlayerNetID()
 {
-	return peerInfo[0].playerNetID;
+	return peerInfo[HostPlayerIndex].playerNetID;
 }
 
 // Called when the game is starting (but not when cancelled)
@@ -465,7 +465,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 
 
 	// Success
-	peerInfo[0].status = 3;
+	peerInfo[HostPlayerIndex].status = 3;
 	return 1;
 }
 
@@ -710,7 +710,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 
 int OPUNetTransportLayer::IsHost()				// IsCurrentGameHost?
 {
-	return (bInvite && (playerNetID == peerInfo[0].playerNetID));
+	return (bInvite && (playerNetID == peerInfo[HostPlayerIndex].playerNetID));
 }
 
 int OPUNetTransportLayer::IsValidPlayer()		// IsHostWaitingToStart?
@@ -997,7 +997,7 @@ bool OPUNetTransportLayer::SendStatusUpdate()
 	packet.tlMessage.statusUpdate.newStatus = peerInfo[PlayerNetID::GetPlayerIndex(playerNetID)].status;		// Copy local status
 
 	// Send the new status to the host
-	return SendTo(packet, peerInfo[0].address);
+	return SendTo(packet, peerInfo[HostPlayerIndex].address);
 }
 
 
@@ -1216,7 +1216,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 
 			return true;			// Packet handled
 		case tlcSetPlayersListFailed:
-			peerInfo[0].status = 4;
+			peerInfo[HostPlayerIndex].status = 4;
 			peerInfo[PlayerNetID::GetPlayerIndex(playerNetID)].status = 4;
 
 			// Form a new packet to return to the game
