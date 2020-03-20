@@ -519,24 +519,17 @@ void OPUNetTransportLayer::RemovePlayer(int playerNetID)
 
 int OPUNetTransportLayer::Send(Packet& packet)
 {
-	// Set the source player net ID
 	packet.header.sourcePlayerNetID = playerNetID;
-	// Calculate the packet size
 	int packetSize = packet.header.sizeOfPayload + sizeof(packet.header);
-	// Calculate checksum
 	packet.header.checksum = packet.Checksum();
 
 	// Check if this packet should be broadcast
 	if (packet.header.destPlayerNetID == 0)
 	{
-		// Broadcast
-
 		SendBroadcast(packet, packetSize);
 	}
 	else
 	{
-		// Singlecast
-
 		SendSinglecast(packet, packetSize);
 	}
 
