@@ -3,6 +3,7 @@
 #include <OP2Internal.h>
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
+#include <array>
 
 // Type alias to handle different type names used by winsock and POSIX socket implementations
 #ifdef WIN32
@@ -100,7 +101,7 @@ private:
 	SOCKET hostSocket;
 	int forcedPort;
 	// Peer Info
-	PeerInfo peerInfo[MaxRemotePlayers];
+	std::array<PeerInfo, 6> peerInfo;
 	// Traffic counters
 	TrafficCounters trafficCounters;
 	// State variables
