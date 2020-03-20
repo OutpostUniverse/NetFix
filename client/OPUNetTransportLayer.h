@@ -89,6 +89,8 @@ private:
 	bool GetGameServerAddress(sockaddr_in &gameServerAddress);
 	void CheckSourcePort(Packet& packet, sockaddr_in& from);
 
+	void SendBroadcast(Packet& packet, int packetSize);
+
 private:
 	// Gameplay variables
 	unsigned int numPlayers;
