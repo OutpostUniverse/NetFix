@@ -170,7 +170,7 @@ bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const c
 	LogDebug(" Session ID: " + FormatGuid(hostedGameInfo.sessionIdentifier));
 
 	// Create a Host playerNetID
-	playerNetID = PlayerNetID::SetTimeStamp(0, timeGetTime());
+	playerNetID = PlayerNetID::SetCurrentTime(0);
 	LogDebug(" Host playerNetID: " + FormatPlayerNetID(playerNetID));
 	// Set the host fields
 	peerInfo[0].playerNetID = playerNetID;
@@ -905,7 +905,7 @@ int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
 			// Store the source address
 			peerInfo[newPlayerIndex].address = from;
 			peerInfo[newPlayerIndex].status = 1;
-			peerInfo[newPlayerIndex].playerNetID = PlayerNetID::SetTimeStamp(newPlayerIndex, timeGetTime());
+			peerInfo[newPlayerIndex].playerNetID = PlayerNetID::SetCurrentTime(newPlayerIndex);
 			// Increase connected player count
 			numPlayers++;
 			numJoining++;
