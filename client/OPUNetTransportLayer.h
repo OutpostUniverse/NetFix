@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PlayerNetID.h"
 #include <OP2Internal.h>
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
@@ -12,7 +13,6 @@ using Port = in_port_t;
 #endif
 
 using namespace OP2Internal;
-
 
 // Max number of remote players
 const int MaxRemotePlayers = 6;

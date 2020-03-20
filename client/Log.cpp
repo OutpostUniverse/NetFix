@@ -54,7 +54,7 @@ std::string FormatPlayerNetID(int playerNetID)
 {
 	std::stringstream ss;
 
-	ss << "[" << (playerNetID & ~7) << "." << (playerNetID & 7) << "]";
+	ss << "[" << (playerNetID & ~7) << "." << PlayerNetID::GetPlayerIndex(playerNetID) << "]";
 
 	return ss.str();
 }
