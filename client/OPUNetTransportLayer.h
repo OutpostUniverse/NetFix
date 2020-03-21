@@ -101,7 +101,7 @@ private:
 	SOCKET hostSocket;
 	int forcedPort;
 	// Peer Info
-	std::array<PeerInfo, 6> peerInfos;
+	std::array<PeerInfo, MaxRemotePlayers> peerInfos;
 	// Traffic counters
 	TrafficCounters trafficCounters;
 	// State variables
