@@ -1174,7 +1174,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 	}
 
 	// Check if we need to respond to pre game setup messages
-	if (bGameStarted == false)
+	if (!bGameStarted)
 	{
 		switch (tlMessage.tlHeader.commandType)
 		{
