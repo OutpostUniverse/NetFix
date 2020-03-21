@@ -8,6 +8,7 @@
 #include <mmsystem.h>
 #include <objbase.h>
 #include <string>
+#include <cstring>
 
 extern char sectionName[];
 
@@ -739,7 +740,7 @@ int OPUNetTransportLayer::GetAddressString(int playerNetID, char* addressString,
 int OPUNetTransportLayer::ResetTrafficCounters()
 {
 	// Clear the TrafficCounters
-	memset(&trafficCounters, 0, sizeof(trafficCounters));
+	std::memset(&trafficCounters, 0, sizeof(trafficCounters));
 	trafficCounters.timeOfLastReset = timeGetTime();
 
 	return true;
@@ -773,10 +774,10 @@ OPUNetTransportLayer::OPUNetTransportLayer()	// Private Constructor  [Prevent ob
 	netSocket = INVALID_SOCKET;
 	hostSocket = INVALID_SOCKET;
 	forcedPort = 0;
-	memset(&peerInfos, 0, sizeof(peerInfos));
+	std::memset(&peerInfos, 0, sizeof(peerInfos));
 	bInvite = false;
 	bGameStarted = false;
-	memset(&hostedGameInfo, 0, sizeof(hostedGameInfo));
+	std::memset(&hostedGameInfo, 0, sizeof(hostedGameInfo));
 	hostedGameInfo.ping = -1;
 	ResetTrafficCounters();
 	joiningGameInfo = nullptr;
@@ -1172,7 +1173,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 	}
 
 	// Check if we need to respond to pre game setup messages
-	if (bGameStarted == false)
+	if (!bGameStarted)
 	{
 		switch (tlMessage.tlHeader.commandType)
 		{
@@ -1196,7 +1197,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 					peerInfos[i].address.sin_family = AF_INET;
 					peerInfos[i].address.sin_port = tlMessage.playersList.netPeerInfo[i].port;
 					peerInfos[i].address.sin_addr.s_addr = tlMessage.playersList.netPeerInfo[i].ip;
-					memset(peerInfos[i].address.sin_zero, 0, sizeof(peerInfos[i].address.sin_zero));
+					std::memset(peerInfos[i].address.sin_zero, 0, sizeof(peerInfos[i].address.sin_zero));
 					peerInfos[i].status = tlMessage.playersList.netPeerInfo[i].status;
 					peerInfos[i].playerNetID = tlMessage.playersList.netPeerInfo[i].playerNetID;
 				}
@@ -1331,7 +1332,7 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddress)
 	// Set default address values
 	gameServerAddress.sin_family = AF_INET;
 	gameServerAddress.sin_port = htons(DefaultGameServerPort);
-	memset(gameServerAddress.sin_zero, 0, sizeof(gameServerAddress.sin_zero));
+	std::memset(gameServerAddress.sin_zero, 0, sizeof(gameServerAddress.sin_zero));
 
 	// Convert the address string to a sockaddr_in struct
 	int errorCode = GetHostAddress(addressString, gameServerAddress);
