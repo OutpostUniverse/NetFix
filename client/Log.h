@@ -16,7 +16,7 @@ namespace OP2Internal {
 
 std::string FormatAddress(const sockaddr_in& address);
 std::string FormatIP4Address(unsigned long ip);
-std::string FormatPlayerList(const std::array<PeerInfo, 6> peerInfos);
+std::string FormatPlayerList(const std::array<PeerInfo, 6>& peerInfos);
 std::string FormatPlayerNetID(int playerNetID);
 std::string FormatGuid(const GUID& guid);
 std::string FormatPacket(const OP2Internal::Packet& packet);

@@ -34,7 +34,7 @@ std::string FormatIP4Address(unsigned long ip)
 	return ss.str();
 }
 
-std::string FormatPlayerList(const std::array<PeerInfo, 6> peerInfos)
+std::string FormatPlayerList(const std::array<PeerInfo, 6>& peerInfos)
 {
 	std::stringstream ss;
 
