@@ -38,7 +38,7 @@ std::string FormatPlayerList(const std::array<PeerInfo, MaxRemotePlayers>& peerI
 {
 	std::stringstream ss;
 
-	for (int i = 0; i < peerInfos.size(); ++i)
+	for (std::size_t i = 0; i < peerInfos.size(); ++i)
 	{
 		ss << " " << i << ") {" << peerInfos[i].status << ", ";
 		ss << FormatAddress(peerInfos[i].address);
