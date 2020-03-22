@@ -120,6 +120,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="OPUNetGameSelectWnd.cpp" />
     <ClCompile Include="OPUNetTransportLayer.cpp" />
+    <ClCompile Include="PlayerNetID.cpp" />
     <ClCompile Include="ValidatePacket.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +129,7 @@
     <ClInclude Include="OPUNetGameProtocol.h" />
     <ClInclude Include="OPUNetGameSelectWnd.h" />
     <ClInclude Include="OPUNetTransportLayer.h" />
+    <ClInclude Include="PlayerNetID.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

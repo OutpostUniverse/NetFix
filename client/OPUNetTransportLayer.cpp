@@ -171,12 +171,12 @@ bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const c
 	LogDebug(" Session ID: " + FormatGuid(hostedGameInfo.sessionIdentifier));
 
 	// Create a Host playerNetID
-	playerNetID = timeGetTime() & ~7;
+	playerNetID = PlayerNetID::SetCurrentTime(HostPlayerIndex);
 	LogDebug(" Host playerNetID: " + FormatPlayerNetID(playerNetID));
 	// Set the host fields
-	peerInfos[0].playerNetID = playerNetID;
-	peerInfos[0].address = localAddress;			// Clear the local address
-	peerInfos[0].status = 2;
+	peerInfos[HostPlayerIndex].playerNetID = playerNetID;
+	peerInfos[HostPlayerIndex].address = localAddress;			// Clear the local address
+	peerInfos[HostPlayerIndex].status = 2;
 	// Update number of players
 	numPlayers = 1;
 
@@ -312,12 +312,12 @@ void OPUNetTransportLayer::OnJoinAccepted(Packet &packet)
 	// Join successful
 	// ---------------
 	// Store the Host info
-	peerInfos[0].playerNetID = packet.header.sourcePlayerNetID;	// Store Host playerNetID
-	peerInfos[0].address = joiningGameInfo->address;				// Store Host address
-	peerInfos[0].status = 2;
+	peerInfos[HostPlayerIndex].playerNetID = packet.header.sourcePlayerNetID;	// Store Host playerNetID
+	peerInfos[HostPlayerIndex].address = joiningGameInfo->address;				// Store Host address
+	peerInfos[HostPlayerIndex].status = 2;
 	// Get the assigned playerNetID
 	playerNetID = packet.tlMessage.joinReply.newPlayerNetID;	// Store playerNetID
-	int localPlayerNum = playerNetID & 7;   // Cache (frequently used)
+	int localPlayerNum = PlayerNetID::GetPlayerIndex(playerNetID);   // Cache (frequently used)
 	// Update local info
 	peerInfos[localPlayerNum].playerNetID = playerNetID;
 	peerInfos[localPlayerNum].address.sin_addr.s_addr = INADDR_ANY;	// Clear the address
@@ -410,7 +410,7 @@ OPUNetTransportLayer::~OPUNetTransportLayer()
 
 int OPUNetTransportLayer::GetHostPlayerNetID()
 {
-	return peerInfos[0].playerNetID;
+	return peerInfos[HostPlayerIndex].playerNetID;
 }
 
 // Called when the game is starting (but not when cancelled)
@@ -466,7 +466,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 
 
 	// Success
-	peerInfos[0].status = 3;
+	peerInfos[HostPlayerIndex].status = 3;
 	return 1;
 }
 
@@ -504,7 +504,7 @@ int OPUNetTransportLayer::GetOpponentNetIDList(int netIDList[], int maxNumID)
 void OPUNetTransportLayer::RemovePlayer(int playerNetID)
 {
 	// Detemine which player to remove
-	unsigned int playerIndex = playerNetID & 7;
+	unsigned int playerIndex = PlayerNetID::GetPlayerIndex(playerNetID);
 
 	// Make sure the player exists
 	if (peerInfos[playerIndex].status != 0)
@@ -618,7 +618,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 					if (peerInfos[i].status == 1)
 					{
 						// Check if timed out
-						if ((timeGetTime() - (peerInfos[i].playerNetID & ~7)) > JoinTimeOut)
+						if (timeGetTime() - PlayerNetID::GetTimeStamp(peerInfos[i].playerNetID) > JoinTimeOut)
 						{
 							// Cancel the join, and reclaim the player record
 							numPlayers--;
@@ -667,11 +667,14 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		int sourcePlayerNetID = packet.header.sourcePlayerNetID;
 		if (sourcePlayerNetID != 0)
 		{
-			// Make sure index is valid
-			if ((sourcePlayerNetID & 7) >= MaxRemotePlayers) {
-				continue;	// Discard packet
+			auto playerIndex = PlayerNetID::GetPlayerIndex(sourcePlayerNetID);
+
+			// Discard packet if playerIndex is invalid
+			if (playerIndex >= MaxRemotePlayers) {
+				continue;
 			}
-			int expectedPlayerNetID = peerInfos[sourcePlayerNetID & 7].playerNetID;
+
+			int expectedPlayerNetID = peerInfos[playerIndex].playerNetID;
 			if (expectedPlayerNetID != 0 && expectedPlayerNetID != sourcePlayerNetID)
 			{
 				Log("Received packet with bad sourcePlayerNetID: " + std::to_string(sourcePlayerNetID) +
@@ -712,7 +715,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 
 int OPUNetTransportLayer::IsHost()				// IsCurrentGameHost?
 {
-	return (bInvite && (playerNetID == peerInfos[0].playerNetID));
+	return (bInvite && (playerNetID == peerInfos[HostPlayerIndex].playerNetID));
 }
 
 int OPUNetTransportLayer::IsValidPlayer()		// IsHostWaitingToStart?
@@ -727,11 +730,8 @@ int OPUNetTransportLayer::F1()
 
 int OPUNetTransportLayer::GetAddressString(int playerNetID, char* addressString, int bufferSize)
 {
-	// Determine the playerIndex
-	int playerIndex = (playerNetID & 7);
-
 	// Get the address and convert it to a string
-	sockaddr_in* address = &peerInfos[playerIndex].address;
+	sockaddr_in* address = &peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].address;
 	scr_snprintf(addressString, bufferSize, "%i.%i.%i.%i", address->sin_addr.S_un.S_un_b.s_b1, address->sin_addr.S_un.S_un_b.s_b2, address->sin_addr.S_un.S_un_b.s_b3, address->sin_addr.S_un.S_un_b.s_b4);
 
 	return true;
@@ -907,7 +907,7 @@ int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
 			// Store the source address
 			peerInfos[newPlayerIndex].address = from;
 			peerInfos[newPlayerIndex].status = 1;
-			peerInfos[newPlayerIndex].playerNetID = newPlayerIndex | (timeGetTime() & ~7);
+			peerInfos[newPlayerIndex].playerNetID = PlayerNetID::SetCurrentTime(newPlayerIndex);
 			// Increase connected player count
 			numPlayers++;
 			numJoining++;
@@ -999,10 +999,10 @@ bool OPUNetTransportLayer::SendStatusUpdate()
 	packet.header.sizeOfPayload = sizeof(StatusUpdate);
 	packet.header.type = 1;
 	packet.tlMessage.tlHeader.commandType = tlcUpdateStatus;
-	packet.tlMessage.statusUpdate.newStatus = peerInfos[playerNetID & 7].status;		// Copy local status
+	packet.tlMessage.statusUpdate.newStatus = peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status;		// Copy local status
 
 	// Send the new status to the host
-	return SendTo(packet, peerInfos[0].address);
+	return SendTo(packet, peerInfos[HostPlayerIndex].address);
 }
 
 
@@ -1026,7 +1026,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, int untilStatus
 		for (int playerNum = 0; playerNum < numPlayers; playerNum++)
 		{
 			// Get the index of the current player peer info
-			int index = playerNetIDList[playerNum] & 7;
+			int index = PlayerNetID::GetPlayerIndex(playerNetIDList[playerNum]);
 			if (peerInfos[index].status != untilStatus)
 			{
 				// Must wait for a response from this player
@@ -1102,7 +1102,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 				{
 					LogDebug("Return Port forced to " + std::to_string(returnPortNum));
 					// Set the new return port number
-					peerInfos[tlMessage.joinReply.newPlayerNetID & 7].address.sin_port = returnPortNum;
+					peerInfos[PlayerNetID::GetPlayerIndex(tlMessage.joinReply.newPlayerNetID)].address.sin_port = returnPortNum;
 				}
 			}
 			else
@@ -1185,7 +1185,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 				return true;		// Packet handled (discard)
 			}
 
-			if (peerInfos[playerNetID & 7].status == 2)
+			if (peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status == 2)
 			{
 				// Copy the number of players
 				numPlayers = tlMessage.playersList.numPlayers;
@@ -1221,8 +1221,8 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 
 			return true;			// Packet handled
 		case tlcSetPlayersListFailed:
-			peerInfos[0].status = 4;
-			peerInfos[playerNetID & 7].status = 4;
+			peerInfos[HostPlayerIndex].status = 4;
+			peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status = 4;
 
 			// Form a new packet to return to the game
 			packet.header.sizeOfPayload = 4;
@@ -1240,7 +1240,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 
 			// Cache which peerInfo struct needs to be updated
 			PeerInfo* updatedPeerInfo;
-			updatedPeerInfo = &peerInfos[packet.header.sourcePlayerNetID & 7];
+			updatedPeerInfo = &peerInfos[PlayerNetID::GetPlayerIndex(packet.header.sourcePlayerNetID)];
 
 			// Check if we need to mark joining
 			if ((updatedPeerInfo->status == 1) && (packet.tlMessage.statusUpdate.newStatus == 2))
@@ -1362,7 +1362,7 @@ void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 
 	if (bGameStarted)
 	{
-		const int sourcePlayerIndex = sourcePlayerNetId & 7;
+		const int sourcePlayerIndex = PlayerNetID::GetPlayerIndex(sourcePlayerNetId);
 		PeerInfo &sourcePlayerPeerInfo = peerInfos[sourcePlayerIndex];
 		unsigned short expectedPort = sourcePlayerPeerInfo.address.sin_port;
 		unsigned short sourcePort = from.sin_port;
