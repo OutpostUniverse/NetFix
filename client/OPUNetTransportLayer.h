@@ -4,6 +4,7 @@
 #include <OP2Internal.h>
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
+#include <array>
 
 // Type alias to handle different type names used by winsock and POSIX socket implementations
 #ifdef WIN32
@@ -89,6 +90,9 @@ private:
 	bool GetGameServerAddress(sockaddr_in &gameServerAddress);
 	void CheckSourcePort(Packet& packet, sockaddr_in& from);
 
+	void SendBroadcast(Packet& packet, int packetSize);
+	void SendSinglecast(Packet& packet, int packetSize);
+
 private:
 	// Gameplay variables
 	unsigned int numPlayers;
@@ -97,7 +101,7 @@ private:
 	SOCKET hostSocket;
 	int forcedPort;
 	// Peer Info
-	PeerInfo peerInfo[MaxRemotePlayers];
+	std::array<PeerInfo, MaxRemotePlayers> peerInfos;
 	// Traffic counters
 	TrafficCounters trafficCounters;
 	// State variables
