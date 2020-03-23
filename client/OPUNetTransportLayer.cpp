@@ -1098,27 +1098,7 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 			return false;			// Return packet for further processing
 
 		case tlcUpdateStatus:
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(StatusUpdate)) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Cache which peerInfo struct needs to be updated
-			PeerInfo* updatedPeerInfo;
-			updatedPeerInfo = &peerInfos[PlayerNetID::GetPlayerIndex(packet.header.sourcePlayerNetID)];
-
-			// Check if we need to mark joining
-			if ((updatedPeerInfo->status == PeerStatus::Joining) && (packet.tlMessage.statusUpdate.newStatus == PeerStatus::Normal))
-			{
-				// Mark this player for returning a join packet
-				updatedPeerInfo->bReturnJoinPacket = true;
-			}
-
-			// Update the Player Status
-			if (updatedPeerInfo->status <= tlMessage.statusUpdate.newStatus) {
-				updatedPeerInfo->status = tlMessage.statusUpdate.newStatus;
-			}
-
+			ProcessUpdateStatus(packet, tlMessage);
 			return true;			// Packet handled
 
 		case tlcHostedGameSearchReply:		// [Custom format]
@@ -1308,6 +1288,30 @@ void OPUNetTransportLayer::ProcessSetPlayersListFailed(Packet& packet)
 	packet.header.sizeOfPayload = 4;
 	packet.header.sourcePlayerNetID = 0;
 	packet.tlMessage.tlHeader.commandType = tlcSetPlayersList;
+}
+
+void OPUNetTransportLayer::ProcessUpdateStatus(Packet& packet, TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(StatusUpdate)) {
+		return;		// Packet handled (discard)
+	}
+
+	// Cache which peerInfo struct needs to be updated
+	PeerInfo* updatedPeerInfo;
+	updatedPeerInfo = &peerInfos[PlayerNetID::GetPlayerIndex(packet.header.sourcePlayerNetID)];
+
+	// Check if we need to mark joining
+	if ((updatedPeerInfo->status == PeerStatus::Joining) && (packet.tlMessage.statusUpdate.newStatus == PeerStatus::Normal))
+	{
+		// Mark this player for returning a join packet
+		updatedPeerInfo->bReturnJoinPacket = true;
+	}
+
+	// Update the Player Status
+	if (updatedPeerInfo->status <= tlMessage.statusUpdate.newStatus) {
+		updatedPeerInfo->status = tlMessage.statusUpdate.newStatus;
+	}
 }
 
 bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
