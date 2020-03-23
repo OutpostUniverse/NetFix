@@ -80,7 +80,7 @@ private:
 	OPUNetTransportLayer();			// Private Constructor  [Prevent object creation]
 	bool InitializeWinsock();
 	int GetHostAddress(char* addrString, sockaddr_in &hostAddress);
-	int AddPlayer(sockaddr_in& from);
+	int AddPlayer(const sockaddr_in& from);
 	int ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from);
 	bool SendTo(Packet& packet, sockaddr_in& to);
 	bool SendStatusUpdate();

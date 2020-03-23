@@ -891,7 +891,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 // -------------------------------------------
 
 // Returns a new playerNetID
-int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
+int OPUNetTransportLayer::AddPlayer(const sockaddr_in& from)
 {
 	// Make sure there is room for a new player
 	if (numPlayers >= hostedGameInfo.createGameInfo.startupFlags.maxPlayers) {
