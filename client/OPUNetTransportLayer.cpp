@@ -1092,46 +1092,7 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 		case tlcStartGame:
 			break;
 		case tlcSetPlayersList:
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(PlayersList)) {
-				return true;		// Packet handled (discard)
-			}
-
-			if (peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status == PeerStatus::Normal)
-			{
-				// Copy the number of players
-				numPlayers = tlMessage.playersList.numPlayers;
-
-				// Copy the Player List
-				int i;
-				for (i = 1; i < MaxRemotePlayers; i++)
-				{
-					peerInfos[i].address.sin_family = AF_INET;
-					peerInfos[i].address.sin_port = tlMessage.playersList.netPeerInfo[i].port;
-					peerInfos[i].address.sin_addr.s_addr = tlMessage.playersList.netPeerInfo[i].ip;
-					std::memset(peerInfos[i].address.sin_zero, 0, sizeof(peerInfos[i].address.sin_zero));
-					peerInfos[i].status = tlMessage.playersList.netPeerInfo[i].status;
-					peerInfos[i].playerNetID = tlMessage.playersList.netPeerInfo[i].playerNetID;
-				}
-
-				LogDebug("Replicated Players List:");
-				LogDebug(FormatPlayerList(peerInfos));
-
-				// Form a new packet to return to the game
-				packet.header.sourcePlayerNetID = 0;
-				packet.header.sizeOfPayload = 4;
-				packet.tlMessage.tlHeader.commandType = tlcStartGame;
-
-				// Send Status update to host
-				SendStatusUpdate();
-
-				return false;		// Return packet for further processing
-			}
-
-			// Send Status update to host
-			SendStatusUpdate();
-
-			return true;			// Packet handled
+			return ProcessSetPlayersList(packet, tlMessage);
 		case tlcSetPlayersListFailed:
 			peerInfos[HostPlayerIndex].status = PeerStatus::ReplicateFailure;
 			peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status = PeerStatus::ReplicateFailure;
@@ -1300,6 +1261,50 @@ bool OPUNetTransportLayer::ProcessJoinHelpRequest(Packet& packet, sockaddr_in& f
 	}
 	sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
 
+}
+
+bool OPUNetTransportLayer::ProcessSetPlayersList(Packet& packet, TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(PlayersList)) {
+		return true;		// Packet handled (discard)
+	}
+
+	if (peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status == PeerStatus::Normal)
+	{
+		// Copy the number of players
+		numPlayers = tlMessage.playersList.numPlayers;
+
+		// Copy the Player List
+		int i;
+		for (i = 1; i < MaxRemotePlayers; i++)
+		{
+			peerInfos[i].address.sin_family = AF_INET;
+			peerInfos[i].address.sin_port = tlMessage.playersList.netPeerInfo[i].port;
+			peerInfos[i].address.sin_addr.s_addr = tlMessage.playersList.netPeerInfo[i].ip;
+			std::memset(peerInfos[i].address.sin_zero, 0, sizeof(peerInfos[i].address.sin_zero));
+			peerInfos[i].status = tlMessage.playersList.netPeerInfo[i].status;
+			peerInfos[i].playerNetID = tlMessage.playersList.netPeerInfo[i].playerNetID;
+		}
+
+		LogDebug("Replicated Players List:");
+		LogDebug(FormatPlayerList(peerInfos));
+
+		// Form a new packet to return to the game
+		packet.header.sourcePlayerNetID = 0;
+		packet.header.sizeOfPayload = 4;
+		packet.tlMessage.tlHeader.commandType = tlcStartGame;
+
+		// Send Status update to host
+		SendStatusUpdate();
+
+		return false;		// Return packet for further processing
+	}
+
+	// Send Status update to host
+	SendStatusUpdate();
+
+	return true;			// Packet handled
 }
 
 bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
