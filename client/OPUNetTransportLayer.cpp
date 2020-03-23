@@ -1059,7 +1059,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, PeerStatus unti
 // -------------------------------------------
 
 // Returns true if the packet was processed, and false otherwise
-bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in& fromAddress)
+bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, const sockaddr_in& fromAddress)
 {
 	// Create shorthand reference to known packet type
 	TransportLayerMessage& tlMessage = packet.tlMessage;
@@ -1108,7 +1108,7 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 	return false; // Unhandled (non-immediate) message
 }
 
-bool OPUNetTransportLayer::ProcessJoinRequest(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+bool OPUNetTransportLayer::ProcessJoinRequest(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(JoinRequest)) {
@@ -1152,7 +1152,7 @@ bool OPUNetTransportLayer::ProcessJoinRequest(Packet& packet, sockaddr_in& fromA
 	return true;			// Packet handled
 }
 
-bool OPUNetTransportLayer::ProcessHostedGameSearchQuery(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+bool OPUNetTransportLayer::ProcessHostedGameSearchQuery(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(HostedGameSearchQuery)) {
@@ -1183,7 +1183,7 @@ bool OPUNetTransportLayer::ProcessHostedGameSearchQuery(Packet& packet, sockaddr
 	return true;			// Packet handled
 }
 
-bool OPUNetTransportLayer::ProcessJoinHelpRequest(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+bool OPUNetTransportLayer::ProcessJoinHelpRequest(const Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest)) {
@@ -1208,7 +1208,7 @@ bool OPUNetTransportLayer::ProcessJoinHelpRequest(Packet& packet, sockaddr_in& f
 
 }
 
-bool OPUNetTransportLayer::ProcessSetPlayersList(Packet& packet, TransportLayerMessage& tlMessage)
+bool OPUNetTransportLayer::ProcessSetPlayersList(Packet& packet, const TransportLayerMessage& tlMessage)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(PlayersList)) {
@@ -1263,7 +1263,7 @@ void OPUNetTransportLayer::ProcessSetPlayersListFailed(Packet& packet)
 	packet.tlMessage.tlHeader.commandType = tlcSetPlayersList;
 }
 
-void OPUNetTransportLayer::ProcessUpdateStatus(Packet& packet, TransportLayerMessage& tlMessage)
+void OPUNetTransportLayer::ProcessUpdateStatus(const Packet& packet, const TransportLayerMessage& tlMessage)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(StatusUpdate)) {
@@ -1287,7 +1287,7 @@ void OPUNetTransportLayer::ProcessUpdateStatus(Packet& packet, TransportLayerMes
 	}
 }
 
-bool OPUNetTransportLayer::ProcessHostedGameSearchReply(Packet& packet, sockaddr_in& fromAddress)
+bool OPUNetTransportLayer::ProcessHostedGameSearchReply(Packet& packet, const sockaddr_in& fromAddress)
 {
 	LogDebug("Hosted Game Search Reply: " + FormatAddress(fromAddress));
 
