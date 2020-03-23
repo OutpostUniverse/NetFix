@@ -692,8 +692,10 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		CheckSourcePort(packet, fromAddress);
 
 		// Determine if immediate processing is required
-		bool bRetVal = DoImmediateProcessing(packet, fromAddress);
-
+		bool bRetVal = packet.header.type == 1;
+		if (bRetVal) {
+			bRetVal = DoImmediateProcessing(packet, fromAddress);
+		}
 
 		// Check destination
 		if ((packet.header.destPlayerNetID != 0) && (packet.header.destPlayerNetID != playerNetID)) {
@@ -1059,11 +1061,6 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, PeerStatus unti
 // Returns true if the packet was processed, and false otherwise
 bool OPUNetTransportLayer::DoImmediateProcessing(Packet& packet, sockaddr_in& fromAddress)
 {
-	// Make sure it's an immediately processed TransportLayer message
-	if (packet.header.type != 1) {
-		return false;				// Abort. Non immediate transport message
-	}
-
 	// Create shorthand reference to known packet type
 	TransportLayerMessage& tlMessage = packet.tlMessage;
 
