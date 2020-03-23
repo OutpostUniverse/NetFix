@@ -692,8 +692,10 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		CheckSourcePort(packet, fromAddress);
 
 		// Determine if immediate processing is required
-		bool bRetVal = DoImmediateProcessing(packet, fromAddress);
-
+		bool bRetVal = packet.header.type == 1;
+		if (bRetVal) {
+			bRetVal = OnImmediatePacketProcess(packet, fromAddress);
+		}
 
 		// Check destination
 		if ((packet.header.destPlayerNetID != 0) && (packet.header.destPlayerNetID != playerNetID)) {
@@ -889,7 +891,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 // -------------------------------------------
 
 // Returns a new playerNetID
-int OPUNetTransportLayer::AddPlayer(sockaddr_in& from)
+int OPUNetTransportLayer::AddPlayer(const sockaddr_in& from)
 {
 	// Make sure there is room for a new player
 	if (numPlayers >= hostedGameInfo.createGameInfo.startupFlags.maxPlayers) {
@@ -959,7 +961,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 // -------------------------------------------
 
-bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
+bool OPUNetTransportLayer::SendTo(Packet& packet, const sockaddr_in& to)
 {
 	LogDebug("SendTo: Packet.commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType));
 
@@ -1057,116 +1059,25 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, PeerStatus unti
 // -------------------------------------------
 
 // Returns true if the packet was processed, and false otherwise
-bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fromAddress)
+bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, const sockaddr_in& fromAddress)
 {
-	// Make sure it's an immediately processed TransportLayer message
-	if (packet.header.type != 1) {
-		return false;				// Abort. Non immediate transport message
-	}
-
 	// Create shorthand reference to known packet type
-	TransportLayerMessage &tlMessage = packet.tlMessage;
+	TransportLayerMessage& tlMessage = packet.tlMessage;
 
 	// Check if we need to repond to game host queries
 	if (bInvite)
 	{
-		int returnPortNum;
-
 		switch (tlMessage.tlHeader.commandType)
 		{
-		case tlcJoinRequest:		// 0: JoinRequest
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(JoinRequest)) {
-				return true;		// Packet handled (discard)
+		case tlcJoinRequest:
+			return ProcessJoinRequest(packet, fromAddress, tlMessage);
+		case tlcHostedGameSearchQuery:
+			return ProcessHostedGameSearchQuery(packet, fromAddress, tlMessage);
+		case tlcJoinHelpRequest:
+			if (ProcessJoinHelpRequest(packet, fromAddress, tlMessage)) {
+				return true;
 			}
-			// Check the session identifier
-			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
-				return true;		// Packet handled (discard)
-			}
-
-			returnPortNum = tlMessage.joinRequest.returnPortNum;
-
-			// Create a reply
-			packet.header.sourcePlayerNetID = playerNetID;		// Client will need the Host's ID
-			packet.header.sizeOfPayload = sizeof(JoinReply);
-			tlMessage.joinReply.newPlayerNetID = AddPlayer(fromAddress);
-			// Determine if join was successful
-			if (tlMessage.joinReply.newPlayerNetID != 0)
-			{
-				tlMessage.tlHeader.commandType = tlcJoinGranted;
-				LogDebug("Client join accepted: " + FormatAddress(fromAddress) + ". New Player Net ID: " +
-					FormatPlayerNetID(tlMessage.joinReply.newPlayerNetID));
-
-				// Check if a forced return port has been set
-				if (returnPortNum != 0)
-				{
-					LogDebug("Return Port forced to " + std::to_string(returnPortNum));
-					// Set the new return port number
-					peerInfos[PlayerNetID::GetPlayerIndex(tlMessage.joinReply.newPlayerNetID)].address.sin_port = returnPortNum;
-				}
-			}
-			else
-			{
-				tlMessage.tlHeader.commandType = tlcJoinRefused;
-				Log("Client join refused: " + FormatAddress(fromAddress));
-			}
-
-			// Send the reply
-			SendTo(packet, fromAddress);
-
-			return true;			// Packet handled
-		case tlcHostedGameSearchQuery:		// 7: HostedGameSearchQuery  [Custom format]
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchQuery)) {
-				return true;		// Packet handled (discard)
-			}
-
-			LogDebug("Game Search Query: " + FormatAddress(fromAddress));
-
-			// Verify Game Identifier
-			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
-				return true;		// Packet handled (discard)
-			}
-			// Verify password
-			if (strncmp(tlMessage.searchQuery.password, hostPassword, sizeof(hostPassword)) != 0) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Create a reply
-			packet.header.sizeOfPayload = sizeof(HostedGameSearchReply);
-			tlMessage.tlHeader.commandType = tlcHostedGameSearchReply;
-			tlMessage.searchReply.sessionIdentifier = hostedGameInfo.sessionIdentifier;
-			tlMessage.searchReply.createGameInfo = hostedGameInfo.createGameInfo;
-			tlMessage.searchReply.hostAddress.sin_addr.s_addr = 0;		// Clear return address  (NAT will obscure it, let a game server or client fix it when the packet is received)
-
-			// Send the reply
-			SendTo(packet, fromAddress);
-
-			return true;			// Packet handled
-		case tlcJoinHelpRequest: {
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest)) {
-				return true;		// Packet handled (discard)
-			}
-			// Check the session identifier
-			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Log JoinHelpRequest parameters
-			const std::string addressStr = FormatAddress(tlMessage.joinHelpRequest.clientAddr);
-			const std::string returnPortStr = std::to_string(tlMessage.joinHelpRequest.returnPortNum);
-			LogDebug("JoinHelpRequest: Client: " + addressStr + "  Return Port: " + returnPortStr);
-
-			// Send something to create router mappings
-			tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
-			if (tlMessage.joinHelpRequest.returnPortNum != 0) {
-				tlMessage.joinHelpRequest.clientAddr.sin_port = htons(tlMessage.joinHelpRequest.returnPortNum);
-			}
-			sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
-
 			break;
-		}
 		default:  // Silence warnings about unused enumeration value in switch
 			break;
 		}
@@ -1180,116 +1091,230 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 		case tlcStartGame:
 			break;
 		case tlcSetPlayersList:
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(PlayersList)) {
-				return true;		// Packet handled (discard)
-			}
-
-			if (peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status == PeerStatus::Normal)
-			{
-				// Copy the number of players
-				numPlayers = tlMessage.playersList.numPlayers;
-
-				// Copy the Player List
-				int i;
-				for (i = 1; i < MaxRemotePlayers; i++)
-				{
-					peerInfos[i].address.sin_family = AF_INET;
-					peerInfos[i].address.sin_port = tlMessage.playersList.netPeerInfo[i].port;
-					peerInfos[i].address.sin_addr.s_addr = tlMessage.playersList.netPeerInfo[i].ip;
-					std::memset(peerInfos[i].address.sin_zero, 0, sizeof(peerInfos[i].address.sin_zero));
-					peerInfos[i].status = tlMessage.playersList.netPeerInfo[i].status;
-					peerInfos[i].playerNetID = tlMessage.playersList.netPeerInfo[i].playerNetID;
-				}
-
-				LogDebug("Replicated Players List:");
-				LogDebug(FormatPlayerList(peerInfos));
-
-				// Form a new packet to return to the game
-				packet.header.sourcePlayerNetID = 0;
-				packet.header.sizeOfPayload = 4;
-				packet.tlMessage.tlHeader.commandType = tlcStartGame;
-
-				// Send Status update to host
-				SendStatusUpdate();
-
-				return false;		// Return packet for further processing
-			}
-
-			// Send Status update to host
-			SendStatusUpdate();
-
-			return true;			// Packet handled
+			return ProcessSetPlayersList(packet, tlMessage);
 		case tlcSetPlayersListFailed:
-			peerInfos[HostPlayerIndex].status = PeerStatus::ReplicateFailure;
-			peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status = PeerStatus::ReplicateFailure;
-
-			// Form a new packet to return to the game
-			packet.header.sizeOfPayload = 4;
-			packet.header.sourcePlayerNetID = 0;
-			packet.tlMessage.tlHeader.commandType = tlcSetPlayersList;
-
-			return false;			// Return packet for further processing
-			break;
-
+			ProcessSetPlayersListFailed(packet);
+			return false; // Return packet for further processing
 		case tlcUpdateStatus:
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(StatusUpdate)) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Cache which peerInfo struct needs to be updated
-			PeerInfo* updatedPeerInfo;
-			updatedPeerInfo = &peerInfos[PlayerNetID::GetPlayerIndex(packet.header.sourcePlayerNetID)];
-
-			// Check if we need to mark joining
-			if ((updatedPeerInfo->status == PeerStatus::Joining) && (packet.tlMessage.statusUpdate.newStatus == PeerStatus::Normal))
-			{
-				// Mark this player for returning a join packet
-				updatedPeerInfo->bReturnJoinPacket = true;
-			}
-
-			// Update the Player Status
-			if (updatedPeerInfo->status <= tlMessage.statusUpdate.newStatus) {
-				updatedPeerInfo->status = tlMessage.statusUpdate.newStatus;
-			}
-
-			return true;			// Packet handled
-
-		case tlcHostedGameSearchReply:		// [Custom format]
-			LogDebug("Hosted Game Search Reply: " + FormatAddress(fromAddress));
-
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Check the game identifier
-			if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Update the internal address if needed
-			if (packet.tlMessage.searchReply.hostAddress.sin_addr.s_addr == 0)
-			{
-				// Update the from address to that of the sender  (NAT will hide the real return address from the sender)
-				packet.tlMessage.searchReply.hostAddress = fromAddress;
-			}
-			else
-			{
-				// Just make sure the address family is correct
-				packet.tlMessage.searchReply.hostAddress.sin_family = fromAddress.sin_family;
-			}
-
-			return false;			// Return Packet for processing
+			ProcessUpdateStatus(packet, tlMessage);
+			return true; // Packet handled
+		case tlcHostedGameSearchReply:
+			return ProcessHostedGameSearchReply(packet, fromAddress);
 		default:  // Silence warnings about unused enumeration value in switch
 			break;
 		}
 	}
 
-	return false;					// Unhandled (non-immediate) message
+	return false; // Unhandled (non-immediate) message
 }
 
+bool OPUNetTransportLayer::ProcessJoinRequest(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(JoinRequest)) {
+		return true;		// Packet handled (discard)
+	}
+	// Check the session identifier
+	if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
+		return true;		// Packet handled (discard)
+	}
+
+	int returnPortNum = tlMessage.joinRequest.returnPortNum;
+
+	// Create a reply
+	packet.header.sourcePlayerNetID = playerNetID;		// Client will need the Host's ID
+	packet.header.sizeOfPayload = sizeof(JoinReply);
+	tlMessage.joinReply.newPlayerNetID = AddPlayer(fromAddress);
+	// Determine if join was successful
+	if (tlMessage.joinReply.newPlayerNetID != 0)
+	{
+		tlMessage.tlHeader.commandType = tlcJoinGranted;
+		LogDebug("Client join accepted: " + FormatAddress(fromAddress) + ". New Player Net ID: " +
+			FormatPlayerNetID(tlMessage.joinReply.newPlayerNetID));
+
+		// Check if a forced return port has been set
+		if (returnPortNum != 0)
+		{
+			LogDebug("Return Port forced to " + std::to_string(returnPortNum));
+			// Set the new return port number
+			peerInfos[PlayerNetID::GetPlayerIndex(tlMessage.joinReply.newPlayerNetID)].address.sin_port = returnPortNum;
+		}
+	}
+	else
+	{
+		tlMessage.tlHeader.commandType = tlcJoinRefused;
+		Log("Client join refused: " + FormatAddress(fromAddress));
+	}
+
+	// Send the reply
+	SendTo(packet, fromAddress);
+
+	return true;			// Packet handled
+}
+
+bool OPUNetTransportLayer::ProcessHostedGameSearchQuery(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(HostedGameSearchQuery)) {
+		return true;		// Packet handled (discard)
+	}
+
+	LogDebug("Game Search Query: " + FormatAddress(fromAddress));
+
+	// Verify Game Identifier
+	if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
+		return true;		// Packet handled (discard)
+	}
+	// Verify password
+	if (strncmp(tlMessage.searchQuery.password, hostPassword, sizeof(hostPassword)) != 0) {
+		return true;		// Packet handled (discard)
+	}
+
+	// Create a reply
+	packet.header.sizeOfPayload = sizeof(HostedGameSearchReply);
+	tlMessage.tlHeader.commandType = tlcHostedGameSearchReply;
+	tlMessage.searchReply.sessionIdentifier = hostedGameInfo.sessionIdentifier;
+	tlMessage.searchReply.createGameInfo = hostedGameInfo.createGameInfo;
+	tlMessage.searchReply.hostAddress.sin_addr.s_addr = 0;		// Clear return address  (NAT will obscure it, let a game server or client fix it when the packet is received)
+
+	// Send the reply
+	SendTo(packet, fromAddress);
+
+	return true;			// Packet handled
+}
+
+bool OPUNetTransportLayer::ProcessJoinHelpRequest(const Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest)) {
+		return true;		// Packet handled (discard)
+	}
+	// Check the session identifier
+	if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
+		return true;		// Packet handled (discard)
+	}
+
+	// Log JoinHelpRequest parameters
+	const std::string addressStr = FormatAddress(tlMessage.joinHelpRequest.clientAddr);
+	const std::string returnPortStr = std::to_string(tlMessage.joinHelpRequest.returnPortNum);
+	LogDebug("JoinHelpRequest: Client: " + addressStr + "  Return Port: " + returnPortStr);
+
+	// Send something to create router mappings
+	tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
+	if (tlMessage.joinHelpRequest.returnPortNum != 0) {
+		tlMessage.joinHelpRequest.clientAddr.sin_port = htons(tlMessage.joinHelpRequest.returnPortNum);
+	}
+	sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
+
+}
+
+bool OPUNetTransportLayer::ProcessSetPlayersList(Packet& packet, const TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(PlayersList)) {
+		return true;		// Packet handled (discard)
+	}
+
+	if (peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status == PeerStatus::Normal)
+	{
+		// Copy the number of players
+		numPlayers = tlMessage.playersList.numPlayers;
+
+		// Copy the Player List
+		int i;
+		for (i = 1; i < MaxRemotePlayers; i++)
+		{
+			peerInfos[i].address.sin_family = AF_INET;
+			peerInfos[i].address.sin_port = tlMessage.playersList.netPeerInfo[i].port;
+			peerInfos[i].address.sin_addr.s_addr = tlMessage.playersList.netPeerInfo[i].ip;
+			std::memset(peerInfos[i].address.sin_zero, 0, sizeof(peerInfos[i].address.sin_zero));
+			peerInfos[i].status = tlMessage.playersList.netPeerInfo[i].status;
+			peerInfos[i].playerNetID = tlMessage.playersList.netPeerInfo[i].playerNetID;
+		}
+
+		LogDebug("Replicated Players List:");
+		LogDebug(FormatPlayerList(peerInfos));
+
+		// Form a new packet to return to the game
+		packet.header.sourcePlayerNetID = 0;
+		packet.header.sizeOfPayload = 4;
+		packet.tlMessage.tlHeader.commandType = tlcStartGame;
+
+		// Send Status update to host
+		SendStatusUpdate();
+
+		return false;		// Return packet for further processing
+	}
+
+	// Send Status update to host
+	SendStatusUpdate();
+
+	return true;			// Packet handled
+}
+
+void OPUNetTransportLayer::ProcessSetPlayersListFailed(Packet& packet)
+{
+	peerInfos[HostPlayerIndex].status = PeerStatus::ReplicateFailure;
+	peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status = PeerStatus::ReplicateFailure;
+
+	// Form a new packet to return to the game
+	packet.header.sizeOfPayload = 4;
+	packet.header.sourcePlayerNetID = 0;
+	packet.tlMessage.tlHeader.commandType = tlcSetPlayersList;
+}
+
+void OPUNetTransportLayer::ProcessUpdateStatus(const Packet& packet, const TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(StatusUpdate)) {
+		return;		// Packet handled (discard)
+	}
+
+	// Cache which peerInfo struct needs to be updated
+	PeerInfo* updatedPeerInfo;
+	updatedPeerInfo = &peerInfos[PlayerNetID::GetPlayerIndex(packet.header.sourcePlayerNetID)];
+
+	// Check if we need to mark joining
+	if ((updatedPeerInfo->status == PeerStatus::Joining) && (packet.tlMessage.statusUpdate.newStatus == PeerStatus::Normal))
+	{
+		// Mark this player for returning a join packet
+		updatedPeerInfo->bReturnJoinPacket = true;
+	}
+
+	// Update the Player Status
+	if (updatedPeerInfo->status <= tlMessage.statusUpdate.newStatus) {
+		updatedPeerInfo->status = tlMessage.statusUpdate.newStatus;
+	}
+}
+
+bool OPUNetTransportLayer::ProcessHostedGameSearchReply(Packet& packet, const sockaddr_in& fromAddress)
+{
+	LogDebug("Hosted Game Search Reply: " + FormatAddress(fromAddress));
+
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
+		return true;		// Packet handled (discard)
+	}
+
+	// Check the game identifier
+	if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier) {
+		return true;		// Packet handled (discard)
+	}
+
+	// Update the internal address if needed
+	if (packet.tlMessage.searchReply.hostAddress.sin_addr.s_addr == 0)
+	{
+		// Update the from address to that of the sender  (NAT will hide the real return address from the sender)
+		packet.tlMessage.searchReply.hostAddress = fromAddress;
+	}
+	else
+	{
+		// Just make sure the address family is correct
+		packet.tlMessage.searchReply.hostAddress.sin_family = fromAddress.sin_family;
+	}
+
+	return false;			// Return Packet for processing
+}
 
 bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 {

@@ -80,12 +80,19 @@ private:
 	OPUNetTransportLayer();			// Private Constructor  [Prevent object creation]
 	bool InitializeWinsock();
 	int GetHostAddress(char* addrString, sockaddr_in &hostAddress);
-	int AddPlayer(sockaddr_in& from);
+	int AddPlayer(const sockaddr_in& from);
 	int ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from);
-	bool SendTo(Packet& packet, sockaddr_in& to);
+	bool SendTo(Packet& packet, const sockaddr_in& to);
 	bool SendStatusUpdate();
 	bool SendUntilStatusUpdate(Packet& packet, PeerStatus untilStatus, int maxTries, int repeatDelay);
-	bool DoImmediateProcessing(Packet& packet, sockaddr_in& fromAddress);
+	bool OnImmediatePacketProcess(Packet& packet, const sockaddr_in& fromAddress);
+	bool ProcessJoinRequest(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
+	bool ProcessHostedGameSearchQuery(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
+	bool ProcessJoinHelpRequest(const Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
+	bool ProcessSetPlayersList(Packet& packet, const TransportLayerMessage& tlMessage);
+	void ProcessSetPlayersListFailed(Packet& packet);
+	void ProcessUpdateStatus(const Packet& packet, const TransportLayerMessage& tlMessage);
+	bool ProcessHostedGameSearchReply(Packet& packet, const sockaddr_in& fromAddress);
 	bool PokeGameServer(PokeStatusCode status);
 	bool GetGameServerAddress(sockaddr_in &gameServerAddress);
 	void CheckSourcePort(Packet& packet, sockaddr_in& from);
