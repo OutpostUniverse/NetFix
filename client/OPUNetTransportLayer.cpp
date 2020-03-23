@@ -1103,7 +1103,6 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 			packet.tlMessage.tlHeader.commandType = tlcSetPlayersList;
 
 			return false;			// Return packet for further processing
-			break;
 
 		case tlcUpdateStatus:
 			// Verify packet size
