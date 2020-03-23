@@ -1067,8 +1067,6 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 	// Check if we need to repond to game host queries
 	if (bInvite)
 	{
-		int returnPortNum;
-
 		switch (tlMessage.tlHeader.commandType)
 		{
 		case tlcJoinRequest:		// 0: JoinRequest
