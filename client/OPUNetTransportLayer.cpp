@@ -1072,46 +1072,7 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 		switch (tlMessage.tlHeader.commandType)
 		{
 		case tlcJoinRequest:		// 0: JoinRequest
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(JoinRequest)) {
-				return true;		// Packet handled (discard)
-			}
-			// Check the session identifier
-			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
-				return true;		// Packet handled (discard)
-			}
-
-			returnPortNum = tlMessage.joinRequest.returnPortNum;
-
-			// Create a reply
-			packet.header.sourcePlayerNetID = playerNetID;		// Client will need the Host's ID
-			packet.header.sizeOfPayload = sizeof(JoinReply);
-			tlMessage.joinReply.newPlayerNetID = AddPlayer(fromAddress);
-			// Determine if join was successful
-			if (tlMessage.joinReply.newPlayerNetID != 0)
-			{
-				tlMessage.tlHeader.commandType = tlcJoinGranted;
-				LogDebug("Client join accepted: " + FormatAddress(fromAddress) + ". New Player Net ID: " +
-					FormatPlayerNetID(tlMessage.joinReply.newPlayerNetID));
-
-				// Check if a forced return port has been set
-				if (returnPortNum != 0)
-				{
-					LogDebug("Return Port forced to " + std::to_string(returnPortNum));
-					// Set the new return port number
-					peerInfos[PlayerNetID::GetPlayerIndex(tlMessage.joinReply.newPlayerNetID)].address.sin_port = returnPortNum;
-				}
-			}
-			else
-			{
-				tlMessage.tlHeader.commandType = tlcJoinRefused;
-				Log("Client join refused: " + FormatAddress(fromAddress));
-			}
-
-			// Send the reply
-			SendTo(packet, fromAddress);
-
-			return true;			// Packet handled
+			return ProcessJoinRequest(packet, fromAddress, tlMessage);
 		case tlcHostedGameSearchQuery:		// 7: HostedGameSearchQuery  [Custom format]
 			// Verify packet size
 			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchQuery)) {
@@ -1287,6 +1248,49 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 	return false;					// Unhandled (non-immediate) message
 }
 
+bool OPUNetTransportLayer::ProcessJoinRequest(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(JoinRequest)) {
+		return true;		// Packet handled (discard)
+	}
+	// Check the session identifier
+	if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
+		return true;		// Packet handled (discard)
+	}
+
+	int returnPortNum = tlMessage.joinRequest.returnPortNum;
+
+	// Create a reply
+	packet.header.sourcePlayerNetID = playerNetID;		// Client will need the Host's ID
+	packet.header.sizeOfPayload = sizeof(JoinReply);
+	tlMessage.joinReply.newPlayerNetID = AddPlayer(fromAddress);
+	// Determine if join was successful
+	if (tlMessage.joinReply.newPlayerNetID != 0)
+	{
+		tlMessage.tlHeader.commandType = tlcJoinGranted;
+		LogDebug("Client join accepted: " + FormatAddress(fromAddress) + ". New Player Net ID: " +
+			FormatPlayerNetID(tlMessage.joinReply.newPlayerNetID));
+
+		// Check if a forced return port has been set
+		if (returnPortNum != 0)
+		{
+			LogDebug("Return Port forced to " + std::to_string(returnPortNum));
+			// Set the new return port number
+			peerInfos[PlayerNetID::GetPlayerIndex(tlMessage.joinReply.newPlayerNetID)].address.sin_port = returnPortNum;
+		}
+	}
+	else
+	{
+		tlMessage.tlHeader.commandType = tlcJoinRefused;
+		Log("Client join refused: " + FormatAddress(fromAddress));
+	}
+
+	// Send the reply
+	SendTo(packet, fromAddress);
+
+	return true;			// Packet handled
+}
 
 bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 {

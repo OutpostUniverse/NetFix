@@ -86,6 +86,7 @@ private:
 	bool SendStatusUpdate();
 	bool SendUntilStatusUpdate(Packet& packet, PeerStatus untilStatus, int maxTries, int repeatDelay);
 	bool OnImmediatePacketProcess(Packet& packet, sockaddr_in& fromAddress);
+	bool ProcessJoinRequest(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
 	bool PokeGameServer(PokeStatusCode status);
 	bool GetGameServerAddress(sockaddr_in &gameServerAddress);
 	void CheckSourcePort(Packet& packet, sockaddr_in& from);
