@@ -1102,31 +1102,7 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 			return true;			// Packet handled
 
 		case tlcHostedGameSearchReply:		// [Custom format]
-			LogDebug("Hosted Game Search Reply: " + FormatAddress(fromAddress));
-
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Check the game identifier
-			if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Update the internal address if needed
-			if (packet.tlMessage.searchReply.hostAddress.sin_addr.s_addr == 0)
-			{
-				// Update the from address to that of the sender  (NAT will hide the real return address from the sender)
-				packet.tlMessage.searchReply.hostAddress = fromAddress;
-			}
-			else
-			{
-				// Just make sure the address family is correct
-				packet.tlMessage.searchReply.hostAddress.sin_family = fromAddress.sin_family;
-			}
-
-			return false;			// Return Packet for processing
+			return ProcessHostedGameSearchReply(packet, fromAddress);
 		default:  // Silence warnings about unused enumeration value in switch
 			break;
 		}
@@ -1312,6 +1288,35 @@ void OPUNetTransportLayer::ProcessUpdateStatus(Packet& packet, TransportLayerMes
 	if (updatedPeerInfo->status <= tlMessage.statusUpdate.newStatus) {
 		updatedPeerInfo->status = tlMessage.statusUpdate.newStatus;
 	}
+}
+
+bool OPUNetTransportLayer::ProcessHostedGameSearchReply(Packet& packet, sockaddr_in& fromAddress)
+{
+	LogDebug("Hosted Game Search Reply: " + FormatAddress(fromAddress));
+
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(HostedGameSearchReply)) {
+		return true;		// Packet handled (discard)
+	}
+
+	// Check the game identifier
+	if (packet.tlMessage.searchReply.gameIdentifier != gameIdentifier) {
+		return true;		// Packet handled (discard)
+	}
+
+	// Update the internal address if needed
+	if (packet.tlMessage.searchReply.hostAddress.sin_addr.s_addr == 0)
+	{
+		// Update the from address to that of the sender  (NAT will hide the real return address from the sender)
+		packet.tlMessage.searchReply.hostAddress = fromAddress;
+	}
+	else
+	{
+		// Just make sure the address family is correct
+		packet.tlMessage.searchReply.hostAddress.sin_family = fromAddress.sin_family;
+	}
+
+	return false;			// Return Packet for processing
 }
 
 bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
