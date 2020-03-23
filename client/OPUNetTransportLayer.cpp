@@ -694,7 +694,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		// Determine if immediate processing is required
 		bool bRetVal = packet.header.type == 1;
 		if (bRetVal) {
-			bRetVal = DoImmediateProcessing(packet, fromAddress);
+			bRetVal = OnImmediatePacketProcess(packet, fromAddress);
 		}
 
 		// Check destination
@@ -1059,7 +1059,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, PeerStatus unti
 // -------------------------------------------
 
 // Returns true if the packet was processed, and false otherwise
-bool OPUNetTransportLayer::DoImmediateProcessing(Packet& packet, sockaddr_in& fromAddress)
+bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in& fromAddress)
 {
 	// Create shorthand reference to known packet type
 	TransportLayerMessage& tlMessage = packet.tlMessage;
