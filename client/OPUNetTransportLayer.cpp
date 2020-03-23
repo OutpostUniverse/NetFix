@@ -1073,13 +1073,12 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 			return ProcessJoinRequest(packet, fromAddress, tlMessage);
 		case tlcHostedGameSearchQuery:		// 7: HostedGameSearchQuery  [Custom format]
 			return ProcessHostedGameSearchQuery(packet, fromAddress, tlMessage);
-		case tlcJoinHelpRequest: {
+		case tlcJoinHelpRequest:
 			if (ProcessJoinHelpRequest(packet, fromAddress, tlMessage)) {
 				return true;
 			}
 
 			break;
-		}
 		default:  // Silence warnings about unused enumeration value in switch
 			break;
 		}
