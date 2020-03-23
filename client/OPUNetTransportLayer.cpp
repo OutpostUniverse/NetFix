@@ -1074,33 +1074,7 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 		case tlcJoinRequest:		// 0: JoinRequest
 			return ProcessJoinRequest(packet, fromAddress, tlMessage);
 		case tlcHostedGameSearchQuery:		// 7: HostedGameSearchQuery  [Custom format]
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(HostedGameSearchQuery)) {
-				return true;		// Packet handled (discard)
-			}
-
-			LogDebug("Game Search Query: " + FormatAddress(fromAddress));
-
-			// Verify Game Identifier
-			if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
-				return true;		// Packet handled (discard)
-			}
-			// Verify password
-			if (strncmp(tlMessage.searchQuery.password, hostPassword, sizeof(hostPassword)) != 0) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Create a reply
-			packet.header.sizeOfPayload = sizeof(HostedGameSearchReply);
-			tlMessage.tlHeader.commandType = tlcHostedGameSearchReply;
-			tlMessage.searchReply.sessionIdentifier = hostedGameInfo.sessionIdentifier;
-			tlMessage.searchReply.createGameInfo = hostedGameInfo.createGameInfo;
-			tlMessage.searchReply.hostAddress.sin_addr.s_addr = 0;		// Clear return address  (NAT will obscure it, let a game server or client fix it when the packet is received)
-
-			// Send the reply
-			SendTo(packet, fromAddress);
-
-			return true;			// Packet handled
+			return ProcessHostedGameSearchQuery(packet, fromAddress, tlMessage);
 		case tlcJoinHelpRequest: {
 			// Verify packet size
 			if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest)) {
@@ -1285,6 +1259,37 @@ bool OPUNetTransportLayer::ProcessJoinRequest(Packet& packet, sockaddr_in& fromA
 		tlMessage.tlHeader.commandType = tlcJoinRefused;
 		Log("Client join refused: " + FormatAddress(fromAddress));
 	}
+
+	// Send the reply
+	SendTo(packet, fromAddress);
+
+	return true;			// Packet handled
+}
+
+bool OPUNetTransportLayer::ProcessHostedGameSearchQuery(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(HostedGameSearchQuery)) {
+		return true;		// Packet handled (discard)
+	}
+
+	LogDebug("Game Search Query: " + FormatAddress(fromAddress));
+
+	// Verify Game Identifier
+	if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
+		return true;		// Packet handled (discard)
+	}
+	// Verify password
+	if (strncmp(tlMessage.searchQuery.password, hostPassword, sizeof(hostPassword)) != 0) {
+		return true;		// Packet handled (discard)
+	}
+
+	// Create a reply
+	packet.header.sizeOfPayload = sizeof(HostedGameSearchReply);
+	tlMessage.tlHeader.commandType = tlcHostedGameSearchReply;
+	tlMessage.searchReply.sessionIdentifier = hostedGameInfo.sessionIdentifier;
+	tlMessage.searchReply.createGameInfo = hostedGameInfo.createGameInfo;
+	tlMessage.searchReply.hostAddress.sin_addr.s_addr = 0;		// Clear return address  (NAT will obscure it, let a game server or client fix it when the packet is received)
 
 	// Send the reply
 	SendTo(packet, fromAddress);
