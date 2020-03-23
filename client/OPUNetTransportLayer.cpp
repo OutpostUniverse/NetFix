@@ -961,7 +961,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 // -------------------------------------------
 
-bool OPUNetTransportLayer::SendTo(Packet& packet, sockaddr_in& to)
+bool OPUNetTransportLayer::SendTo(Packet& packet, const sockaddr_in& to)
 {
 	LogDebug("SendTo: Packet.commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType));
 

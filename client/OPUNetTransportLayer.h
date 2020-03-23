@@ -82,7 +82,7 @@ private:
 	int GetHostAddress(char* addrString, sockaddr_in &hostAddress);
 	int AddPlayer(const sockaddr_in& from);
 	int ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from);
-	bool SendTo(Packet& packet, sockaddr_in& to);
+	bool SendTo(Packet& packet, const sockaddr_in& to);
 	bool SendStatusUpdate();
 	bool SendUntilStatusUpdate(Packet& packet, PeerStatus untilStatus, int maxTries, int repeatDelay);
 	bool OnImmediatePacketProcess(Packet& packet, sockaddr_in& fromAddress);
