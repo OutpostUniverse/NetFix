@@ -90,6 +90,7 @@ private:
 	bool ProcessHostedGameSearchQuery(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
 	bool ProcessJoinHelpRequest(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
 	bool ProcessSetPlayersList(Packet& packet, TransportLayerMessage& tlMessage);
+	void ProcessSetPlayersListFailed(Packet& packet);
 	bool PokeGameServer(PokeStatusCode status);
 	bool GetGameServerAddress(sockaddr_in &gameServerAddress);
 	void CheckSourcePort(Packet& packet, sockaddr_in& from);

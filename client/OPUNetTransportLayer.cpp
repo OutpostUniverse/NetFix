@@ -1094,14 +1094,7 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 		case tlcSetPlayersList:
 			return ProcessSetPlayersList(packet, tlMessage);
 		case tlcSetPlayersListFailed:
-			peerInfos[HostPlayerIndex].status = PeerStatus::ReplicateFailure;
-			peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status = PeerStatus::ReplicateFailure;
-
-			// Form a new packet to return to the game
-			packet.header.sizeOfPayload = 4;
-			packet.header.sourcePlayerNetID = 0;
-			packet.tlMessage.tlHeader.commandType = tlcSetPlayersList;
-
+			ProcessSetPlayersListFailed(packet);
 			return false;			// Return packet for further processing
 
 		case tlcUpdateStatus:
@@ -1304,6 +1297,17 @@ bool OPUNetTransportLayer::ProcessSetPlayersList(Packet& packet, TransportLayerM
 	SendStatusUpdate();
 
 	return true;			// Packet handled
+}
+
+void OPUNetTransportLayer::ProcessSetPlayersListFailed(Packet& packet)
+{
+	peerInfos[HostPlayerIndex].status = PeerStatus::ReplicateFailure;
+	peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status = PeerStatus::ReplicateFailure;
+
+	// Form a new packet to return to the game
+	packet.header.sizeOfPayload = 4;
+	packet.header.sourcePlayerNetID = 0;
+	packet.tlMessage.tlHeader.commandType = tlcSetPlayersList;
 }
 
 bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
