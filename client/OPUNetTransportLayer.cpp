@@ -1069,15 +1069,14 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 	{
 		switch (tlMessage.tlHeader.commandType)
 		{
-		case tlcJoinRequest:		// 0: JoinRequest
+		case tlcJoinRequest:
 			return ProcessJoinRequest(packet, fromAddress, tlMessage);
-		case tlcHostedGameSearchQuery:		// 7: HostedGameSearchQuery  [Custom format]
+		case tlcHostedGameSearchQuery:
 			return ProcessHostedGameSearchQuery(packet, fromAddress, tlMessage);
 		case tlcJoinHelpRequest:
 			if (ProcessJoinHelpRequest(packet, fromAddress, tlMessage)) {
 				return true;
 			}
-
 			break;
 		default:  // Silence warnings about unused enumeration value in switch
 			break;
@@ -1095,20 +1094,18 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 			return ProcessSetPlayersList(packet, tlMessage);
 		case tlcSetPlayersListFailed:
 			ProcessSetPlayersListFailed(packet);
-			return false;			// Return packet for further processing
-
+			return false; // Return packet for further processing
 		case tlcUpdateStatus:
 			ProcessUpdateStatus(packet, tlMessage);
-			return true;			// Packet handled
-
-		case tlcHostedGameSearchReply:		// [Custom format]
+			return true; // Packet handled
+		case tlcHostedGameSearchReply:
 			return ProcessHostedGameSearchReply(packet, fromAddress);
 		default:  // Silence warnings about unused enumeration value in switch
 			break;
 		}
 	}
 
-	return false;					// Unhandled (non-immediate) message
+	return false; // Unhandled (non-immediate) message
 }
 
 bool OPUNetTransportLayer::ProcessJoinRequest(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
