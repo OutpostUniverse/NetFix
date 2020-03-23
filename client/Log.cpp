@@ -40,7 +40,7 @@ std::string FormatPlayerList(const std::array<PeerInfo, MaxRemotePlayers>& peerI
 
 	for (std::size_t i = 0; i < peerInfos.size(); ++i)
 	{
-		ss << " " << i << ") {" << peerInfos[i].status << ", ";
+		ss << " " << i << ") {" << static_cast<short>(peerInfos[i].status) << ", ";
 		ss << FormatAddress(peerInfos[i].address);
 		ss << ", ";
 		ss << FormatPlayerNetID(peerInfos[i].playerNetID);
