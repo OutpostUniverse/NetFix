@@ -36,7 +36,7 @@ struct HostedGameInfo
 struct PeerInfo
 {
 	int playerNetID;
-	int status;
+	PeerStatus status;
 	sockaddr_in address;
 	bool bReturnJoinPacket;
 };
@@ -84,7 +84,7 @@ private:
 	int ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from);
 	bool SendTo(Packet& packet, sockaddr_in& to);
 	bool SendStatusUpdate();
-	bool SendUntilStatusUpdate(Packet& packet, int untilStatus, int maxTries, int repeatDelay);
+	bool SendUntilStatusUpdate(Packet& packet, PeerStatus untilStatus, int maxTries, int repeatDelay);
 	bool DoImmediateProcessing(Packet& packet, sockaddr_in& fromAddress);
 	bool PokeGameServer(PokeStatusCode status);
 	bool GetGameServerAddress(sockaddr_in &gameServerAddress);
