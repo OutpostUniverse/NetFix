@@ -1076,26 +1076,9 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, sockaddr_in&
 		case tlcHostedGameSearchQuery:		// 7: HostedGameSearchQuery  [Custom format]
 			return ProcessHostedGameSearchQuery(packet, fromAddress, tlMessage);
 		case tlcJoinHelpRequest: {
-			// Verify packet size
-			if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest)) {
-				return true;		// Packet handled (discard)
+			if (ProcessJoinHelpRequest(packet, fromAddress, tlMessage)) {
+				return true;
 			}
-			// Check the session identifier
-			if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
-				return true;		// Packet handled (discard)
-			}
-
-			// Log JoinHelpRequest parameters
-			const std::string addressStr = FormatAddress(tlMessage.joinHelpRequest.clientAddr);
-			const std::string returnPortStr = std::to_string(tlMessage.joinHelpRequest.returnPortNum);
-			LogDebug("JoinHelpRequest: Client: " + addressStr + "  Return Port: " + returnPortStr);
-
-			// Send something to create router mappings
-			tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
-			if (tlMessage.joinHelpRequest.returnPortNum != 0) {
-				tlMessage.joinHelpRequest.clientAddr.sin_port = htons(tlMessage.joinHelpRequest.returnPortNum);
-			}
-			sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
 
 			break;
 		}
@@ -1295,6 +1278,31 @@ bool OPUNetTransportLayer::ProcessHostedGameSearchQuery(Packet& packet, sockaddr
 	SendTo(packet, fromAddress);
 
 	return true;			// Packet handled
+}
+
+bool OPUNetTransportLayer::ProcessJoinHelpRequest(Packet& packet, sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+{
+	// Verify packet size
+	if (packet.header.sizeOfPayload != sizeof(JoinHelpRequest)) {
+		return true;		// Packet handled (discard)
+	}
+	// Check the session identifier
+	if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
+		return true;		// Packet handled (discard)
+	}
+
+	// Log JoinHelpRequest parameters
+	const std::string addressStr = FormatAddress(tlMessage.joinHelpRequest.clientAddr);
+	const std::string returnPortStr = std::to_string(tlMessage.joinHelpRequest.returnPortNum);
+	LogDebug("JoinHelpRequest: Client: " + addressStr + "  Return Port: " + returnPortStr);
+
+	// Send something to create router mappings
+	tlMessage.joinHelpRequest.clientAddr.sin_family = AF_INET;
+	if (tlMessage.joinHelpRequest.returnPortNum != 0) {
+		tlMessage.joinHelpRequest.clientAddr.sin_port = htons(tlMessage.joinHelpRequest.returnPortNum);
+	}
+	sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
+
 }
 
 bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
