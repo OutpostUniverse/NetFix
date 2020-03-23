@@ -1057,7 +1057,7 @@ bool OPUNetTransportLayer::SendUntilStatusUpdate(Packet& packet, PeerStatus unti
 // -------------------------------------------
 
 // Returns true if the packet was processed, and false otherwise
-bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fromAddress)
+bool OPUNetTransportLayer::DoImmediateProcessing(Packet& packet, sockaddr_in& fromAddress)
 {
 	// Make sure it's an immediately processed TransportLayer message
 	if (packet.header.type != 1) {
@@ -1065,7 +1065,7 @@ bool OPUNetTransportLayer::DoImmediateProcessing(Packet &packet, sockaddr_in &fr
 	}
 
 	// Create shorthand reference to known packet type
-	TransportLayerMessage &tlMessage = packet.tlMessage;
+	TransportLayerMessage& tlMessage = packet.tlMessage;
 
 	// Check if we need to repond to game host queries
 	if (bInvite)
