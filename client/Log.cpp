@@ -72,6 +72,46 @@ std::string FormatGuid(const GUID& guid)
 	return ss.str();
 }
 
+std::string FormatTransportLayerCommand(TransportLayerCommand command)
+{
+	switch (command)
+	{
+	case TransportLayerCommand::JoinRequest:
+		return "Join Request";
+	case TransportLayerCommand::JoinGranted:
+		return "Join Granted";
+	case TransportLayerCommand::JoinRefused:
+		return "Join Refused";
+	case TransportLayerCommand::StartGame:
+		return "Start Game";
+	case TransportLayerCommand::SetPlayersList:
+		return "Set Players List";
+	case TransportLayerCommand::SetPlayersListFailed:
+		return "Set Players List Failed";
+	case TransportLayerCommand::UpdateStatus:
+		return "Update Status";
+	case TransportLayerCommand::HostedGameSearchQuery:
+		return "Hosted Game Search Query";
+	case TransportLayerCommand::HostedGameSearchReply:
+		return "Hosted Game Search Reply";
+	case TransportLayerCommand::GameServerPoke:
+		return "Game Server Poke";
+	case TransportLayerCommand::JoinHelpRequest:
+		return "Join Help Request";
+	case TransportLayerCommand::RequestExternalAddress:
+		return "Request External Address";
+	case TransportLayerCommand::EchoExternalAddress:
+		return "Echo External Address";
+	default:
+		return "Unknown Transport Layer Command";
+	}
+}
+
+std::string FormatTransportLayerCommandIncludeIndex(TransportLayerCommand command)
+{
+	return FormatTransportLayerCommand(command) +  " (" + std::to_string(static_cast<int>(command)) + ")";
+}
+
 std::string FormatPacket(const OP2Internal::Packet& packet)
 {
 	std::stringstream ss;
@@ -81,7 +121,7 @@ std::string FormatPacket(const OP2Internal::Packet& packet)
 	ss << " Size  : " << static_cast<unsigned int>(packet.header.sizeOfPayload) << std::endl;
 	ss << " type  : " << static_cast<unsigned int>(packet.header.type) << std::endl;
 	ss << " checksum : " << std::hex << packet.Checksum() << std::dec << std::endl;
-	ss << " commandType : " << static_cast<int>(packet.tlMessage.tlHeader.commandType); //Final endl adding by Log function
+	ss << " commandType : " << FormatTransportLayerCommandIncludeIndex(packet.tlMessage.tlHeader.commandType); //Final endl adding by Log function
 
 	return ss.str();
 }

@@ -649,7 +649,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		}
 
 		LogDebug("ReadSocket: type = " + std::to_string(packet.header.type)
-			+ "  commandType = " + std::to_string(static_cast<int>(packet.tlMessage.tlHeader.commandType))
+			+ "  commandType = " + FormatTransportLayerCommandIncludeIndex(packet.tlMessage.tlHeader.commandType)
 			+ "  sourcePlayerNetID = " + std::to_string(packet.header.sourcePlayerNetID));
 
 		// Error check the packet
@@ -963,7 +963,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 bool OPUNetTransportLayer::SendTo(Packet& packet, const sockaddr_in& to)
 {
-	LogDebug("SendTo: Packet.commandType = " + std::to_string(static_cast<int>(packet.tlMessage.tlHeader.commandType)));
+	LogDebug("SendTo: Packet.commandType = " + FormatTransportLayerCommandIncludeIndex(packet.tlMessage.tlHeader.commandType));
 
 	// Calculate Packet size
 	int packetSize = packet.header.sizeOfPayload + sizeof(packet.header);
