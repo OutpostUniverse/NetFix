@@ -81,7 +81,7 @@ std::string FormatPacket(const OP2Internal::Packet& packet)
 	ss << " Size  : " << static_cast<unsigned int>(packet.header.sizeOfPayload) << std::endl;
 	ss << " type  : " << static_cast<unsigned int>(packet.header.type) << std::endl;
 	ss << " checksum : " << std::hex << packet.Checksum() << std::dec << std::endl;
-	ss << " commandType : " << packet.tlMessage.tlHeader.commandType; //Final endl adding by Log function
+	ss << " commandType : " << static_cast<int>(packet.tlMessage.tlHeader.commandType); //Final endl adding by Log function
 
 	return ss.str();
 }
