@@ -109,7 +109,7 @@ std::string FormatTransportLayerCommand(TransportLayerCommand command)
 
 std::string FormatTransportLayerCommandIncludeIndex(TransportLayerCommand command)
 {
-	return FormatTransportLayerCommand(command) +  " (" + std::to_string(static_cast<int>(command)) + ")";
+	return std::to_string(static_cast<int>(command)) +  " (" + FormatTransportLayerCommand(command) + ")";
 }
 
 std::string FormatPacket(const OP2Internal::Packet& packet)
