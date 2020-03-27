@@ -185,7 +185,7 @@ bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const c
 
 
 	// Poke the game server (and let it know a new game is hosted)
-	int errorCode = PokeGameServer(pscGameHosted);
+	int errorCode = PokeGameServer(PokeStatusCode::GameHosted);
 	// Check for errors
 	if (errorCode == 0)
 	{
@@ -204,7 +204,7 @@ bool OPUNetTransportLayer::GetExternalAddress()
 	packet.header.destPlayerNetID = 0;
 	packet.header.sizeOfPayload = sizeof(RequestExternalAddress);
 	packet.header.type = 1;
-	packet.tlMessage.tlHeader.commandType = tlcRequestExternalAddress;
+	packet.tlMessage.tlHeader.commandType = TransportLayerCommand::RequestExternalAddress;
 	packet.tlMessage.requestExternalAddress.internalPort = GetPort();
 
 	// Get the game server address
@@ -248,7 +248,7 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, Port defaultH
 	packet.header.destPlayerNetID = 0;
 	packet.header.sizeOfPayload = sizeof(HostedGameSearchQuery);
 	packet.header.type = 1;
-	packet.tlMessage.searchQuery.commandType = tlcHostedGameSearchQuery;
+	packet.tlMessage.searchQuery.commandType = TransportLayerCommand::HostedGameSearchQuery;
 	packet.tlMessage.searchQuery.gameIdentifier = gameIdentifier;
 	packet.tlMessage.searchQuery.timeStamp = timeGetTime();
 	packet.tlMessage.searchQuery.password[0] = 0;
@@ -280,7 +280,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* joinReques
 	packet.header.destPlayerNetID = 0;
 	packet.header.sizeOfPayload = sizeof(JoinRequest);
 	packet.header.type = 1;
-	packet.tlMessage.joinRequest.commandType = tlcJoinRequest;
+	packet.tlMessage.joinRequest.commandType = TransportLayerCommand::JoinRequest;
 	packet.tlMessage.joinRequest.sessionIdentifier = game.sessionIdentifier;
 	packet.tlMessage.joinRequest.returnPortNum = forcedPort;
 	strncpy_s(packet.tlMessage.joinRequest.password, joinRequestPassword, sizeof(packet.tlMessage.joinRequest.password));
@@ -389,7 +389,7 @@ OPUNetTransportLayer::~OPUNetTransportLayer()
 	if (bInvite == true)
 	{
 		// Inform the game server
-		PokeGameServer(pscGameCancelled);
+		PokeGameServer(PokeStatusCode::GameCancelled);
 	}
 
 	// Make sure we don't Cleanup if we haven't done Startup
@@ -421,7 +421,7 @@ void OPUNetTransportLayer::ShutDownInvite()
 	bGameStarted = true;
 
 	// Let the game server know the game is starting
-	PokeGameServer(pscGameStarted);
+	PokeGameServer(PokeStatusCode::GameStarted);
 }
 
 int OPUNetTransportLayer::ReplicatePlayersList()
@@ -433,7 +433,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 	packet.header.sizeOfPayload = sizeof(PlayersList);
 	packet.header.type = 1;
 	// Fill in the packet body
-	packet.tlMessage.playersList.commandType = tlcSetPlayersList;
+	packet.tlMessage.playersList.commandType = TransportLayerCommand::SetPlayersList;
 	packet.tlMessage.playersList.numPlayers = numPlayers;
 	// Copy the players list
 	for (int i = 0; i < MaxRemotePlayers; i++)
@@ -457,7 +457,7 @@ int OPUNetTransportLayer::ReplicatePlayersList()
 		packet.header.destPlayerNetID = 0;
 		packet.header.sizeOfPayload = 4;
 		packet.header.type = 1;
-		packet.tlMessage.tlHeader.commandType = tlcSetPlayersListFailed;
+		packet.tlMessage.tlHeader.commandType = TransportLayerCommand::SetPlayersListFailed;
 
 		// Wait until all clients acknowledge failure
 		SendUntilStatusUpdate(packet, PeerStatus::ReplicateFailure, 16, 500);
@@ -604,7 +604,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 					packet.header.destPlayerNetID = playerNetID;		// Send fake packet to self
 					packet.header.sizeOfPayload = sizeof(JoinReturned);
 					packet.header.type = 1;
-					packet.tlMessage.tlHeader.commandType = tlcJoinGranted;
+					packet.tlMessage.tlHeader.commandType = TransportLayerCommand::JoinGranted;
 					packet.tlMessage.joinReturned.newPlayerNetID = peerInfos[i].playerNetID;
 
 					// Mark as returned
@@ -649,7 +649,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		}
 
 		LogDebug("ReadSocket: type = " + std::to_string(packet.header.type)
-			+ "  commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType)
+			+ "  commandType = " + FormatTransportLayerCommandIncludeIndex(packet.tlMessage.tlHeader.commandType)
 			+ "  sourcePlayerNetID = " + std::to_string(packet.header.sourcePlayerNetID));
 
 		// Error check the packet
@@ -680,7 +680,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 				Log("Received packet with bad sourcePlayerNetID: " + std::to_string(sourcePlayerNetID) +
 					" from " + FormatAddress(fromAddress));
 				Log(" Packet.type = " + std::to_string(packet.header.type));
-				Log(" Packet.commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType));
+				Log(" Packet.commandType = " + std::to_string(static_cast<int>(packet.tlMessage.tlHeader.commandType)));
 			}
 		}
 
@@ -963,7 +963,7 @@ int OPUNetTransportLayer::ReadSocket(SOCKET sourceSocket, Packet& packet, sockad
 
 bool OPUNetTransportLayer::SendTo(Packet& packet, const sockaddr_in& to)
 {
-	LogDebug("SendTo: Packet.commandType = " + std::to_string(packet.tlMessage.tlHeader.commandType));
+	LogDebug("SendTo: Packet.commandType = " + FormatTransportLayerCommandIncludeIndex(packet.tlMessage.tlHeader.commandType));
 
 	// Calculate Packet size
 	int packetSize = packet.header.sizeOfPayload + sizeof(packet.header);
@@ -1000,7 +1000,7 @@ bool OPUNetTransportLayer::SendStatusUpdate()
 	packet.header.sourcePlayerNetID = playerNetID;
 	packet.header.sizeOfPayload = sizeof(StatusUpdate);
 	packet.header.type = 1;
-	packet.tlMessage.tlHeader.commandType = tlcUpdateStatus;
+	packet.tlMessage.tlHeader.commandType = TransportLayerCommand::UpdateStatus;
 	packet.tlMessage.statusUpdate.newStatus = peerInfos[PlayerNetID::GetPlayerIndex(playerNetID)].status;		// Copy local status
 
 	// Send the new status to the host
@@ -1069,11 +1069,11 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, const sockad
 	{
 		switch (tlMessage.tlHeader.commandType)
 		{
-		case tlcJoinRequest:
+		case TransportLayerCommand::JoinRequest:
 			return OnJoinRequest(packet, fromAddress, tlMessage);
-		case tlcHostedGameSearchQuery:
+		case TransportLayerCommand::HostedGameSearchQuery:
 			return OnHostedGameSearchQuery(packet, fromAddress, tlMessage);
-		case tlcJoinHelpRequest:
+		case TransportLayerCommand::JoinHelpRequest:
 			if (OnJoinHelpRequest(packet, fromAddress, tlMessage)) {
 				return true;
 			}
@@ -1088,17 +1088,17 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, const sockad
 	{
 		switch (tlMessage.tlHeader.commandType)
 		{
-		case tlcStartGame:
+		case TransportLayerCommand::StartGame:
 			break;
-		case tlcSetPlayersList:
+		case TransportLayerCommand::SetPlayersList:
 			return OnSetPlayersList(packet, tlMessage);
-		case tlcSetPlayersListFailed:
+		case TransportLayerCommand::SetPlayersListFailed:
 			OnSetPlayersListFailed(packet);
 			return false; // Return packet for further processing
-		case tlcUpdateStatus:
+		case TransportLayerCommand::UpdateStatus:
 			OnUpdateStatus(packet, tlMessage);
 			return true; // Packet handled
-		case tlcHostedGameSearchReply:
+		case TransportLayerCommand::HostedGameSearchReply:
 			return OnHostedGameSearchReply(packet, fromAddress);
 		default:  // Silence warnings about unused enumeration value in switch
 			break;
@@ -1128,7 +1128,7 @@ bool OPUNetTransportLayer::OnJoinRequest(Packet& packet, const sockaddr_in& from
 	// Determine if join was successful
 	if (tlMessage.joinReply.newPlayerNetID != 0)
 	{
-		tlMessage.tlHeader.commandType = tlcJoinGranted;
+		tlMessage.tlHeader.commandType = TransportLayerCommand::JoinGranted;
 		LogDebug("Client join accepted: " + FormatAddress(fromAddress) + ". New Player Net ID: " +
 			FormatPlayerNetID(tlMessage.joinReply.newPlayerNetID));
 
@@ -1142,7 +1142,7 @@ bool OPUNetTransportLayer::OnJoinRequest(Packet& packet, const sockaddr_in& from
 	}
 	else
 	{
-		tlMessage.tlHeader.commandType = tlcJoinRefused;
+		tlMessage.tlHeader.commandType = TransportLayerCommand::JoinRefused;
 		Log("Client join refused: " + FormatAddress(fromAddress));
 	}
 
@@ -1172,7 +1172,7 @@ bool OPUNetTransportLayer::OnHostedGameSearchQuery(Packet& packet, const sockadd
 
 	// Create a reply
 	packet.header.sizeOfPayload = sizeof(HostedGameSearchReply);
-	tlMessage.tlHeader.commandType = tlcHostedGameSearchReply;
+	tlMessage.tlHeader.commandType = TransportLayerCommand::HostedGameSearchReply;
 	tlMessage.searchReply.sessionIdentifier = hostedGameInfo.sessionIdentifier;
 	tlMessage.searchReply.createGameInfo = hostedGameInfo.createGameInfo;
 	tlMessage.searchReply.hostAddress.sin_addr.s_addr = 0;		// Clear return address  (NAT will obscure it, let a game server or client fix it when the packet is received)
@@ -1238,7 +1238,7 @@ bool OPUNetTransportLayer::OnSetPlayersList(Packet& packet, const TransportLayer
 		// Form a new packet to return to the game
 		packet.header.sourcePlayerNetID = 0;
 		packet.header.sizeOfPayload = 4;
-		packet.tlMessage.tlHeader.commandType = tlcStartGame;
+		packet.tlMessage.tlHeader.commandType = TransportLayerCommand::StartGame;
 
 		// Send Status update to host
 		SendStatusUpdate();
@@ -1260,7 +1260,7 @@ void OPUNetTransportLayer::OnSetPlayersListFailed(Packet& packet)
 	// Form a new packet to return to the game
 	packet.header.sizeOfPayload = 4;
 	packet.header.sourcePlayerNetID = 0;
-	packet.tlMessage.tlHeader.commandType = tlcSetPlayersList;
+	packet.tlMessage.tlHeader.commandType = TransportLayerCommand::SetPlayersList;
 }
 
 void OPUNetTransportLayer::OnUpdateStatus(const Packet& packet, const TransportLayerMessage& tlMessage)
@@ -1333,7 +1333,7 @@ bool OPUNetTransportLayer::PokeGameServer(PokeStatusCode status)
 	packet.header.sizeOfPayload = sizeof(GameServerPoke);
 	packet.header.type = 1;
 	// Fill in the command type
-	packet.tlMessage.tlHeader.commandType = tlcGameServerPoke;
+	packet.tlMessage.tlHeader.commandType = TransportLayerCommand::GameServerPoke;
 	packet.tlMessage.gameServerPoke.statusCode = status;
 	packet.tlMessage.gameServerPoke.randValue = randValue;
 	// Calculate the checksum

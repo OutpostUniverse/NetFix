@@ -467,16 +467,16 @@ void OPUNetGameSelectWnd::OnReceive(Packet &packet)
 	// Determine which message type was received
 	switch(packet.tlMessage.tlHeader.commandType)
 	{
-	case tlcHostedGameSearchReply: 
+	case TransportLayerCommand::HostedGameSearchReply:
 		OnReceiveHostedGameSearchReply(packet);
 		break;
-	case tlcJoinGranted:
+	case TransportLayerCommand::JoinGranted:
 		OnReceiveJoinGranted(packet);
 		break;
-	case tlcJoinRefused:
+	case TransportLayerCommand::JoinRefused:
 		OnReceiveJoinRefused(packet);
 		break;
-	case tlcEchoExternalAddress:
+	case TransportLayerCommand::EchoExternalAddress:
 		OnReceiveEchoExternalAddress(packet);
 		break;
 	default:  // Silence warnings about unused enumeration value in switch
