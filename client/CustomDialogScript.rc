@@ -51,7 +51,7 @@ BEGIN
                     WS_TABSTOP
     LTEXT           "Game Join Info",IDC_STATIC,7,111,287,8
     GROUPBOX        "",IDC_STATIC,7,117,287,136
-    LTEXT           "Server &Address :",IDC_STATIC,13,128,72,8
+    LTEXT           "Server &Address :",IDC_ServerAddressLabel,13,128,72,8
     COMBOBOX        IDC_ServerAddress,90,126,198,120,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_TABSTOP
     LTEXT           "&Games",IDC_STATIC,13,140,275,8
