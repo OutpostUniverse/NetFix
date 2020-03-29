@@ -42,6 +42,7 @@ private:
 	// Member functions
 	void InitializeMaxPlayersComboBox();
 	void InitializeGameTypeComboBox();
+	void InitializeServerAddressComboBox();
 	void InitNetLayer();
 	bool InitGurManager();
 	void CleanupGurManager();

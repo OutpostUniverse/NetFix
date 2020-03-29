@@ -130,24 +130,7 @@ void OPUNetGameSelectWnd::OnInit()
 	InitializeGameTypeComboBox();
 
 	// Setup the ServerAddress combo box
-	// Set the maximum string length
-	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_LIMITTEXT, (WPARAM)MaxServerAddressLen, 0);
-	// Load the IPAddress history
-	for (int i = 0; i < 10; ++i)
-	{
-		// Form the keyName string (number)
-		scr_snprintf(buffer, sizeof(buffer), "%i", i);
-		// Load the stored address
-		config.GetString("IPHistory", buffer, buffer, sizeof(buffer), "");
-		// Make sure a value was actually loaded
-		if (buffer[0] != 0)
-		{
-			// Add the address to the combo box
-			SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_ADDSTRING, 0, (LPARAM)buffer);
-		}
-	}
-	// Select the first item
-	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_SETCURSEL, (WPARAM)0, 0);
+	InitializeServerAddressComboBox();
 
 	CreateServerAddressToolTip();
 
@@ -222,6 +205,30 @@ void OPUNetGameSelectWnd::InitializeGameTypeComboBox()
 	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 4, static_cast<LPARAM>(-7));
 	// Set the selected GameType
 	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETCURSEL, static_cast<WPARAM>(0), 0);
+}
+
+void OPUNetGameSelectWnd::InitializeServerAddressComboBox()
+{
+	char buffer[MaxServerAddressLen];
+
+	// Set the maximum string length
+	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_LIMITTEXT, (WPARAM)MaxServerAddressLen, 0);
+	// Load the IPAddress history
+	for (int i = 0; i < 10; ++i)
+	{
+		// Form the keyName string (number)
+		scr_snprintf(buffer, sizeof(buffer), "%i", i);
+		// Load the stored address
+		config.GetString("IPHistory", buffer, buffer, sizeof(buffer), "");
+		// Make sure a value was actually loaded
+		if (buffer[0] != 0)
+		{
+			// Add the address to the combo box
+			SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_ADDSTRING, 0, (LPARAM)buffer);
+		}
+	}
+	// Select the first item
+	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_SETCURSEL, (WPARAM)0, 0);
 }
 
 void OPUNetGameSelectWnd::InitNetLayer()
