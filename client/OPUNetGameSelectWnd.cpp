@@ -182,6 +182,7 @@ void OPUNetGameSelectWnd::OnInit()
 	// Select the first item
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_SETCURSEL, (WPARAM)0, 0);
 
+	CreateServerAddressToolTip();
 
 	// Initialize the List View's Columns
 	// ----------------------------------
@@ -893,4 +894,46 @@ void OPUNetGameSelectWnd::OnClickCancel()
 	app.NetShutdown(false);
 
 	EndDialog(this->hWnd, true);			// 0 = Start, 1 = Cancel
+}
+
+
+void OPUNetGameSelectWnd::CreateServerAddressToolTip()
+{
+	HMODULE globalHInstance = GetModuleHandle(nullptr);
+
+	HWND hwndToolTip = CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, nullptr,
+		WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		this->hWnd, nullptr, globalHInstance, nullptr);
+
+	std::string toolTipText = "Server Address is represented by either an IP Address or DNS Name.\r\n";
+	toolTipText += "May point to an instance of a NetFix Server or Outpost2.exe.\r\n";
+	toolTipText += "Appending a port number is optional in either format.\r\n";
+	toolTipText += "IP Address example: 192.168.1.2:47800\r\n";
+	toolTipText += "DNS example: outpost2.net:4780";
+
+	TOOLINFO toolInfo = { 0 };
+	toolInfo.cbSize = sizeof(TOOLINFO);
+	toolInfo.uFlags = TTF_SUBCLASS;
+	toolInfo.hwnd = this->hWnd;
+	toolInfo.hinst = globalHInstance;
+	toolInfo.lpszText = TEXT(const_cast<char*>(toolTipText.c_str()));
+
+
+	// Get RECT where tooltip should be drawn.
+	// The tooltip will not draw over IDC_ServerAddress
+	HWND addressLabel = ::GetDlgItem(this->hWnd, IDC_ServerAddressLabel);
+	GetWindowRect(addressLabel, &toolInfo.rect);
+
+	// Cast RECT as POINT before passing into MapWindowPoints
+	MapWindowPoints(nullptr, hWnd, reinterpret_cast<LPPOINT>(&toolInfo.rect), 2);
+
+	// Associate the tooltip with the tooltip window.
+	SendMessage(hwndToolTip, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(static_cast<LPTOOLINFO>(&toolInfo)));
+
+	// Setting TTM_SETMAXTIPWIDTH allows multiple lines of text within tooltip
+	SendMessage(hwndToolTip, TTM_SETMAXTIPWIDTH, 0, 375);
+
+	// Increase past default tooltip AUTOPOP delay time due to length of tooltip
+	SendMessage(hwndToolTip, TTM_SETDELAYTIME, TTDT_AUTOPOP, MAKELPARAM((30000), (0)));
 }

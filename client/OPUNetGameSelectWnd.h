@@ -48,6 +48,8 @@ private:
 	void AddServerAddress(const char* address);
 	void SetStatusText(const char* text);
 
+	void CreateServerAddressToolTip();
+
 private:
 	OPUNetTransportLayer* opuNetTransportLayer;
 	UINT_PTR timer;
