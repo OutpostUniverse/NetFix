@@ -40,6 +40,7 @@ private:
 	void OnJoinAccepted();
 
 	// Member functions
+	void InitializeMaxPlayersComboBox();
 	void InitNetLayer();
 	bool InitGurManager();
 	void CleanupGurManager();

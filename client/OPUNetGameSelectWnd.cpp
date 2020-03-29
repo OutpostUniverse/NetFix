@@ -124,15 +124,7 @@ void OPUNetGameSelectWnd::OnInit()
 	SetDlgItemText(this->hWnd, IDC_PlayerName, buffer);
 
 	// Setup the MaxPlayers combo box
-	// Add the MaxPlayer options
-	for (int i = 2; i <= 6; ++i)
-	{
-		// Add the number of player to the combo box
-		scr_snprintf(buffer, sizeof(buffer), "%i", i);
-		SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_ADDSTRING, 0, (LPARAM)buffer);
-	}
-	// Select the first item  (maxPlayers = 2)
-	SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_SETCURSEL, (WPARAM)0, 0);
+	InitializeMaxPlayersComboBox();
 
 	// Setup the GameType combo box
 	// Set the GameType display strings
@@ -212,6 +204,20 @@ void OPUNetGameSelectWnd::OnInit()
 	timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
 }
 
+void OPUNetGameSelectWnd::InitializeMaxPlayersComboBox()
+{
+	char buffer[MaxServerAddressLen];
+
+	// Add the MaxPlayer options
+	for (int i = 2; i <= 6; ++i)
+	{
+		// Add the number of player to the combo box
+		scr_snprintf(buffer, sizeof(buffer), "%i", i);
+		SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_ADDSTRING, 0, (LPARAM)buffer);
+	}
+	// Select the first item  (maxPlayers = 2)
+	SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_SETCURSEL, (WPARAM)0, 0);
+}
 
 void OPUNetGameSelectWnd::InitNetLayer()
 {
