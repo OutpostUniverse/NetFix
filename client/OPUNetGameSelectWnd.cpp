@@ -127,20 +127,7 @@ void OPUNetGameSelectWnd::OnInit()
 	InitializeMaxPlayersComboBox();
 
 	// Setup the GameType combo box
-	// Set the GameType display strings
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Last One Standing");
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Land Rush");
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Space Race");
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Resouce Race");
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Midas");
-	// Set the GameType internal values
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 0, (LPARAM)-8);
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 1, (LPARAM)-4);
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 2, (LPARAM)-5);
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 3, (LPARAM)-6);
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 4, (LPARAM)-7);
-	// Set the selected GameType
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETCURSEL, (WPARAM)0, 0);
+	InitializeGameTypeComboBox();
 
 	// Setup the ServerAddress combo box
 	// Set the maximum string length
@@ -217,6 +204,24 @@ void OPUNetGameSelectWnd::InitializeMaxPlayersComboBox()
 	}
 	// Select the first item  (maxPlayers = 2)
 	SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_SETCURSEL, static_cast<WPARAM>(0), 0);
+}
+
+void OPUNetGameSelectWnd::InitializeGameTypeComboBox()
+{
+	// Set the GameType display strings
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Last One Standing");
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Land Rush");
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Space Race");
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Resouce Race");
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Midas");
+	// Set the GameType internal values
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 0, (LPARAM)-8);
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 1, (LPARAM)-4);
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 2, (LPARAM)-5);
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 3, (LPARAM)-6);
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 4, (LPARAM)-7);
+	// Set the selected GameType
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETCURSEL, (WPARAM)0, 0);
 }
 
 void OPUNetGameSelectWnd::InitNetLayer()
