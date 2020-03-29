@@ -212,7 +212,7 @@ void OPUNetGameSelectWnd::InitializeServerAddressComboBox()
 	char buffer[MaxServerAddressLen];
 
 	// Set the maximum string length
-	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_LIMITTEXT, (WPARAM)MaxServerAddressLen, 0);
+	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_LIMITTEXT, static_cast<WPARAM>(MaxServerAddressLen), 0);
 	// Load the IPAddress history
 	for (int i = 0; i < 10; ++i)
 	{
@@ -224,11 +224,11 @@ void OPUNetGameSelectWnd::InitializeServerAddressComboBox()
 		if (buffer[0] != 0)
 		{
 			// Add the address to the combo box
-			SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_ADDSTRING, 0, (LPARAM)buffer);
+			SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
 		}
 	}
 	// Select the first item
-	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_SETCURSEL, (WPARAM)0, 0);
+	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_SETCURSEL, static_cast<WPARAM>(0), 0);
 }
 
 void OPUNetGameSelectWnd::InitNetLayer()
