@@ -147,7 +147,7 @@ void OPUNetGameSelectWnd::OnInit()
 
 void OPUNetGameSelectWnd::InitializePlayerNameComboBox()
 {
-	char buffer[MaxServerAddressLen];
+	char buffer[MaxPlayerNameLength];
 
 	// Set the default player name
 	GetPlayerName(buffer, false);
@@ -363,7 +363,7 @@ void OPUNetGameSelectWnd::OnDestroy()
 	}
 
 	// Save the PlayerName
-	char keyValue[MaxServerAddressLen];
+	char keyValue[MaxPlayerNameLength];
 	GetDlgItemText(this->hWnd, IDC_PlayerName, keyValue, sizeof(keyValue));
 	config.SetString("Game", "Name", keyValue);
 
@@ -742,7 +742,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 	// Get the host player name
 	int hostPlayerNetID = app.netTLayer->GetHostPlayerNetID();
 	// Get the Player Name.
-	char playerName[16];
+	char playerName[MaxPlayerNameLength];
 	SendDlgItemMessage(this->hWnd, IDC_PlayerName, WM_GETTEXT, sizeof(playerName), (LPARAM)&playerName);
 
 

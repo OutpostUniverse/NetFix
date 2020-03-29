@@ -4,6 +4,7 @@
 using namespace OP2Internal;
 
 const int MaxServerAddressLen = 128;
+const int MaxPlayerNameLength = 13;
 const int timerInterval = 50;
 const int SearchTickInterval = 60;
 const int JoinAttemptInterval = 20;
