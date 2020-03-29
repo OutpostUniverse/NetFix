@@ -206,7 +206,7 @@ void OPUNetGameSelectWnd::OnInit()
 
 void OPUNetGameSelectWnd::InitializeMaxPlayersComboBox()
 {
-	char buffer[MaxServerAddressLen];
+	char buffer[2];
 
 	// Add the MaxPlayer options
 	for (int i = 2; i <= 6; ++i)
