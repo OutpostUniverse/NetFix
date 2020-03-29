@@ -46,7 +46,7 @@ private:
 	void InitializeGameSessionsListView();
 	void InitializeNetTransportLayer();
 	bool InitializeGuaranteedSendLayerManager();
-	void CleanupGurManager();
+	void CleanupGuaranteedSendLayerManager();
 	void ClearGamesList();
 	void SetGameListItem(int itemIndex, HostedGameInfo* hostedGameInfo);
 	void AddServerAddress(const char* address);

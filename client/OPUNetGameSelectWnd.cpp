@@ -280,7 +280,7 @@ bool OPUNetGameSelectWnd::InitializeGuaranteedSendLayerManager()
 }
 
 
-void OPUNetGameSelectWnd::CleanupGurManager()
+void OPUNetGameSelectWnd::CleanupGuaranteedSendLayerManager()
 {
 	if (opuNetTransportLayer->GetNumPlayers() > 0)
 	{
@@ -759,7 +759,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 		searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 
 		// Send the player Quit message
-		CleanupGurManager();
+		CleanupGuaranteedSendLayerManager();
 	}
 }
 
@@ -884,7 +884,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 		SetStatusText("Cancelling game...");
 
 		// Cancel the game (inform other players if needed)
-		CleanupGurManager();
+		CleanupGuaranteedSendLayerManager();
 
 		SetStatusText("Game Cancelled");
 
