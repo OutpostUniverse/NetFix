@@ -238,12 +238,8 @@ void OPUNetGameSelectWnd::InitializeGameSessionsListView()
 
 void OPUNetGameSelectWnd::InitializeNetTransportLayer()
 {
-	// Initialize Network objects
-	// --------------------------
-
-	// Create NetTransportLayer
 	opuNetTransportLayer = OPUNetTransportLayer::Create();
-	// Check for errors
+
 	if (opuNetTransportLayer == nullptr)
 	{
 		// Error creating the transport layer
