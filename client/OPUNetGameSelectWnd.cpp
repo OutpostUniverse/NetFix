@@ -118,30 +118,13 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 void OPUNetGameSelectWnd::OnInit()
 {
 	InitializePlayerNameComboBox();
-
-	// Setup the MaxPlayers combo box
 	InitializeMaxPlayersComboBox();
-
-	// Setup the GameType combo box
 	InitializeGameTypeComboBox();
-
-	// Setup the ServerAddress combo box
 	InitializeServerAddressComboBox();
-
 	CreateServerAddressToolTip();
-
-	// Initialize the List View's Columns
-	// ----------------------------------
 	InitializeGameSessionsListView();
-
-
-
-	// Initialize Network objects
 	InitializeNetTransportLayer();
 
-
-	// Create a timer
-	// --------------
 	timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
 }
 
