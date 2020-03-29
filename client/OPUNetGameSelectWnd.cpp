@@ -141,7 +141,7 @@ void OPUNetGameSelectWnd::OnInit()
 
 
 	// Initialize Network objects
-	InitNetLayer();
+	InitializeNetTransportLayer();
 
 
 	// Create a timer
@@ -236,7 +236,7 @@ void OPUNetGameSelectWnd::InitializeGameSessionsListView()
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 }
 
-void OPUNetGameSelectWnd::InitNetLayer()
+void OPUNetGameSelectWnd::InitializeNetTransportLayer()
 {
 	// Initialize Network objects
 	// --------------------------
@@ -292,7 +292,7 @@ void OPUNetGameSelectWnd::CleanupGurManager()
 		app.NetShutdown(true);
 
 		// Reinitialize the network layer
-		InitNetLayer();
+		InitializeNetTransportLayer();
 	}
 	else
 	{

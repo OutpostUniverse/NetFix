@@ -44,7 +44,7 @@ private:
 	void InitializeGameTypeComboBox();
 	void InitializeServerAddressComboBox();
 	void InitializeGameSessionsListView();
-	void InitNetLayer();
+	void InitializeNetTransportLayer();
 	bool InitGurManager();
 	void CleanupGurManager();
 	void ClearGamesList();
