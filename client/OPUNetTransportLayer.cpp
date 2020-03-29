@@ -1206,6 +1206,7 @@ bool OPUNetTransportLayer::OnJoinHelpRequest(const Packet& packet, const sockadd
 	}
 	sendto(netSocket, (char*)&packet, 0, 0, (sockaddr*)&packet.tlMessage.joinHelpRequest.clientAddr, sizeof(packet.tlMessage.joinHelpRequest.clientAddr));
 
+	return false;
 }
 
 bool OPUNetTransportLayer::OnSetPlayersList(Packet& packet, const TransportLayerMessage& tlMessage)
