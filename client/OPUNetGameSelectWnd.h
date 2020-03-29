@@ -55,7 +55,7 @@ private:
 	UINT_PTR timer = 0;
 	UINT searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 	HostedGameInfo* joiningGame = 0;
-	char joinRequestPassword[16];
+	char joinRequestPassword[16] = { 0 };
 	UINT joinAttempt = 0;
 	UINT joinAttemptTickCount = 0;
 	Port internalPort = 0;
