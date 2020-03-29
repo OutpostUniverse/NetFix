@@ -40,6 +40,7 @@ private:
 	void OnJoinAccepted();
 
 	// Member functions
+	void InitializePlayerNameComboBox();
 	void InitializeMaxPlayersComboBox();
 	void InitializeGameTypeComboBox();
 	void InitializeServerAddressComboBox();

@@ -117,11 +117,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void OPUNetGameSelectWnd::OnInit()
 {
-	char buffer[MaxServerAddressLen];
-
-	// Set the default player name
-	GetPlayerName(buffer, false);
-	SetDlgItemText(this->hWnd, IDC_PlayerName, buffer);
+	InitializePlayerNameComboBox();
 
 	// Setup the MaxPlayers combo box
 	InitializeMaxPlayersComboBox();
@@ -147,6 +143,15 @@ void OPUNetGameSelectWnd::OnInit()
 	// Create a timer
 	// --------------
 	timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
+}
+
+void OPUNetGameSelectWnd::InitializePlayerNameComboBox()
+{
+	char buffer[MaxServerAddressLen];
+
+	// Set the default player name
+	GetPlayerName(buffer, false);
+	SetDlgItemText(this->hWnd, IDC_PlayerName, buffer);
 }
 
 void OPUNetGameSelectWnd::InitializeMaxPlayersComboBox()
