@@ -100,7 +100,6 @@ private:
 	void SendBroadcast(Packet& packet, int packetSize);
 	void SendSinglecast(Packet& packet, int packetSize);
 
-private:
 	// Gameplay variables
 	unsigned int numPlayers;
 	bool bInitialized;

@@ -50,7 +50,6 @@ private:
 
 	void CreateServerAddressToolTip();
 
-private:
 	OPUNetTransportLayer* opuNetTransportLayer = nullptr;
 	UINT_PTR timer = 0;
 	UINT searchTickCount = SearchTickInterval - 1;	// Broadcast right away
