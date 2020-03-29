@@ -252,7 +252,7 @@ void OPUNetGameSelectWnd::InitializeNetTransportLayer()
 }
 
 
-bool OPUNetGameSelectWnd::InitGurManager()
+bool OPUNetGameSelectWnd::InitializeGuaranteedSendLayerManager()
 {
 	// Delete Guaranteed Send Layer if it already exists
 	delete app.gurManager;
@@ -724,7 +724,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 
 
 	// Initialize the Guaranteed Send Layer
-	int errorCode = InitGurManager();
+	int errorCode = InitializeGuaranteedSendLayerManager();
 	// Check for errors
 	if (errorCode == 0) {
 		return;
@@ -861,7 +861,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 	}
 
 	// Initialize the Guaranteed Send Layer
-	errorCode = InitGurManager();
+	errorCode = InitializeGuaranteedSendLayerManager();
 	// Check for errors
 	if (errorCode == 0) {
 		return;
