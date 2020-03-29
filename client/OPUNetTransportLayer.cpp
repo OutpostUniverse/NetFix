@@ -1070,9 +1070,11 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, const sockad
 		switch (tlMessage.tlHeader.commandType)
 		{
 		case TransportLayerCommand::JoinRequest:
-			return OnJoinRequest(packet, fromAddress, tlMessage);
+			OnJoinRequest(packet, fromAddress, tlMessage);
+			return true;
 		case TransportLayerCommand::HostedGameSearchQuery:
-			return OnHostedGameSearchQuery(packet, fromAddress, tlMessage);
+			OnHostedGameSearchQuery(packet, fromAddress, tlMessage);
+			return true;
 		case TransportLayerCommand::JoinHelpRequest:
 			if (OnJoinHelpRequest(packet, fromAddress, tlMessage)) {
 				return true;
@@ -1108,15 +1110,15 @@ bool OPUNetTransportLayer::OnImmediatePacketProcess(Packet& packet, const sockad
 	return false; // Unhandled (non-immediate) message
 }
 
-bool OPUNetTransportLayer::OnJoinRequest(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+void OPUNetTransportLayer::OnJoinRequest(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(JoinRequest)) {
-		return true;		// Packet handled (discard)
+		return; // Packet handled (discard)
 	}
 	// Check the session identifier
 	if (packet.tlMessage.joinRequest.sessionIdentifier != hostedGameInfo.sessionIdentifier) {
-		return true;		// Packet handled (discard)
+		return; // Packet handled (discard)
 	}
 
 	int returnPortNum = tlMessage.joinRequest.returnPortNum;
@@ -1149,25 +1151,25 @@ bool OPUNetTransportLayer::OnJoinRequest(Packet& packet, const sockaddr_in& from
 	// Send the reply
 	SendTo(packet, fromAddress);
 
-	return true;			// Packet handled
+	return; // Packet handled
 }
 
-bool OPUNetTransportLayer::OnHostedGameSearchQuery(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
+void OPUNetTransportLayer::OnHostedGameSearchQuery(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)
 {
 	// Verify packet size
 	if (packet.header.sizeOfPayload != sizeof(HostedGameSearchQuery)) {
-		return true;		// Packet handled (discard)
+		return; // Packet handled (discard)
 	}
 
 	LogDebug("Game Search Query: " + FormatAddress(fromAddress));
 
 	// Verify Game Identifier
 	if (tlMessage.searchQuery.gameIdentifier != gameIdentifier) {
-		return true;		// Packet handled (discard)
+		return; // Packet handled (discard)
 	}
 	// Verify password
 	if (strncmp(tlMessage.searchQuery.password, hostPassword, sizeof(hostPassword)) != 0) {
-		return true;		// Packet handled (discard)
+		return; // Packet handled (discard)
 	}
 
 	// Create a reply
@@ -1180,7 +1182,7 @@ bool OPUNetTransportLayer::OnHostedGameSearchQuery(Packet& packet, const sockadd
 	// Send the reply
 	SendTo(packet, fromAddress);
 
-	return true;			// Packet handled
+	return; // Packet handled
 }
 
 bool OPUNetTransportLayer::OnJoinHelpRequest(const Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage)

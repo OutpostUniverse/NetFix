@@ -86,8 +86,8 @@ private:
 	bool SendStatusUpdate();
 	bool SendUntilStatusUpdate(Packet& packet, PeerStatus untilStatus, int maxTries, int repeatDelay);
 	bool OnImmediatePacketProcess(Packet& packet, const sockaddr_in& fromAddress);
-	bool OnJoinRequest(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
-	bool OnHostedGameSearchQuery(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
+	void OnJoinRequest(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
+	void OnHostedGameSearchQuery(Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
 	bool OnJoinHelpRequest(const Packet& packet, const sockaddr_in& fromAddress, TransportLayerMessage& tlMessage);
 	bool OnSetPlayersList(Packet& packet, const TransportLayerMessage& tlMessage);
 	void OnSetPlayersListFailed(Packet& packet);
