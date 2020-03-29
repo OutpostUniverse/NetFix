@@ -43,6 +43,7 @@ private:
 	void InitializeMaxPlayersComboBox();
 	void InitializeGameTypeComboBox();
 	void InitializeServerAddressComboBox();
+	void InitializeGameSessionsListView();
 	void InitNetLayer();
 	bool InitGurManager();
 	void CleanupGurManager();

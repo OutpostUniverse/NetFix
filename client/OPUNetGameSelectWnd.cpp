@@ -136,32 +136,7 @@ void OPUNetGameSelectWnd::OnInit()
 
 	// Initialize the List View's Columns
 	// ----------------------------------
-	LVCOLUMN lvColumn;
-
-	// Set valid struct fields
-	lvColumn.mask = LVCF_WIDTH | LVCF_TEXT;
-	// Insert each column
-	lvColumn.cx = 100;
-	lvColumn.pszText = const_cast<char*>("Host");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 0, (LPARAM)&lvColumn);
-	lvColumn.cx = 100;
-	lvColumn.pszText = const_cast<char*>("Game Type");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 1, (LPARAM)&lvColumn);
-	lvColumn.cx = 57;
-	lvColumn.pszText = const_cast<char*>("# Players");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 2, (LPARAM)&lvColumn);
-	lvColumn.cx = 70;
-	lvColumn.pszText = const_cast<char*>("IP");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 3, (LPARAM)&lvColumn);
-	lvColumn.cx = 42;
-	lvColumn.pszText = const_cast<char*>("Port");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 4, (LPARAM)&lvColumn);
-	lvColumn.cx = 40;
-	lvColumn.pszText = const_cast<char*>("Ping");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 5, (LPARAM)&lvColumn);
-
-	// Turn on full row select in the list view
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
+	InitializeGameSessionsListView();
 
 
 
@@ -229,6 +204,36 @@ void OPUNetGameSelectWnd::InitializeServerAddressComboBox()
 	}
 	// Select the first item
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_SETCURSEL, static_cast<WPARAM>(0), 0);
+}
+
+void OPUNetGameSelectWnd::InitializeGameSessionsListView()
+{
+	LVCOLUMN lvColumn;
+
+	// Set valid struct fields
+	lvColumn.mask = LVCF_WIDTH | LVCF_TEXT;
+	// Insert each column
+	lvColumn.cx = 100;
+	lvColumn.pszText = const_cast<char*>("Host");
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 0, (LPARAM)&lvColumn);
+	lvColumn.cx = 100;
+	lvColumn.pszText = const_cast<char*>("Game Type");
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 1, (LPARAM)&lvColumn);
+	lvColumn.cx = 57;
+	lvColumn.pszText = const_cast<char*>("# Players");
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 2, (LPARAM)&lvColumn);
+	lvColumn.cx = 70;
+	lvColumn.pszText = const_cast<char*>("IP");
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 3, (LPARAM)&lvColumn);
+	lvColumn.cx = 42;
+	lvColumn.pszText = const_cast<char*>("Port");
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 4, (LPARAM)&lvColumn);
+	lvColumn.cx = 40;
+	lvColumn.pszText = const_cast<char*>("Ping");
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 5, (LPARAM)&lvColumn);
+
+	// Turn on full row select in the list view
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 }
 
 void OPUNetGameSelectWnd::InitNetLayer()
