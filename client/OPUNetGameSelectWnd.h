@@ -51,18 +51,18 @@ private:
 	void CreateServerAddressToolTip();
 
 private:
-	OPUNetTransportLayer* opuNetTransportLayer;
-	UINT_PTR timer;
-	UINT searchTickCount;
-	HostedGameInfo* joiningGame;
-	char joinRequestPassword[16];
-	UINT joinAttempt;
-	UINT joinAttemptTickCount;
-	Port internalPort;
-	Port externalPort;
+	OPUNetTransportLayer* opuNetTransportLayer = nullptr;
+	UINT_PTR timer = 0;
+	UINT searchTickCount = SearchTickInterval - 1;	// Broadcast right away
+	HostedGameInfo* joiningGame = nullptr;
+	char joinRequestPassword[16] = { };
+	UINT joinAttempt = 0;
+	UINT joinAttemptTickCount = 0;
+	Port internalPort = 0;
+	Port externalPort = 0;
 	in_addr externalIp;
-	bool bReceivedInternal;
-	bool bTwoExternal;
-	UCHAR numEchoRequestsSent;
-	UCHAR echoTick;
+	bool bReceivedInternal = false;
+	bool bTwoExternal = false;
+	UCHAR numEchoRequestsSent = 0;
+	UCHAR echoTick = EchoTickInterval - 1;	// Check external address right away
 };

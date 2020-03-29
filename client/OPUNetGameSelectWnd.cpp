@@ -38,19 +38,7 @@ const char* GameTypeName[] =
 
 OPUNetGameSelectWnd::OPUNetGameSelectWnd()
 {
-	opuNetTransportLayer = nullptr;
-	timer = 0;
-	searchTickCount = SearchTickInterval - 1;	// Broadcast right away
-	joiningGame = nullptr;
-	joinAttempt = 0;
-	joinAttemptTickCount = 0;
-	internalPort = 0;
-	externalPort = 0;
 	externalIp.S_un.S_addr = INADDR_ANY;
-	bReceivedInternal = false;
-	bTwoExternal = false;
-	numEchoRequestsSent = 0;
-	echoTick = EchoTickInterval - 1;	// Check external address right away
 }
 
 OPUNetGameSelectWnd::~OPUNetGameSelectWnd()
