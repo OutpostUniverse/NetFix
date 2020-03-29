@@ -107,8 +107,8 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		// Get the controlId
 		controlId = wParam;
 		notifyCode = ((NMHDR*)lParam)->code;
-
-		if ((controlId == IDC_GamesList) && (notifyCode == static_cast<UINT>(NM_DBLCLK)))
+#pragma warning(suppress: 26454) // MSVC C26454 produced within expansion of NM_DBLCLK
+		if ((controlId == IDC_GamesList) && (notifyCode == NM_DBLCLK))
 		{
 			OnClickJoin();
 			return true;			// Message processed
