@@ -213,10 +213,10 @@ void OPUNetGameSelectWnd::InitializeMaxPlayersComboBox()
 	{
 		// Add the number of player to the combo box
 		scr_snprintf(buffer, sizeof(buffer), "%i", i);
-		SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_ADDSTRING, 0, (LPARAM)buffer);
+		SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
 	}
 	// Select the first item  (maxPlayers = 2)
-	SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_SETCURSEL, (WPARAM)0, 0);
+	SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_SETCURSEL, static_cast<WPARAM>(0), 0);
 }
 
 void OPUNetGameSelectWnd::InitNetLayer()
