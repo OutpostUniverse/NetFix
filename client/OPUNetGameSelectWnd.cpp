@@ -189,10 +189,10 @@ void OPUNetGameSelectWnd::InitializeGameTypeComboBox()
 
 void OPUNetGameSelectWnd::InitializeServerAddressComboBox()
 {
-	char buffer[MaxServerAddressLen];
+	char buffer[MaxServerAddressLength];
 
 	// Set the maximum string length
-	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_LIMITTEXT, static_cast<WPARAM>(MaxServerAddressLen), 0);
+	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_LIMITTEXT, static_cast<WPARAM>(MaxServerAddressLength), 0);
 	// Load the IPAddress history
 	for (int i = 0; i < 10; ++i)
 	{
@@ -776,7 +776,7 @@ void OPUNetGameSelectWnd::OnClickSearch()
 	SetStatusText("Searching for games...");
 
 	// Get the server address
-	char serverAddress[MaxServerAddressLen];
+	char serverAddress[MaxServerAddressLength];
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, WM_GETTEXT, (WPARAM)sizeof(serverAddress), (LPARAM)serverAddress);
 	// Request games list from server
 	const int errorCode = opuNetTransportLayer->SearchForGames(serverAddress, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
