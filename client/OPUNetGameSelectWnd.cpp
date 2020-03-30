@@ -49,9 +49,6 @@ OPUNetGameSelectWnd::~OPUNetGameSelectWnd()
 
 int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	int controlId;
-	UINT notifyCode;
-
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
@@ -66,16 +63,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return OnCommand(wParam);
 
 	case WM_NOTIFY:
-		// Get the controlId
-		controlId = wParam;
-		notifyCode = reinterpret_cast<NMHDR*>(lParam)->code;
-#pragma warning(suppress: 26454) // MSVC C26454 produced within expansion of NM_DBLCLK
-		if ((controlId == IDC_GamesList) && (notifyCode == NM_DBLCLK))
-		{
-			OnClickJoin();
-			return true;			// Message processed
-		}
-		return false; // Message not processed
+		return OnNotify(wParam, lParam);
 
 	case WM_DESTROY:
 		OnDestroy();
@@ -454,6 +442,20 @@ bool OPUNetGameSelectWnd::OnCommand(WPARAM wParam)
 		}
 	}
 
+	return false; // Message not processed
+}
+
+bool OPUNetGameSelectWnd::OnNotify(WPARAM wParam, LPARAM lParam)
+{
+	// Get the controlId
+	int controlId = wParam;
+	UINT notifyCode = reinterpret_cast<NMHDR*>(lParam)->code;
+#pragma warning(suppress: 26454) // MSVC C26454 produced within expansion of NM_DBLCLK
+	if ((controlId == IDC_GamesList) && (notifyCode == NM_DBLCLK))
+	{
+		OnClickJoin();
+		return true;			// Message processed
+	}
 	return false; // Message not processed
 }
 
