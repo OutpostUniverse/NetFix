@@ -94,7 +94,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_NOTIFY:
 		// Get the controlId
 		controlId = wParam;
-		notifyCode = ((NMHDR*)lParam)->code;
+		notifyCode = reinterpret_cast<NMHDR*>(lParam)->code;
 #pragma warning(suppress: 26454) // MSVC C26454 produced within expansion of NM_DBLCLK
 		if ((controlId == IDC_GamesList) && (notifyCode == NM_DBLCLK))
 		{
