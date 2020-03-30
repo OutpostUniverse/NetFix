@@ -32,6 +32,7 @@ private:
 	void OnInitialization();
 	void OnDestroy();
 	void OnTimer();
+	bool OnCommand(WPARAM wParam);
 	void OnReceive(Packet &packet);
 	void OnReceiveHostedGameSearchReply(Packet& packet);
 	void OnReceiveJoinGranted(Packet& packet);

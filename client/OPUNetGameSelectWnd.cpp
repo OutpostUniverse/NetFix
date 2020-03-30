@@ -63,33 +63,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return true;			// Message processed
 
 	case WM_COMMAND:
-		// Get the controlId
-		controlId = LOWORD(wParam);
-		notifyCode = HIWORD(wParam);
-
-		// Figure out what to do
-		if (notifyCode == BN_CLICKED)
-		{
-			switch (controlId)
-			{
-			case IDC_SearchButton:
-				OnClickSearch();
-				return true;		// Message processed
-
-			case IDC_JoinButton:
-				OnClickJoin();
-				return true;		// Message processed
-
-			case IDC_CreateButton:
-				OnClickCreate();
-				return true;		// Message processed
-
-			case IDC_CancelButton:
-				OnClickCancel();
-				return true;		// Message processed
-			}
-		}
-		return false; // Message not processed
+		return OnCommand(wParam);
 
 	case WM_NOTIFY:
 		// Get the controlId
@@ -451,6 +425,38 @@ void OPUNetGameSelectWnd::OnTimer()
 		// Process the packet
 		OnReceive(packet);
 	}
+}
+
+bool OPUNetGameSelectWnd::OnCommand(WPARAM wParam)
+{
+	// Get the controlId
+	int controlId = LOWORD(wParam);
+	UINT notifyCode = HIWORD(wParam);
+
+	// Figure out what to do
+	if (notifyCode == BN_CLICKED)
+	{
+		switch (controlId)
+		{
+		case IDC_SearchButton:
+			OnClickSearch();
+			return true;		// Message processed
+
+		case IDC_JoinButton:
+			OnClickJoin();
+			return true;		// Message processed
+
+		case IDC_CreateButton:
+			OnClickCreate();
+			return true;		// Message processed
+
+		case IDC_CancelButton:
+			OnClickCancel();
+			return true;		// Message processed
+		}
+	}
+
+	return false; // Message not processed
 }
 
 void OPUNetGameSelectWnd::OnReceive(Packet &packet)
