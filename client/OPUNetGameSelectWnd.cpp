@@ -68,6 +68,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		OnDestroy();
 		return false;			// Should return 0 for this message
+
 	case WM_NCDESTROY:
 		hWnd = nullptr;
 		return false;			// Should return 0 for this message
