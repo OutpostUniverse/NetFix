@@ -3,7 +3,8 @@
 
 using namespace OP2Internal;
 
-const int MaxServerAddressLen = 128;
+const int MaxServerAddressLength = 128;
+const int MaxPlayerNameLength = 13;
 const int timerInterval = 50;
 const int SearchTickInterval = 60;
 const int JoinAttemptInterval = 20;
@@ -28,7 +29,7 @@ private:
 	void OnClickCancel();
 
 	// Other event handlers
-	void OnInit();
+	void OnInitialization();
 	void OnDestroy();
 	void OnTimer();
 	void OnReceive(Packet &packet);
@@ -40,9 +41,14 @@ private:
 	void OnJoinAccepted();
 
 	// Member functions
-	void InitNetLayer();
-	bool InitGurManager();
-	void CleanupGurManager();
+	void InitializePlayerNameComboBox();
+	void InitializeMaxPlayersComboBox();
+	void InitializeGameTypeComboBox();
+	void InitializeServerAddressComboBox();
+	void InitializeGameSessionsListView();
+	void InitializeNetTransportLayer();
+	bool InitializeGuaranteedSendLayerManager();
+	void CleanupGuaranteedSendLayerManager();
 	void ClearGamesList();
 	void SetGameListItem(int itemIndex, HostedGameInfo* hostedGameInfo);
 	void AddServerAddress(const char* address);

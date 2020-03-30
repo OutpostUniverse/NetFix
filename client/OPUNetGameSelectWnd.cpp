@@ -55,7 +55,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
-		OnInit();
+		OnInitialization();
 		return true;			// Let system call SetFocus
 
 	case WM_TIMER:
@@ -115,44 +115,67 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 };
 
 
-void OPUNetGameSelectWnd::OnInit()
+void OPUNetGameSelectWnd::OnInitialization()
 {
-	char buffer[MaxServerAddressLen];
+	InitializePlayerNameComboBox();
+	InitializeMaxPlayersComboBox();
+	InitializeGameTypeComboBox();
+	InitializeServerAddressComboBox();
+	CreateServerAddressToolTip();
+	InitializeGameSessionsListView();
+	InitializeNetTransportLayer();
+
+	timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
+}
+
+void OPUNetGameSelectWnd::InitializePlayerNameComboBox()
+{
+	char buffer[MaxPlayerNameLength];
 
 	// Set the default player name
 	GetPlayerName(buffer, false);
 	SetDlgItemText(this->hWnd, IDC_PlayerName, buffer);
+}
 
-	// Setup the MaxPlayers combo box
+void OPUNetGameSelectWnd::InitializeMaxPlayersComboBox()
+{
+	char buffer[2];
+
 	// Add the MaxPlayer options
 	for (int i = 2; i <= 6; ++i)
 	{
 		// Add the number of player to the combo box
 		scr_snprintf(buffer, sizeof(buffer), "%i", i);
-		SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_ADDSTRING, 0, (LPARAM)buffer);
+		SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
 	}
 	// Select the first item  (maxPlayers = 2)
-	SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_SETCURSEL, (WPARAM)0, 0);
+	SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_SETCURSEL, static_cast<WPARAM>(0), 0);
+}
 
-	// Setup the GameType combo box
+void OPUNetGameSelectWnd::InitializeGameTypeComboBox()
+{
 	// Set the GameType display strings
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Last One Standing");
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Land Rush");
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Space Race");
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Resouce Race");
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, (LPARAM)"Midas");
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>("Last One Standing"));
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>("Land Rush"));
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>("Space Race"));
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>("Resouce Race"));
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>("Midas"));
 	// Set the GameType internal values
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 0, (LPARAM)-8);
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 1, (LPARAM)-4);
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 2, (LPARAM)-5);
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 3, (LPARAM)-6);
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 4, (LPARAM)-7);
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 0, static_cast<LPARAM>(-8));
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 1, static_cast<LPARAM>(-4));
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 2, static_cast<LPARAM>(-5));
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 3, static_cast<LPARAM>(-6));
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETITEMDATA, 4, static_cast<LPARAM>(-7));
 	// Set the selected GameType
-	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETCURSEL, (WPARAM)0, 0);
+	SendDlgItemMessage(this->hWnd, IDC_GameType, CB_SETCURSEL, static_cast<WPARAM>(0), 0);
+}
 
-	// Setup the ServerAddress combo box
+void OPUNetGameSelectWnd::InitializeServerAddressComboBox()
+{
+	char buffer[MaxServerAddressLength];
+
 	// Set the maximum string length
-	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_LIMITTEXT, (WPARAM)MaxServerAddressLen, 0);
+	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_LIMITTEXT, static_cast<WPARAM>(MaxServerAddressLength), 0);
 	// Load the IPAddress history
 	for (int i = 0; i < 10; ++i)
 	{
@@ -164,16 +187,15 @@ void OPUNetGameSelectWnd::OnInit()
 		if (buffer[0] != 0)
 		{
 			// Add the address to the combo box
-			SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_ADDSTRING, 0, (LPARAM)buffer);
+			SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
 		}
 	}
 	// Select the first item
-	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_SETCURSEL, (WPARAM)0, 0);
+	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_SETCURSEL, static_cast<WPARAM>(0), 0);
+}
 
-	CreateServerAddressToolTip();
-
-	// Initialize the List View's Columns
-	// ----------------------------------
+void OPUNetGameSelectWnd::InitializeGameSessionsListView()
+{
 	LVCOLUMN lvColumn;
 
 	// Set valid struct fields
@@ -181,46 +203,31 @@ void OPUNetGameSelectWnd::OnInit()
 	// Insert each column
 	lvColumn.cx = 100;
 	lvColumn.pszText = const_cast<char*>("Host");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 0, (LPARAM)&lvColumn);
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 0, reinterpret_cast<LPARAM>(&lvColumn));
 	lvColumn.cx = 100;
 	lvColumn.pszText = const_cast<char*>("Game Type");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 1, (LPARAM)&lvColumn);
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 1, reinterpret_cast<LPARAM>(&lvColumn));
 	lvColumn.cx = 57;
 	lvColumn.pszText = const_cast<char*>("# Players");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 2, (LPARAM)&lvColumn);
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 2, reinterpret_cast<LPARAM>(&lvColumn));
 	lvColumn.cx = 70;
 	lvColumn.pszText = const_cast<char*>("IP");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 3, (LPARAM)&lvColumn);
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 3, reinterpret_cast<LPARAM>(&lvColumn));
 	lvColumn.cx = 42;
 	lvColumn.pszText = const_cast<char*>("Port");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 4, (LPARAM)&lvColumn);
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 4, reinterpret_cast<LPARAM>(&lvColumn));
 	lvColumn.cx = 40;
 	lvColumn.pszText = const_cast<char*>("Ping");
-	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 5, (LPARAM)&lvColumn);
+	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_INSERTCOLUMN, 5, reinterpret_cast<LPARAM>(&lvColumn));
 
 	// Turn on full row select in the list view
 	SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
-
-
-
-	// Initialize Network objects
-	InitNetLayer();
-
-
-	// Create a timer
-	// --------------
-	timer = SetTimer(this->hWnd, 0, timerInterval, nullptr);
 }
 
-
-void OPUNetGameSelectWnd::InitNetLayer()
+void OPUNetGameSelectWnd::InitializeNetTransportLayer()
 {
-	// Initialize Network objects
-	// --------------------------
-
-	// Create NetTransportLayer
 	opuNetTransportLayer = OPUNetTransportLayer::Create();
-	// Check for errors
+
 	if (opuNetTransportLayer == nullptr)
 	{
 		// Error creating the transport layer
@@ -233,7 +240,7 @@ void OPUNetGameSelectWnd::InitNetLayer()
 }
 
 
-bool OPUNetGameSelectWnd::InitGurManager()
+bool OPUNetGameSelectWnd::InitializeGuaranteedSendLayerManager()
 {
 	// Delete Guaranteed Send Layer if it already exists
 	delete app.gurManager;
@@ -261,7 +268,7 @@ bool OPUNetGameSelectWnd::InitGurManager()
 }
 
 
-void OPUNetGameSelectWnd::CleanupGurManager()
+void OPUNetGameSelectWnd::CleanupGuaranteedSendLayerManager()
 {
 	if (opuNetTransportLayer->GetNumPlayers() > 0)
 	{
@@ -269,7 +276,7 @@ void OPUNetGameSelectWnd::CleanupGurManager()
 		app.NetShutdown(true);
 
 		// Reinitialize the network layer
-		InitNetLayer();
+		InitializeNetTransportLayer();
 	}
 	else
 	{
@@ -339,7 +346,7 @@ void OPUNetGameSelectWnd::OnDestroy()
 	}
 
 	// Save the PlayerName
-	char keyValue[MaxServerAddressLen];
+	char keyValue[MaxPlayerNameLength];
 	GetDlgItemText(this->hWnd, IDC_PlayerName, keyValue, sizeof(keyValue));
 	config.SetString("Game", "Name", keyValue);
 
@@ -705,7 +712,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 
 
 	// Initialize the Guaranteed Send Layer
-	int errorCode = InitGurManager();
+	int errorCode = InitializeGuaranteedSendLayerManager();
 	// Check for errors
 	if (errorCode == 0) {
 		return;
@@ -718,7 +725,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 	// Get the host player name
 	int hostPlayerNetID = app.netTLayer->GetHostPlayerNetID();
 	// Get the Player Name.
-	char playerName[16];
+	char playerName[MaxPlayerNameLength];
 	SendDlgItemMessage(this->hWnd, IDC_PlayerName, WM_GETTEXT, sizeof(playerName), (LPARAM)&playerName);
 
 
@@ -740,7 +747,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 		searchTickCount = SearchTickInterval - 1;	// Broadcast right away
 
 		// Send the player Quit message
-		CleanupGurManager();
+		CleanupGuaranteedSendLayerManager();
 	}
 }
 
@@ -752,7 +759,7 @@ void OPUNetGameSelectWnd::OnClickSearch()
 	SetStatusText("Searching for games...");
 
 	// Get the server address
-	char serverAddress[MaxServerAddressLen];
+	char serverAddress[MaxServerAddressLength];
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, WM_GETTEXT, (WPARAM)sizeof(serverAddress), (LPARAM)serverAddress);
 	// Request games list from server
 	const int errorCode = opuNetTransportLayer->SearchForGames(serverAddress, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
@@ -842,7 +849,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 	}
 
 	// Initialize the Guaranteed Send Layer
-	errorCode = InitGurManager();
+	errorCode = InitializeGuaranteedSendLayerManager();
 	// Check for errors
 	if (errorCode == 0) {
 		return;
@@ -865,7 +872,7 @@ void OPUNetGameSelectWnd::OnClickCreate()
 		SetStatusText("Cancelling game...");
 
 		// Cancel the game (inform other players if needed)
-		CleanupGurManager();
+		CleanupGuaranteedSendLayerManager();
 
 		SetStatusText("Game Cancelled");
 
