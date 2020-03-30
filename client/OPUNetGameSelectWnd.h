@@ -29,7 +29,7 @@ private:
 	void OnClickCancel();
 
 	// Other event handlers
-	void OnInit();
+	void OnInitialization();
 	void OnDestroy();
 	void OnTimer();
 	void OnReceive(Packet &packet);

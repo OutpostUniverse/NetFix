@@ -55,7 +55,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
-		OnInit();
+		OnInitialization();
 		return true;			// Let system call SetFocus
 
 	case WM_TIMER:
@@ -115,7 +115,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 };
 
 
-void OPUNetGameSelectWnd::OnInit()
+void OPUNetGameSelectWnd::OnInitialization()
 {
 	InitializePlayerNameComboBox();
 	InitializeMaxPlayersComboBox();
