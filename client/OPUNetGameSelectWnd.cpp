@@ -89,7 +89,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 				return true;		// Message processed
 			}
 		}
-		break;
+		return false; // Message not processed
 
 	case WM_NOTIFY:
 		// Get the controlId
@@ -101,7 +101,7 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			OnClickJoin();
 			return true;			// Message processed
 		}
-		break;
+		return false; // Message not processed
 
 	case WM_DESTROY:
 		OnDestroy();
