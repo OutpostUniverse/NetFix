@@ -429,11 +429,9 @@ void OPUNetGameSelectWnd::OnTimer()
 
 bool OPUNetGameSelectWnd::OnCommand(WPARAM wParam)
 {
-	// Get the controlId
 	int controlId = LOWORD(wParam);
 	UINT notifyCode = HIWORD(wParam);
 
-	// Figure out what to do
 	if (notifyCode == BN_CLICKED)
 	{
 		switch (controlId)
