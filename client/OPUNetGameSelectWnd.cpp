@@ -447,15 +447,16 @@ bool OPUNetGameSelectWnd::OnCommand(WPARAM wParam)
 
 bool OPUNetGameSelectWnd::OnNotify(WPARAM wParam, LPARAM lParam)
 {
-	// Get the controlId
 	int controlId = wParam;
 	UINT notifyCode = reinterpret_cast<NMHDR*>(lParam)->code;
+
 #pragma warning(suppress: 26454) // MSVC C26454 produced within expansion of NM_DBLCLK
 	if ((controlId == IDC_GamesList) && (notifyCode == NM_DBLCLK))
 	{
 		OnClickJoin();
 		return true;			// Message processed
 	}
+
 	return false; // Message not processed
 }
 
