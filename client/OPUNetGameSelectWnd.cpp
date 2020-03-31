@@ -49,9 +49,6 @@ OPUNetGameSelectWnd::~OPUNetGameSelectWnd()
 
 int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	int controlId;
-	UINT notifyCode;
-
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
@@ -63,49 +60,15 @@ int OPUNetGameSelectWnd::DlgProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return true;			// Message processed
 
 	case WM_COMMAND:
-		// Get the controlId
-		controlId = LOWORD(wParam);
-		notifyCode = HIWORD(wParam);
-
-		// Figure out what to do
-		if (notifyCode == BN_CLICKED)
-		{
-			switch (controlId)
-			{
-			case IDC_SearchButton:
-				OnClickSearch();
-				return true;		// Message processed
-
-			case IDC_JoinButton:
-				OnClickJoin();
-				return true;		// Message processed
-
-			case IDC_CreateButton:
-				OnClickCreate();
-				return true;		// Message processed
-
-			case IDC_CancelButton:
-				OnClickCancel();
-				return true;		// Message processed
-			}
-		}
-		break;
+		return OnCommand(wParam);
 
 	case WM_NOTIFY:
-		// Get the controlId
-		controlId = wParam;
-		notifyCode = reinterpret_cast<NMHDR*>(lParam)->code;
-#pragma warning(suppress: 26454) // MSVC C26454 produced within expansion of NM_DBLCLK
-		if ((controlId == IDC_GamesList) && (notifyCode == NM_DBLCLK))
-		{
-			OnClickJoin();
-			return true;			// Message processed
-		}
-		break;
+		return OnNotify(wParam, lParam);
 
 	case WM_DESTROY:
 		OnDestroy();
 		return false;			// Should return 0 for this message
+
 	case WM_NCDESTROY:
 		hWnd = nullptr;
 		return false;			// Should return 0 for this message
@@ -451,6 +414,51 @@ void OPUNetGameSelectWnd::OnTimer()
 		// Process the packet
 		OnReceive(packet);
 	}
+}
+
+bool OPUNetGameSelectWnd::OnCommand(WPARAM wParam)
+{
+	int controlId = LOWORD(wParam);
+	UINT notifyCode = HIWORD(wParam);
+
+	if (notifyCode == BN_CLICKED)
+	{
+		switch (controlId)
+		{
+		case IDC_SearchButton:
+			OnClickSearch();
+			return true;		// Message processed
+
+		case IDC_JoinButton:
+			OnClickJoin();
+			return true;		// Message processed
+
+		case IDC_CreateButton:
+			OnClickCreate();
+			return true;		// Message processed
+
+		case IDC_CancelButton:
+			OnClickCancel();
+			return true;		// Message processed
+		}
+	}
+
+	return false; // Message not processed
+}
+
+bool OPUNetGameSelectWnd::OnNotify(WPARAM wParam, LPARAM lParam)
+{
+	int controlId = wParam;
+	UINT notifyCode = reinterpret_cast<NMHDR*>(lParam)->code;
+
+#pragma warning(suppress: 26454) // MSVC C26454 produced within expansion of NM_DBLCLK
+	if ((controlId == IDC_GamesList) && (notifyCode == NM_DBLCLK))
+	{
+		OnClickJoin();
+		return true;			// Message processed
+	}
+
+	return false; // Message not processed
 }
 
 void OPUNetGameSelectWnd::OnReceive(Packet &packet)
