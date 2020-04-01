@@ -102,15 +102,12 @@ void OPUNetGameSelectWnd::InitializePlayerNameComboBox()
 
 void OPUNetGameSelectWnd::InitializeMaxPlayersComboBox()
 {
-	char buffer[2];
-
-	// Add the MaxPlayer options
+	// Add the number of MaxPlayer options to the combo box
 	for (int i = 2; i <= 6; ++i)
 	{
-		// Add the number of player to the combo box
-		scr_snprintf(buffer, sizeof(buffer), "%i", i);
-		SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
+		SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(std::to_string(i).c_str()));
 	}
+
 	// Select the first item  (maxPlayers = 2)
 	SendDlgItemMessage(this->hWnd, IDC_MaxPlayers, CB_SETCURSEL, static_cast<WPARAM>(0), 0);
 }
@@ -142,10 +139,8 @@ void OPUNetGameSelectWnd::InitializeServerAddressComboBox()
 	// Load the IPAddress history
 	for (int i = 0; i < 10; ++i)
 	{
-		// Form the keyName string (number)
-		scr_snprintf(buffer, sizeof(buffer), "%i", i);
-		// Load the stored address
-		config.GetString("IPHistory", buffer, buffer, sizeof(buffer), "");
+		// Load the stored address from integer keyname
+		config.GetString("IPHistory", std::to_string(i).c_str(), buffer, sizeof(buffer), "");
 		// Make sure a value was actually loaded
 		if (buffer[0] != 0)
 		{
@@ -316,22 +311,18 @@ void OPUNetGameSelectWnd::OnDestroy()
 	// Save the ServerAddress list
 	for (int i = 0; i < 10; ++i)
 	{
-		// Form the keyName string (number)
-		char keyName[16];
-		scr_snprintf(keyName, sizeof(keyName), "%i", i);
-
 		// Get the Server Address
 		const int retVal = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_GETLBTEXT, (WPARAM)i, (LPARAM)keyValue);
 		// Check for errors
 		if (retVal != CB_ERR)
 		{
 			// Save the string to the file
-			config.SetString("IPHistory", keyName, keyValue);
+			config.SetString("IPHistory", std::to_string(i).c_str(), keyValue);
 		}
 		else
 		{
 			// Remove the string from the file
-			config.SetString("IPHistory", keyName, nullptr);
+			config.SetString("IPHistory", std::to_string(i).c_str(), nullptr);
 		}
 	}
 
