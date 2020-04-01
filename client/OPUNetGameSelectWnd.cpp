@@ -733,7 +733,7 @@ void OPUNetGameSelectWnd::OnJoinAccepted()
 	// Get the host player name
 	int hostPlayerNetID = app.netTLayer->GetHostPlayerNetID();
 	// Get the Player Name.
-	char playerName[MaxPlayerNameLength];
+	char playerName[16];
 	SendDlgItemMessage(this->hWnd, IDC_PlayerName, WM_GETTEXT, sizeof(playerName), (LPARAM)&playerName);
 
 
