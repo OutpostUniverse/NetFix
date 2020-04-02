@@ -313,7 +313,7 @@ void OPUNetGameSelectWnd::OnDestroy()
 	for (int i = 0; i < 10; ++i)
 	{
 		// Get the Server Address
-		const int retVal = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_GETLBTEXT, (WPARAM)i, (LPARAM)serverAddressBuffer);
+		const int retVal = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_GETLBTEXT, static_cast<WPARAM>(i), reinterpret_cast<LPARAM>(serverAddressBuffer));
 		// Check for errors
 		if (retVal != CB_ERR)
 		{
