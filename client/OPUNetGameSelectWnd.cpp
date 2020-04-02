@@ -304,7 +304,7 @@ void OPUNetGameSelectWnd::OnDestroy()
 	}
 
 	// Save the PlayerName
-	SavePlayerNameToIniFile();
+	WritePlayerNameToIniFile();
 
 	// Save the ServerAddress list
 	WriteServerAddressListToIniFile();
@@ -312,7 +312,7 @@ void OPUNetGameSelectWnd::OnDestroy()
 	ClearGamesList();
 }
 
-void OPUNetGameSelectWnd::SavePlayerNameToIniFile()
+void OPUNetGameSelectWnd::WritePlayerNameToIniFile()
 {
 	char playerNameBuffer[MaxPlayerNameLength];
 	GetDlgItemText(this->hWnd, IDC_PlayerName, playerNameBuffer, sizeof(playerNameBuffer));
