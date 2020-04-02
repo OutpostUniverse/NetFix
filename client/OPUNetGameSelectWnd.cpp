@@ -770,10 +770,10 @@ void OPUNetGameSelectWnd::OnClickSearch()
 	char serverAddress[MaxServerAddressLength];
 	SendDlgItemMessage(this->hWnd, IDC_ServerAddress, WM_GETTEXT, (WPARAM)sizeof(serverAddress), (LPARAM)serverAddress);
 	// Request games list from server
-	const int errorCode = opuNetTransportLayer->SearchForGames(serverAddress, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
+	bool success = opuNetTransportLayer->SearchForGames(serverAddress, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
 
 	// Check if the request was successfully sent
-	if (errorCode != 0)
+	if (success)
 	{
 		// Save the host address
 		AddServerAddress(serverAddress);
