@@ -175,7 +175,7 @@ bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const c
 	LogDebug(" Host playerNetID: " + FormatPlayerNetID(playerNetID));
 	// Set the host fields
 	peerInfos[HostPlayerIndex].playerNetID = playerNetID;
-	peerInfos[HostPlayerIndex].address = localAddress;			// Clear the local address
+	peerInfos[HostPlayerIndex].address = localAddress;
 	peerInfos[HostPlayerIndex].status = PeerStatus::Normal;
 	// Update number of players
 	numPlayers = 1;
