@@ -304,20 +304,21 @@ void OPUNetGameSelectWnd::OnDestroy()
 	}
 
 	// Save the PlayerName
-	char keyValue[MaxPlayerNameLength];
-	GetDlgItemText(this->hWnd, IDC_PlayerName, keyValue, sizeof(keyValue));
-	config.SetString("Game", "Name", keyValue);
+	char playerNameBuffer[MaxPlayerNameLength];
+	GetDlgItemText(this->hWnd, IDC_PlayerName, playerNameBuffer, sizeof(playerNameBuffer));
+	config.SetString("Game", "Name", playerNameBuffer);
 
 	// Save the ServerAddress list
+	char serverAddressBuffer[MaxServerAddressLength];
 	for (int i = 0; i < 10; ++i)
 	{
 		// Get the Server Address
-		const int retVal = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_GETLBTEXT, (WPARAM)i, (LPARAM)keyValue);
+		const int retVal = SendDlgItemMessage(this->hWnd, IDC_ServerAddress, CB_GETLBTEXT, (WPARAM)i, (LPARAM)serverAddressBuffer);
 		// Check for errors
 		if (retVal != CB_ERR)
 		{
 			// Save the string to the file
-			config.SetString("IPHistory", std::to_string(i).c_str(), keyValue);
+			config.SetString("IPHistory", std::to_string(i).c_str(), serverAddressBuffer);
 		}
 		else
 		{
