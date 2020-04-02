@@ -307,6 +307,20 @@ void OPUNetGameSelectWnd::OnDestroy()
 	SavePlayerNameToIniFile();
 
 	// Save the ServerAddress list
+	WriteServerAddressListToIniFile();
+
+	ClearGamesList();
+}
+
+void OPUNetGameSelectWnd::SavePlayerNameToIniFile()
+{
+	char playerNameBuffer[MaxPlayerNameLength];
+	GetDlgItemText(this->hWnd, IDC_PlayerName, playerNameBuffer, sizeof(playerNameBuffer));
+	config.SetString("Game", "Name", playerNameBuffer);
+}
+
+void OPUNetGameSelectWnd::WriteServerAddressListToIniFile()
+{
 	char serverAddressBuffer[MaxServerAddressLength];
 	for (int i = 0; i < 10; ++i)
 	{
@@ -324,15 +338,6 @@ void OPUNetGameSelectWnd::OnDestroy()
 			config.SetString("IPHistory", std::to_string(i).c_str(), nullptr);
 		}
 	}
-
-	ClearGamesList();
-}
-
-void OPUNetGameSelectWnd::SavePlayerNameToIniFile()
-{
-	char playerNameBuffer[MaxPlayerNameLength];
-	GetDlgItemText(this->hWnd, IDC_PlayerName, playerNameBuffer, sizeof(playerNameBuffer));
-	config.SetString("Game", "Name", playerNameBuffer);
 }
 
 void OPUNetGameSelectWnd::OnTimer()

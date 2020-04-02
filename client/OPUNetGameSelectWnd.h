@@ -56,7 +56,7 @@ private:
 	void AddServerAddress(const char* address);
 	void SetStatusText(const char* text);
 	void SavePlayerNameToIniFile();
-
+	void WriteServerAddressListToIniFile();
 
 	void CreateServerAddressToolTip();
 
