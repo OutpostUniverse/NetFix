@@ -1363,11 +1363,8 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddress)
 
 	// Convert the address string to a sockaddr_in struct
 	auto errorCode = GetHostAddress(addressString, gameServerAddress);
-	if (errorCode == HostAddressCode::Success) {
-		return true;
-	}
-
-	return false;
+	
+	return errorCode == HostAddressCode::Success;
 }
 
 void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressString, int maxLength)
