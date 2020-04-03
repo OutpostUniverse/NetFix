@@ -90,7 +90,7 @@ bool OPUNetTransportLayer::CreateSocket()
 	}
 
 	// Return status
-	return (netSocket != INVALID_SOCKET);
+	return netSocket != INVALID_SOCKET;
 }
 
 bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
