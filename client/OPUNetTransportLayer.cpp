@@ -97,9 +97,9 @@ bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const c
 {
 	// Clear internal players state
 	numPlayers = 0;
-	for (int i = 0; i < MaxRemotePlayers; ++i)
+	for (PeerInfo& peerInfo : peerInfos)
 	{
-		peerInfos[i].Clear();
+		peerInfo.Clear();
 	}
 
 	sockaddr_in localAddress;
@@ -261,9 +261,9 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* joinReques
 {
 	// Clear internal players state
 	numPlayers = 0;
-	for (int i = 0; i < MaxRemotePlayers; ++i)
+	for (PeerInfo& peerInfo : peerInfos)
 	{
-		peerInfos[i].Clear();
+		peerInfo.Clear();
 	}
 
 
@@ -474,13 +474,13 @@ int OPUNetTransportLayer::GetOpponentNetIDList(int netIDList[], int maxNumID)
 	int j = 0;
 
 	// Copy all non local playerNetIDs
-	for (int i = 0; i < MaxRemotePlayers; ++i)
+	for (const PeerInfo& peerInfo : peerInfos)
 	{
 		// Make sure the ID is valid
-		if (peerInfos[i].playerNetID != 0)
+		if (peerInfo.playerNetID != 0)
 		{
 			// Make sure it doesn't match the local player
-			if (peerInfos[i].playerNetID != playerNetID)
+			if (peerInfo.playerNetID != playerNetID)
 			{
 				// Abort if the output buffer is full
 				if (j >= maxNumID) {
@@ -488,7 +488,7 @@ int OPUNetTransportLayer::GetOpponentNetIDList(int netIDList[], int maxNumID)
 				}
 
 				// Copy it to the dest buffer
-				netIDList[j] = peerInfos[i].playerNetID;
+				netIDList[j] = peerInfo.playerNetID;
 				j++;
 			}
 		}
@@ -586,10 +586,10 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 		if (numJoining != 0)
 		{
 			// Check each player for joining
-			for (int i = 0; i < MaxRemotePlayers; i++)
+			for (PeerInfo& peerInfo : peerInfos)
 			{
 				// Check if this player is joining
-				if (peerInfos[i].bReturnJoinPacket)
+				if (peerInfo.bReturnJoinPacket)
 				{
 					// Construct the JoinGranted packet
 					// Note: This packet is returned as if it was received over the network
@@ -599,26 +599,26 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 					packet.header.sizeOfPayload = sizeof(JoinReturned);
 					packet.header.type = 1;
 					packet.tlMessage.tlHeader.commandType = TransportLayerCommand::JoinGranted;
-					packet.tlMessage.joinReturned.newPlayerNetID = peerInfos[i].playerNetID;
+					packet.tlMessage.joinReturned.newPlayerNetID = peerInfo.playerNetID;
 
 					// Mark as returned
-					peerInfos[i].bReturnJoinPacket = false;
+					peerInfo.bReturnJoinPacket = false;
 					numJoining--;
 					return true;		// Return packet for processing
 				}
 				else
 				{
 					// Check if partially joined
-					if (peerInfos[i].status == PeerStatus::Joining)
+					if (peerInfo.status == PeerStatus::Joining)
 					{
 						// Check if timed out
-						if (timeGetTime() - PlayerNetID::GetTimeStamp(peerInfos[i].playerNetID) > JoinTimeOut)
+						if (timeGetTime() - PlayerNetID::GetTimeStamp(peerInfo.playerNetID) > JoinTimeOut)
 						{
 							// Cancel the join, and reclaim the player record
 							numPlayers--;
 							numJoining--;
-							peerInfos[i].bReturnJoinPacket = false;
-							peerInfos[i].Clear();
+							peerInfo.bReturnJoinPacket = false;
+							peerInfo.Clear();
 						}
 					}
 				}
