@@ -113,6 +113,7 @@ private:
 
 	void SendBroadcast(Packet& packet, int packetSize);
 	void SendSinglecast(Packet& packet, int packetSize);
+	void ClearPlayers();
 
 	// Gameplay variables
 	unsigned int numPlayers;

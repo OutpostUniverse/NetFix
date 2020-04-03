@@ -96,11 +96,7 @@ bool OPUNetTransportLayer::CreateSocket()
 bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
 {
 	// Clear internal players state
-	numPlayers = 0;
-	for (PeerInfo& peerInfo : peerInfos)
-	{
-		peerInfo.Clear();
-	}
+	ClearPlayers();
 
 	sockaddr_in localAddress;
 	// Check if we want to bind to the host port
@@ -260,11 +256,7 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, Port defaultH
 bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* joinRequestPassword)
 {
 	// Clear internal players state
-	numPlayers = 0;
-	for (PeerInfo& peerInfo : peerInfos)
-	{
-		peerInfo.Clear();
-	}
+	ClearPlayers();
 
 
 	// Store a pointer to the game we're trying to join
@@ -1395,5 +1387,14 @@ void OPUNetTransportLayer::CheckSourcePort(Packet &packet, sockaddr_in &from)
 		}
 		// Update the source port
 		sourcePlayerPeerInfo.address.sin_port = sourcePort;
+	}
+}
+
+void OPUNetTransportLayer::ClearPlayers()
+{
+	numPlayers = 0;
+	for (PeerInfo& peerInfo : peerInfos)
+	{
+		peerInfo.Clear();
 	}
 }
