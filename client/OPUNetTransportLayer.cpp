@@ -90,7 +90,7 @@ bool OPUNetTransportLayer::CreateSocket()
 	}
 
 	// Return status
-	return (netSocket != INVALID_SOCKET);
+	return netSocket != INVALID_SOCKET;
 }
 
 bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
@@ -237,8 +237,8 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, Port defaultH
 	hostAddress.sin_addr.S_un.S_addr = INADDR_BROADCAST;
 
 	// Try to convert the string fields
-	int errorCode = GetHostAddress(hostAddressString, hostAddress);
-	if (errorCode == 0) {
+	auto errorCode = GetHostAddress(hostAddressString, hostAddress);
+	if (errorCode == HostAddressCode::InvalidAddress) {
 		return false;
 	}
 
@@ -822,12 +822,11 @@ bool OPUNetTransportLayer::InitializeWinsock()
 
 // -------------------------------------------
 
-// Returns: -1 = Success, 0 = Failed (bad addr), 1 = Failed (no addr specified)
-int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &hostAddress)
+OPUNetTransportLayer::HostAddressCode OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &hostAddress)
 {
 	// Check if a specific host address was indicated
 	if (hostAddressString == nullptr) {
-		return 1;				// Failed (no address specified)
+		return HostAddressCode::NoAddressSpecified;
 	}
 
 	// Convert hostAddress string to network address
@@ -858,7 +857,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 		if (portNumString != nullptr) {
 			portNumString[0] = ':';		// Restore string
 		}
-		return 1;					// Failed (no address specified)
+		return HostAddressCode::NoAddressSpecified;
 	}
 
 	// First try a numeric conversion
@@ -875,7 +874,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 			if (portNumString != nullptr) {
 				portNumString[0] = ':';		// Restore string
 			}
-			return 0;				// Failed (invalid address)
+			return HostAddressCode::InvalidAddress;
 		}
 		// Get the host IP address
 		hostAddress.sin_addr.S_un.S_addr = *(unsigned long*)hostEnt->h_addr_list[0];
@@ -884,7 +883,7 @@ int OPUNetTransportLayer::GetHostAddress(char* hostAddressString, sockaddr_in &h
 	if (portNumString != nullptr) {
 		portNumString[0] = ':';		// Restore string
 	}
-	return -1;						// Success
+	return HostAddressCode::Success;
 }
 
 
@@ -1363,12 +1362,9 @@ bool OPUNetTransportLayer::GetGameServerAddress(sockaddr_in &gameServerAddress)
 	std::memset(gameServerAddress.sin_zero, 0, sizeof(gameServerAddress.sin_zero));
 
 	// Convert the address string to a sockaddr_in struct
-	int errorCode = GetHostAddress(addressString, gameServerAddress);
-	if (errorCode == -1) {
-		return true;
-	}
-
-	return false;
+	auto errorCode = GetHostAddress(addressString, gameServerAddress);
+	
+	return errorCode == HostAddressCode::Success;
 }
 
 void OPUNetTransportLayer::GetGameServerAddressString(char* gameServerAddressString, int maxLength)

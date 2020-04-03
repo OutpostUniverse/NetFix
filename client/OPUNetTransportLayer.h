@@ -77,9 +77,16 @@ public:
 	virtual int GetTrafficCounts(TrafficCounters& trafficCounters) override;
 
 private:
+	enum class HostAddressCode
+	{
+		Success = -1,
+		InvalidAddress = 0,
+		NoAddressSpecified = 1
+	};
+
 	OPUNetTransportLayer();			// Private Constructor  [Prevent object creation]
 	bool InitializeWinsock();
-	int GetHostAddress(char* addrString, sockaddr_in &hostAddress);
+	HostAddressCode GetHostAddress(char* addrString, sockaddr_in &hostAddress);
 	int AddPlayer(const sockaddr_in& from);
 	int ReadSocket(SOCKET sourceSocket, Packet& packet, sockaddr_in& from);
 	bool SendTo(Packet& packet, const sockaddr_in& to);
