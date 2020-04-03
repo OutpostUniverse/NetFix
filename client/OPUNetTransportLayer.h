@@ -39,6 +39,13 @@ struct PeerInfo
 	PeerStatus status;
 	sockaddr_in address;
 	bool bReturnJoinPacket;
+
+	void Clear()
+	{
+		playerNetID = 0;
+		status = PeerStatus::EmptySlot;
+		address.sin_addr.s_addr = INADDR_ANY;
+	}
 };
 
 

@@ -99,9 +99,7 @@ bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const c
 	numPlayers = 0;
 	for (int i = 0; i < MaxRemotePlayers; ++i)
 	{
-		peerInfos[i].status = PeerStatus::EmptySlot;
-		peerInfos[i].playerNetID = 0;
-		peerInfos[i].address.sin_addr.s_addr = INADDR_ANY;
+		peerInfos[i].Clear();
 	}
 
 	sockaddr_in localAddress;
@@ -265,9 +263,7 @@ bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* joinReques
 	numPlayers = 0;
 	for (int i = 0; i < MaxRemotePlayers; ++i)
 	{
-		peerInfos[i].status = PeerStatus::EmptySlot;
-		peerInfos[i].playerNetID = 0;
-		peerInfos[i].address.sin_addr.s_addr = INADDR_ANY;
+		peerInfos[i].Clear();
 	}
 
 
@@ -510,9 +506,7 @@ void OPUNetTransportLayer::RemovePlayer(int playerNetID)
 	if (peerInfos[playerIndex].status != PeerStatus::EmptySlot)
 	{
 		// Remove the player
-		peerInfos[playerIndex].playerNetID = 0;
-		peerInfos[playerIndex].status = PeerStatus::EmptySlot;
-		peerInfos[playerIndex].address.sin_addr.s_addr = INADDR_ANY;		// Clear the address
+		peerInfos[playerIndex].Clear();
 		// Update player count
 		numPlayers--;
 	}
@@ -624,9 +618,7 @@ int OPUNetTransportLayer::Receive(Packet& packet)
 							numPlayers--;
 							numJoining--;
 							peerInfos[i].bReturnJoinPacket = false;
-							peerInfos[i].status = PeerStatus::EmptySlot;
-							peerInfos[i].address.sin_addr.s_addr = INADDR_ANY;
-							peerInfos[i].playerNetID = 0;
+							peerInfos[i].Clear();
 						}
 					}
 				}
