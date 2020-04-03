@@ -55,6 +55,8 @@ private:
 	void SetGameListItem(int itemIndex, HostedGameInfo* hostedGameInfo);
 	void AddServerAddress(const char* address);
 	void SetStatusText(const char* text);
+	void WritePlayerNameToIniFile();
+	void WriteServerAddressListToIniFile();
 
 	void CreateServerAddressToolTip();
 
