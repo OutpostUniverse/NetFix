@@ -350,7 +350,7 @@ void OPUNetGameSelectWnd::OnTimer()
 		searchTickCount = 0;
 
 		// First check a game server for games (if info is setup)
-		char addrString[128];
+		char addrString[MaxServerAddressLength];
 		opuNetTransportLayer->GetGameServerAddressString(addrString, sizeof(addrString));
 		if (addrString[0] != 0)
 		{
