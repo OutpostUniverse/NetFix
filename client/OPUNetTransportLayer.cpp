@@ -95,7 +95,6 @@ bool OPUNetTransportLayer::CreateSocket()
 
 bool OPUNetTransportLayer::HostGame(Port port, const char* hostPassword, const char* creatorName, int maxPlayers, int gameType)
 {
-	// Clear internal players state
 	ClearPlayers();
 
 	sockaddr_in localAddress;
@@ -255,9 +254,7 @@ bool OPUNetTransportLayer::SearchForGames(char* hostAddressString, Port defaultH
 
 bool OPUNetTransportLayer::JoinGame(HostedGameInfo &game, const char* joinRequestPassword)
 {
-	// Clear internal players state
 	ClearPlayers();
-
 
 	// Store a pointer to the game we're trying to join
 	joiningGameInfo = &game;
