@@ -59,6 +59,7 @@ private:
 	void WriteServerAddressListToIniFile();
 	void SearchForGames();
 	void UpdateJoinAttempt();
+	void UpdateEchoRequest();
 
 	void CreateServerAddressToolTip();
 

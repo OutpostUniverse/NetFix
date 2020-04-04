@@ -357,20 +357,7 @@ void OPUNetGameSelectWnd::OnTimer()
 
 	if ((externalPort == 0) && (numEchoRequestsSent < MaxEchoAttempt))
 	{
-		echoTick++;
-		if (echoTick >= EchoTickInterval)
-		{
-			if (numEchoRequestsSent == 0)
-			{
-				internalPort = opuNetTransportLayer->GetPort();
-			}
-
-			echoTick = 0;
-			numEchoRequestsSent++;
-
-			// Request external address
-			opuNetTransportLayer->GetExternalAddress();
-		}
+		UpdateEchoRequest();
 	}
 
 	// Check for network replies
@@ -421,6 +408,24 @@ void OPUNetGameSelectWnd::UpdateJoinAttempt()
 			// Resend the Join request
 			opuNetTransportLayer->JoinGame(*joiningGame, joinRequestPassword);
 		}
+	}
+}
+
+void OPUNetGameSelectWnd::UpdateEchoRequest()
+{
+	echoTick++;
+	if (echoTick >= EchoTickInterval)
+	{
+		if (numEchoRequestsSent == 0)
+		{
+			internalPort = opuNetTransportLayer->GetPort();
+		}
+
+		echoTick = 0;
+		numEchoRequestsSent++;
+
+		// Request external address
+		opuNetTransportLayer->GetExternalAddress();
 	}
 }
 
