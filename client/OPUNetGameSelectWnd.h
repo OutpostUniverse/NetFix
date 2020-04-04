@@ -60,6 +60,7 @@ private:
 	void SearchForGames();
 	void UpdateJoinAttempt();
 	void RequestExternalAddress();
+	void SetJoiningGame();
 
 	void CreateServerAddressToolTip();
 

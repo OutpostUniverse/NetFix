@@ -798,43 +798,39 @@ void OPUNetGameSelectWnd::OnClickSearch()
 	}
 }
 
-
 void OPUNetGameSelectWnd::OnClickJoin()
 {
-	// Get the game to join
-	// --------------------
-	// Prepare a LVITEM struct
-	LVITEM item;
-	item.mask = LVIF_PARAM;
-	item.iSubItem = 0;
-	// Get the selected game to join
-	item.iItem = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETSELECTIONMARK, 0, 0);
-	// Get the item data
-	if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&item)) {
-		joiningGame = (HostedGameInfo*)item.lParam;	// Retrieve the HostedGameListItem pointer
-	}
-	else {
-		joiningGame = nullptr;		// Clear joining game
-	}
+	SetJoiningGame();
 
-	// Check if we have a bad pointer
 	if (joiningGame == nullptr)
 	{
-		// No game selected  (or selected item is not a game)
 		SetStatusText("Please select a game to join");
 		return;
 	}
 
-	// Get the join joinRequestPassword
-	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(joinRequestPassword), (LPARAM)joinRequestPassword);
+	// Get the joinRequestPassword
+	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(joinRequestPassword), reinterpret_cast<LPARAM>(joinRequestPassword));
 
 	SetStatusText("Sending Join request...");
 
 	joinAttempt = 1;
-	// Send the Join request
 	opuNetTransportLayer->JoinGame(*joiningGame, joinRequestPassword);
 }
 
+void OPUNetGameSelectWnd::SetJoiningGame()
+{
+	LVITEM listViewItem;
+	listViewItem.mask = LVIF_PARAM;
+	listViewItem.iSubItem = 0;
+	listViewItem.iItem = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETSELECTIONMARK, 0, 0);
+
+	if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, reinterpret_cast<LPARAM>(&listViewItem))) {
+		joiningGame = reinterpret_cast<HostedGameInfo*>(listViewItem.lParam);
+	}
+	else {
+		joiningGame = nullptr;
+	}
+}
 
 void OPUNetGameSelectWnd::OnClickCreate()
 {
