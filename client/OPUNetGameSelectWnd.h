@@ -58,6 +58,7 @@ private:
 	void WritePlayerNameToIniFile();
 	void WriteServerAddressListToIniFile();
 	void SearchForGames();
+	void UpdateJoinAttempt();
 
 	void CreateServerAddressToolTip();
 
