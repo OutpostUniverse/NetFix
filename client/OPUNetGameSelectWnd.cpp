@@ -357,7 +357,7 @@ void OPUNetGameSelectWnd::OnTimer()
 
 	if ((externalPort == 0) && (numEchoRequestsSent < MaxEchoAttempt))
 	{
-		UpdateEchoRequest();
+		RequestExternalAddress();
 	}
 
 	// Check for network replies
@@ -411,7 +411,7 @@ void OPUNetGameSelectWnd::UpdateJoinAttempt()
 	}
 }
 
-void OPUNetGameSelectWnd::UpdateEchoRequest()
+void OPUNetGameSelectWnd::RequestExternalAddress()
 {
 	echoTick++;
 	if (echoTick >= EchoTickInterval)
