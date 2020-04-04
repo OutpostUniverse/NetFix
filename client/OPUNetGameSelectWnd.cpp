@@ -809,7 +809,7 @@ void OPUNetGameSelectWnd::OnClickJoin()
 	}
 
 	// Get the joinRequestPassword
-	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(joinRequestPassword), (LPARAM)joinRequestPassword);
+	SendDlgItemMessage(this->hWnd, IDC_Password, WM_GETTEXT, sizeof(joinRequestPassword), reinterpret_cast<LPARAM>(joinRequestPassword));
 
 	SetStatusText("Sending Join request...");
 
@@ -824,8 +824,8 @@ void OPUNetGameSelectWnd::SetJoiningGame()
 	listViewItem.iSubItem = 0;
 	listViewItem.iItem = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETSELECTIONMARK, 0, 0);
 
-	if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&listViewItem)) {
-		joiningGame = (HostedGameInfo*)listViewItem.lParam;
+	if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, reinterpret_cast<LPARAM>(&listViewItem))) {
+		joiningGame = reinterpret_cast<HostedGameInfo*>(listViewItem.lParam);
 	}
 	else {
 		joiningGame = nullptr;
