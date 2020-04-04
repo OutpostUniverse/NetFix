@@ -819,13 +819,13 @@ void OPUNetGameSelectWnd::OnClickJoin()
 
 void OPUNetGameSelectWnd::SetJoiningGame()
 {
-	LVITEM item;
-	item.mask = LVIF_PARAM;
-	item.iSubItem = 0;
-	item.iItem = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETSELECTIONMARK, 0, 0);
+	LVITEM listViewItem;
+	listViewItem.mask = LVIF_PARAM;
+	listViewItem.iSubItem = 0;
+	listViewItem.iItem = SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETSELECTIONMARK, 0, 0);
 
-	if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&item)) {
-		joiningGame = (HostedGameInfo*)item.lParam;
+	if (SendDlgItemMessage(this->hWnd, IDC_GamesList, LVM_GETITEM, 0, (LPARAM)&listViewItem)) {
+		joiningGame = (HostedGameInfo*)listViewItem.lParam;
 	}
 	else {
 		joiningGame = nullptr;
