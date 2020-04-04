@@ -347,62 +347,17 @@ void OPUNetGameSelectWnd::OnTimer()
 	searchTickCount++;
 	if (searchTickCount >= SearchTickInterval)
 	{
-		searchTickCount = 0;
-
-		// First check a game server for games (if info is setup)
-		char addrString[MaxServerAddressLength];
-		opuNetTransportLayer->GetGameServerAddressString(addrString, sizeof(addrString));
-		if (addrString[0] != 0)
-		{
-			// Check the game server for a list of games
-			opuNetTransportLayer->SearchForGames(addrString, DefaultGameServerPort);
-		}
-		else
-		{
-			// Game server not available. Broadcast a search query  (Broadcast to LAN)
-			opuNetTransportLayer->SearchForGames(nullptr, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
-		}
+		SearchForGames();
 	}
 
 	if ((joinAttempt > 0) && (joiningGame != nullptr))
 	{
-		joinAttemptTickCount++;
-		if (joinAttemptTickCount >= JoinAttemptInterval)
-		{
-			joinAttemptTickCount = 0;
-
-			if (joinAttempt > MaxJoinAttempt)
-			{
-				joinAttempt = 0;
-				joiningGame = nullptr;
-
-				SetStatusText("Game join failed");
-			}
-			else
-			{
-				joinAttempt++;
-				// Resend the Join request
-				opuNetTransportLayer->JoinGame(*joiningGame, joinRequestPassword);
-			}
-		}
+		UpdateJoinAttempt();
 	}
 
 	if ((externalPort == 0) && (numEchoRequestsSent < MaxEchoAttempt))
 	{
-		echoTick++;
-		if (echoTick >= EchoTickInterval)
-		{
-			if (numEchoRequestsSent == 0)
-			{
-				internalPort = opuNetTransportLayer->GetPort();
-			}
-
-			echoTick = 0;
-			numEchoRequestsSent++;
-
-			// Request external address
-			opuNetTransportLayer->GetExternalAddress();
-		}
+		RequestExternalAddress();
 	}
 
 	// Check for network replies
@@ -411,6 +366,66 @@ void OPUNetGameSelectWnd::OnTimer()
 	{
 		// Process the packet
 		OnReceive(packet);
+	}
+}
+
+void OPUNetGameSelectWnd::SearchForGames()
+{
+	searchTickCount = 0;
+
+	// First check a game server for games (if info is setup)
+	char addrString[MaxServerAddressLength];
+	opuNetTransportLayer->GetGameServerAddressString(addrString, sizeof(addrString));
+	if (addrString[0] != 0)
+	{
+		// Check the game server for a list of games
+		opuNetTransportLayer->SearchForGames(addrString, DefaultGameServerPort);
+	}
+	else
+	{
+		// Game server not available. Broadcast a search query  (Broadcast to LAN)
+		opuNetTransportLayer->SearchForGames(nullptr, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
+	}
+}
+
+void OPUNetGameSelectWnd::UpdateJoinAttempt()
+{
+	joinAttemptTickCount++;
+	if (joinAttemptTickCount >= JoinAttemptInterval)
+	{
+		joinAttemptTickCount = 0;
+
+		if (joinAttempt > MaxJoinAttempt)
+		{
+			joinAttempt = 0;
+			joiningGame = nullptr;
+
+			SetStatusText("Game join failed");
+		}
+		else
+		{
+			joinAttempt++;
+			// Resend the Join request
+			opuNetTransportLayer->JoinGame(*joiningGame, joinRequestPassword);
+		}
+	}
+}
+
+void OPUNetGameSelectWnd::RequestExternalAddress()
+{
+	echoTick++;
+	if (echoTick >= EchoTickInterval)
+	{
+		if (numEchoRequestsSent == 0)
+		{
+			internalPort = opuNetTransportLayer->GetPort();
+		}
+
+		echoTick = 0;
+		numEchoRequestsSent++;
+
+		// Request external address
+		opuNetTransportLayer->GetExternalAddress();
 	}
 }
 
