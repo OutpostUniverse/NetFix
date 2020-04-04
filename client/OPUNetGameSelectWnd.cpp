@@ -347,21 +347,7 @@ void OPUNetGameSelectWnd::OnTimer()
 	searchTickCount++;
 	if (searchTickCount >= SearchTickInterval)
 	{
-		searchTickCount = 0;
-
-		// First check a game server for games (if info is setup)
-		char addrString[MaxServerAddressLength];
-		opuNetTransportLayer->GetGameServerAddressString(addrString, sizeof(addrString));
-		if (addrString[0] != 0)
-		{
-			// Check the game server for a list of games
-			opuNetTransportLayer->SearchForGames(addrString, DefaultGameServerPort);
-		}
-		else
-		{
-			// Game server not available. Broadcast a search query  (Broadcast to LAN)
-			opuNetTransportLayer->SearchForGames(nullptr, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
-		}
+		SearchForGames();
 	}
 
 	if ((joinAttempt > 0) && (joiningGame != nullptr))
@@ -411,6 +397,25 @@ void OPUNetGameSelectWnd::OnTimer()
 	{
 		// Process the packet
 		OnReceive(packet);
+	}
+}
+
+void OPUNetGameSelectWnd::SearchForGames()
+{
+	searchTickCount = 0;
+
+	// First check a game server for games (if info is setup)
+	char addrString[MaxServerAddressLength];
+	opuNetTransportLayer->GetGameServerAddressString(addrString, sizeof(addrString));
+	if (addrString[0] != 0)
+	{
+		// Check the game server for a list of games
+		opuNetTransportLayer->SearchForGames(addrString, DefaultGameServerPort);
+	}
+	else
+	{
+		// Game server not available. Broadcast a search query  (Broadcast to LAN)
+		opuNetTransportLayer->SearchForGames(nullptr, config.GetInt(sectionName, "ClientPort", DefaultClientPort));
 	}
 }
 
